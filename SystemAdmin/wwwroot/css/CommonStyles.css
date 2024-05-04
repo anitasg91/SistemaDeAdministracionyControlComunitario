@@ -1,0 +1,13 @@
+﻿.hide {
+    display: none !important;
+}
+
+.btnMarginTop {
+    margin: 10px 0 0 0 !important;
+    height: 35px;
+}
+
+.btnMarginTopDer {
+    margin: 10px 10px 0 0 !important;
+    height: 35px;
+}

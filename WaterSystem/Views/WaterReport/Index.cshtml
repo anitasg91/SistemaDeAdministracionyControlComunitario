@@ -1,0 +1,368 @@
+﻿@model SAyCC.Entities.SystemAdmin.ProfileEntity
+
+@{
+    ViewData["Title"] = "Catalogos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <style>
+            .chart-wrap {
+                --chart-width: 420px;
+                --grid-color: #aaa;
+                --bar-color: #F16335;
+                --bar-thickness: 40px;
+                --bar-rounded: 3px;
+                --bar-spacing: 10px;
+                font-family: sans-serif;
+                width: var(--chart-width);
+            }
+
+                .chart-wrap .title {
+                    font-weight: bold;
+                    padding: 1.8em 0;
+                    text-align: center;
+                    white-space: nowrap;
+                }
+
+                /* cuando definimos el gráfico en horizontal, lo giramos 90 grados */
+                .chart-wrap.horizontal .grid {
+                    transform: rotate(-90deg);
+                }
+
+                .chart-wrap.horizontal .bar::after {
+                    /* giramos las letras para horizontal*/
+                    transform: rotate(45deg);
+                    padding-top: 0px;
+                    display: block;
+                }
+
+                .chart-wrap .grid {
+                    margin-left: 120px;
+                    position: relative;
+                    padding: 5px 0 5px 0;
+                    height: 100%;
+                    width: 100%;
+                    border-left: 2px solid var(--grid-color);
+                }
+
+                    /* posicionamos el % del gráfico*/
+                    .chart-wrap .grid::before {
+                        font-size: 0.8em;
+                        font-weight: bold;
+                        content: '0%';
+                        position: absolute;
+                        left: -0.5em;
+                        top: -1.5em;
+                    }
+
+                    .chart-wrap .grid::after {
+                        font-size: 0.8em;
+                        font-weight: bold;
+                        content: '100%';
+                        position: absolute;
+                        right: -1.5em;
+                        top: -1.5em;
+                    }
+
+                /* giramos las valores de 0% y 100% para horizontal */
+                .chart-wrap.horizontal .grid::before, .chart-wrap.horizontal .grid::after {
+                    transform: rotate(90deg);
+                }
+
+                .chart-wrap .bar {
+                    width: var(--bar-value);
+                    height: var(--bar-thickness);
+                    margin: var(--bar-spacing) 0;
+                    background-color: #17a2b8;/*var(--bar-color);*/
+                    border-radius: 0 var(--bar-rounded) var(--bar-rounded) 0;
+                }
+
+                    .chart-wrap .bar:hover {
+                        opacity: 0.7;
+                    }
+
+                    .chart-wrap .bar::after {
+                        content: attr(data-name);
+                        margin-left: 100%;
+                        padding: 10px;
+                        display: inline-block;
+                        white-space: nowrap;
+                    }
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.0.272/jspdf.debug.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+
+    </head>
+
+
+<body style="overflow-x: hidden;">
+    <div id="dvContenedorInfoGral" class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <label style="float:left;">Periodo: </label><br />
+            <select id="ddlPeriod" class="form-control" onchange="ddlCatalogoOnChange();">
+                @{
+                    var app = (List<SAyCC.Entities.SystemAdmin.CatalogEntity>)ViewBag.Period;
+                    foreach (var item in app)
+                    {
+                        <option value="@item.Id">@item.Descripcion</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <label style="float:left;">Manzana: </label><br />
+            <select id="ddlApple" class="form-control" onchange="ddlCatalogoOnChange();">
+                @{
+                    var apple = (List<SAyCC.Entities.SystemAdmin.CatalogEntity>)ViewBag.Apple;
+                    foreach (var item in apple)
+                    {
+                        <option value="@item.Id">@item.Descripcion</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <label style="float:left;">Clave Titular: </label><br />
+            <input id="txtClaveTitular" class="form-control" onchange="ddlCatalogoOnChange();" />
+
+        </div>
+        @*<div id="dvAplicacion" class="col-md-3 col-sm-3 col-xs-12 hide">
+                <label>Aplicación:</label>
+                <br />
+                <select asp-for="IDAplicacion" id="ddlIDAplicacion" class="form-control" onchange=" getProf();">
+                    @{
+                        var app = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.Applications;
+                        foreach (var item in app)
+                        {
+                            <option value="@item.Id">@item.Descripcion</option>
+                        }
+                    }
+                </select>
+                <input type="hidden" id="hfIdAppEdit" value="0" />
+            </div>*@
+        @*<div class="col-md-2 col-sm-2 col-xs-12">
+                <div style="margin: 34px 0 0 0; float: left; height: 35px;" class="btn btn-info" onclick="showModalbyCatalog();">
+                    <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                </div>
+            </div>*@
+    </div>
+    <div id="dvTablaCatalog" class="datagrid" style="height:500px; overflow-y:scroll; margin-top:5%;">
+        <table id="table_id">
+            <thead>
+                <tr>
+                    <th class="dt-center" scope="col">No</th>
+                    <th scope="col">Medidor</th>
+                    <th scope="col">Folio</th>
+                    <th scope="col">Titular</th>
+                    <th scope="col">ClaveTitular</th>
+                    <th scope="col">TotalPeriodo</th>
+                    <th scope="col">Estatus</th>
+                    <th class="dt-center" scope="col"><i class="fas fa-cog fa-1x"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var voucher = (List<SAyCC.Entities.WaterSystem.VoucherEntity>)ViewBag.PaymentVoucher;
+                    foreach (var item in voucher)
+                    {
+                        <tr>
+                            <td class="dt-center ajustes">@item.Id</td>
+                            <td>@item.NoMedidor</td>
+                            <td>@item.Folio</td>
+                            <td>@item.Titular</td>
+                            <td>@item.ClaveTitular</td>
+                            <td>$@item.TotalPagado</td>
+                            <td class="@item.TextColor">@item.Estatus</td>
+                            <td class="dt-center ajustes">
+                                <i onclick="showMdlViewReport(@item.Id);" style="color:dodgerblue; cursor:pointer;" class="fas fa-eye fa-lg" title="Ver comprobante"></i>
+                                @*<i onclick="showMdlDeleteCatalog(@item.Id);" style="color:red; cursor:pointer;" class="fas fa-file-pdf fa-lg" title="Descargar PDF"></i>*@
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin: 1% 0;" id="dvMdlViewDetail" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <input id="hfIdWaterMeter" class="form-control" type="hidden" value="0" name="IdWaterMeter" />
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="lblTitleWaterMeterNE" class="modal-title"><i class="fas fa-file-invoice fa-lg"></i> Recibo de Agua potable</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="dvReport" class="modal-body" style="height:auto; max-height:500px; overflow-y: scroll;">
+                    <div class="container">
+                        <div class="row bg-info">
+                            <div class="col-xl-6 col-lg-6 col-md-4 col-sm-6 col-xs-6">
+                                <label>RECIBO DE AGUA</label>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-4 col-sm-6 col-xs-6">
+                                <div class="float-xl-right float-lg-right float-md-right float-sm-none float-xs-none">
+                                    <label>Fecha exp.: </label> <label id="lblFechaExp"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-6 col-xs-12">
+                                <img style="position: absolute;" src="data:image/png;base64,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" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-4 col-sm-6 col-xs-6">
+                                <label>Folio: </label> <label id="lblFolio"></label>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-4 col-sm-6 col-xs-6">
+                                <div class="float-xl-right float-lg-right float-md-right float-sm-none float-xs-none">
+                                    <label>Periodo: </label> <label id="lblPeriodo">Ene 2021 - Feb 2021</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container" style="margin-top: 11% !important; padding-top: 1%;">
+                        <label style="background-color: white; position: absolute; z-index: 99999999;">Datos del usuario</label>
+                        <div class="row" style="border: solid 1px gray; margin-top: 1.5% !important; padding-top: 2%;">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <label>Titular:</label><br />
+                                <label id="lblTitular"></label>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <div class="float-xl-right float-lg-right float-md-right float-sm-none float-xs-none">
+                                    <label>Clave:</label><br />
+                                    <label id="lblClave"></label>
+                                </div>
+                            </div>
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <label>Dirección:</label><br />
+                                <label id="lblDireccion">mza. Manzana 1, loc. Bondhi, mun. Tasquillo, edo. Hidalgo. CP. 42380</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container" style="margin-top: 1% !important; padding-top: 1%;">
+                        <label style="background-color: white; position: absolute; z-index: 99999999;">Datos de facturación</label>
+                        <div class="row" style="border: solid 1px gray; margin-top: 1.5% !important; padding-top: 2%;">
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <label>No. Medidor:</label><br />
+                                <label id="lblMedidor"></label>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <label>Total del periodo:</label><br />
+                                <label id="lblTotalPagar"></label>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="float-xl-right float-lg-right float-md-right float-sm-none float-xs-none">
+                                    <label>Total con adeudos:</label><br />
+                                    <label id="lblTotalPagarAdeudo"></label>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <label>Lect. Anterior:</label><br />
+                                <label id="lblLectAnterior"></label>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <label>Lect. Actual:</label><br />
+                                <label id="lblLectActual"></label>
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="float-xl-right float-lg-right float-md-right float-sm-none float-xs-none">
+                                    <label>Total usado:</label><br />
+                                    <label id="lblTotalUsado"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container" style="margin-top: 1% !important; padding-top: 1%;">
+                        <label style="background-color: white; position: absolute; z-index: 99999999;">Historial de consumo</label>
+                        <div class="row" style="border: solid 1px gray; margin-top: 1.5% !important; padding-top: 2%;">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="chart-wrap horizontal">
+                                    <div class="title">Historial de consumo</div>
+                                    <div id="dvBarras" class="grid">
+                                        @*<div class="bar" style="--bar-value:85%;" data-name="Your Blog"></div>
+        <div class="bar" style="--bar-value:23%;" data-name="Medium"></div>
+        <div class="bar" style="--bar-value:7%;" data-name="Tumblr"></div>
+        <div class="bar" style="--bar-value:38%;" data-name="Facebook"></div>
+        <div class="bar" style="--bar-value:35%;" data-name="YouTube"></div>
+        <div class="bar" style="--bar-value:30%;" data-name="LinkedIn"></div>
+        <div class="bar" style="--bar-value:5%;" data-name="Twitter"></div>
+        <div class="bar" style="--bar-value:20%;" data-name="Other"></div>*@
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/ENE./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/FEB./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/MAR./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/ABR./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/MAY./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/JUN./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/JUL./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/AGO./2021"></div>
+                                        @*<div class="bar" style="--bar-value:7%;" data-name="21/SEP./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/OCT./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/NOV./2021"></div>
+                                        <div class="bar" style="--bar-value:7%;" data-name="21/DIC./2021"></div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container" style="margin-top: 1% !important; padding-top: 1%;">
+                        <label style="background-color: white; position: absolute; z-index: 99999999;">Desglose</label>
+                        <div class="row" style="border: solid 1px gray; margin-top: 1.5% !important; padding-top: 2%;">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6 table-responsive-md">
+                                <div id="dvTableDesglose">
+                                    <table id="tableDesglose" class="table" style="border: solid 1px gray;">
+                                        <thead class="bg-info">
+                                            <tr>
+                                                <th scope="col">Concepto</th>
+                                                <th scope="col">M3</th>
+                                                <th scope="col">Costo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <h1 class="text-center text-info">
+                                    ¡Cuidemos el agua!
+                                </h1><br />
+                                <h1 class="text-center text-info"> Gota a gota el agua se agota. </h1>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCancel" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                    <div id="btnDownloadFilePDF" type="submit" class="btn btn-success"><i class="fas fa-download fa-1x" style="color:white"></i> Descargar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript">
+    var result = "@ViewBag.resultado";
+    switch (result) {
+        case "Success":
+            swal("Éxito", "Los datos fueron  guardador exitosamente.", "success");
+            break;
+        case "Error":
+            swal("Error", "@ViewBag.MensajeErr", "error");
+            break;
+        default:
+    }
+</script>
+<script src="~/js/Common.js"></script>
+<script src="~/js/jsWaterReport.js"></script>

@@ -1,0 +1,77 @@
+﻿@model SAyCC.Entities.Login.UserEntity
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style>
+    .row {
+        margin: 2% 0 2% 0 !important;
+    }
+</style>
+
+
+<body style="overflow-x: hidden;">
+    <div>
+        <br />
+        <br />
+        <div class="datagrid" style="height:500px; overflow-y:scroll;">
+            <table id="table_id">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Identificador</th>
+                        <th scope="col">Perfil</th>
+                        <th scope="col">Manzana</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">E-Mail</th>
+                        <th scope="col">Fecha Alta</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">
+                            <i class="fas fa-cog fa-1x"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var Users = (List<SAyCC.Entities.Login.UserEntity>)ViewBag.tableUser;
+                        foreach (var item in Users)
+                        {
+                            string fechaAlta = item.FechaAlta.ToString("dd/MM/yyyy");
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.NombreCompleto</td>
+                                <td>@item.Identificador</td>
+                                <td>@item.Perfil</td>
+                                <td>@item.Manzana</td>
+                                <td>@item.Telefono</td>
+                                <td>@item.Email</td>
+                                <td>@fechaAlta</td>
+                                <td style="color:@item.Color" class="dt-center ajustes"><i class="@item.Estatus fa-lg"></i></td>
+                                <td class="dt-center ajustes">
+                                    <i onclick="editUser(1,@item.Id);" style="color:dodgerblue; cursor:pointer;" class="fas fa-file-invoice fa-lg" title="Reporte"></i>
+                                    @*@if (ViewBag.Alta || ViewBag.Modificacion)
+                                    {
+                                        <i onclick="blockUnblockUser(1,@item.Id,@(item.Activo? 1: 0));" style="color:gray; cursor:pointer;" class="@item.Action fa-lg"></i>
+                                    }
+                                    @if (ViewBag.Alta)
+                                    {
+                                        <i onclick="deleteUser(1,@item.Id);" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i>
+                                    }*@
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="margin: 1% 0;" id="dvMdlNewUser" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        @*<partial name="~/Views/Home/modalNewUser.cshtml" model="Model" />*@
+    </div>
+</body>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

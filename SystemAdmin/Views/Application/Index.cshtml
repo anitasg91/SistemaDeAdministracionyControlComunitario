@@ -1,0 +1,327 @@
+﻿@model SAyCC.Entities.Login.ApplicationEntity
+
+@{
+    ViewData["Title"] = "Aplicación";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<div>
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            @if (ViewBag.Alta)
+            {
+                <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="newApplication();">
+                    <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                </div>
+            }
+        </div>
+    </div>
+    <br />
+    <div class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:500px;">
+        <table id="table_id">
+            <thead>
+                <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Estatus</th>
+                    <th scope="col">Fecha Alta</th>
+                    <th scope="col">Usuario Alta</th>
+                    <th scope="col">Fecha Mod</th>
+                    <th scope="col">Usuario Mod</th>
+                    <th class="dt-center" scope="col">
+                        <i class="fas fa-cog fa-1x"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @{
+                    var app = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.Applications;
+                    foreach (var item in app)
+                    {
+                        string fechaAlta = item.FechaAlta.ToString("dd/MM/yyyy");
+                        string fechaMod = string.IsNullOrEmpty(item.FechaModificacion.ToString()) ? "" : Convert.ToDateTime(item.FechaModificacion).ToString("dd/MM/yyyy");
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Descripcion</td>
+                            <td class="dt-center" style="color:@item.Color"><i class="@item.Estatus fa-lg"></i></td>
+                            <td class="dt-center">@fechaAlta</td>
+                            <td>@item.NombreUsuarioAlta</td>
+                            <td class="dt-center">@fechaMod</td>
+                            <td>@item.NombreUsuarioMod</td>
+                            <td class="dt-center ajustes">
+                                <i onclick="editApplication(@item.Id);" style="color:dodgerblue; cursor:pointer;" class="fas fa-edit fa-lg"></i>
+                                @if (ViewBag.Alta || ViewBag.Modificacion)
+                                {
+                                    <i onclick="execAction(1,@item.Id,@(item.Activo? 1: 0));" style="color:gray; cursor:pointer;" class="@item.Action fa-lg"></i>
+                                }
+                                @if (ViewBag.Alta)
+                                {
+                                    <i onclick="execAction(2,@item.Id);" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div style="margin: 5% 0;" id="dvMdlNewApp" class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <form asp-controller="Application" asp-action="saveApplication" method="post">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class='fas fa-store fa-lg'></i> Nueva Aplicación</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="bodyModalApplication" class="row typemodal">
+                        <partial name="NewApplication" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div style="margin: 1% 0;" id="dvMdlEditApp" class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <form asp-controller="Application" asp-action="saveApplication" method="post">
+        <input id="hfIdAppEdit" asp-for="Id" class="form-control" type="hidden" value="0" />
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content noBorder">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class='fas fa-edit fa-lg'></i> Editar Aplicación</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a id="aInfoGral" class="nav-link active" data-toggle="tab" href="#GeneralInfo">Información General</a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="aModules" class="nav-link" data-toggle="tab" href="#Modules">Módulos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="aProfiles" class="nav-link" data-toggle="tab" href="#Profiles">Perfiles</a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="aPermission" class="nav-link" data-toggle="tab" href="#Permission">Permisos</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active container" id="GeneralInfo">
+                            <div class="row typemodal">
+                                @if (ViewBag.Alta || ViewBag.Modificacion)
+                                {
+                                    <partial name="NewApplication" />
+                                }
+                                else
+                                {
+                                    <partial name="ConsutaApp" />
+                                }
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label>Estatus:</label>
+                                    <br />
+                                    <input class="form-control inputDetail" disabled="disabled" id="lblEstatus" />
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label>Fecha Alta:</label>
+                                    <br />
+                                    <input class="form-control inputDetail" disabled="disabled" id="lblFechaAlta" />
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label>Usuario Alta:</label>
+                                    <br />
+                                    <input class="form-control inputDetail" disabled="disabled" id="lblUsuarioAlta" />
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label>Fecha Mod:</label>
+                                    <br />
+                                    <input class="form-control inputDetail" disabled="disabled" id="lblFechaMod" />
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label>Usuario Mod:</label>
+                                    <br />
+                                    <input class="form-control inputDetail" disabled="disabled" id="lblUsuarioMod" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane container" id="Modules">
+                            <div>
+                                <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        @if (ViewBag.Alta)
+                                        {
+                                        <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="NewModule();">
+                                            <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                <br />
+                                <div id="dvTabla" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:300px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane container" id="Profiles">
+                            <div>
+                                <div style="margin-top: 1%;" class="row">
+                                    @if (ViewBag.Alta)
+                                    {
+                                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                        <label>Nombre:</label>
+                                        <br />
+                                        <input class="form-control" id="txtNombreProfile" placeholder="Nombre" />
+                                        <input id="hfIdProfile" type="hidden" class="form-control" value="0" />
+                                    </div>
+                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                        <div id="dvBtnNewProf" style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="NewProfile();">
+                                            <i class="fas fa-plus-circle fa-1x" style="color:white"></i> Agregar
+                                        </div>
+                                    </div>
+                                    }
+                                </div>
+                                <br />
+                                <div id="dvTablaProfileMod" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:300px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane container" id="Permission">
+                            <div>
+                                <div style="margin-top: 1%;" class="row">
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                        <label>Perfil:</label>
+                                        <br />
+                                        <select id="ddlPerfil" class="form-control" onchange="onDllPerfilesChanged();">
+                                        </select>
+                                    </div>
+                                </div>
+                                <br />
+                                <div id="dvTablaPermissionMod" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:300px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                    @if (ViewBag.Alta || ViewBag.Modificacion)
+                    {
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div style="margin: 10% 0;" id="dvMdlActions" class="modal fade bd-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <form asp-controller="Application" asp-action="execAction" method="post">
+        <input id="hfIdApp" class="form-control" type="hidden" value="0" name="IdApp" />
+        <input id="hfTypeAction" class="form-control" type="hidden" value="0" name="TypeAction" />
+        <input id="hfTypeStatus" class="form-control" type="hidden" value="0" name="Status" />
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lblTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                            <label id="lblMensaje"></label><br />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div style="margin: 1% 0;" id="dvMdlNewModule" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="lblTitle"><i class='fas fa-sliders-h fa-lg'></i> Nuevo Módulo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row typemodal">
+                    <partial name="~/Views/Module/NewModule.cshtml" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger dvCloseModalNewModal" data-dismiss="modal" onclick='$(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                <div type="submit" class="btn btn-success" onclick="saveModule();"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="margin: 10% 0;" id="dvMdlblockUnblockProfile" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <partial name="~/Views/Catalog/blockUnblockProfile.cshtml" />
+</div>
+<div style="margin: 10% 0;" id="dvMdlDeleteProfile" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <partial name="~/Views/Catalog/deleteProfile.cshtml" />
+</div>
+<div style="margin: 10% 0;" id="dvMdlblockUnblockModule" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <partial name="~/Views/Module/blockUnblockModule.cshtml" />
+</div>
+<div style="margin: 10% 0;" id="dvMdlDeleteModule" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <partial name="~/Views/Module/deleteModule.cshtml" />
+</div>
+<div style="margin: 1% 0;" id="dvMdlEditModule" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <partial name="~/Views/Module/editModule.cshtml" />
+</div>
+<div style="margin: 2% 0;" id="dvMdlEditProfile" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <partial name="~/Views/Catalog/editProfile.cshtml" />
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<script>
+    $(".primerModal").removeClass("primerModal");
+    var resul = "@ViewBag.Resultado";
+        switch (resul) {
+            case "SaveSuccess":
+                swal("Éxito", "El registro ha sido guardado con éxito.", "info")
+                break;
+            case "SaveError":
+                swal("ERROR", "@ViewBag.MessageError", "error");
+                break;
+            case "Error":
+                swal("ERROR", "@ViewBag.MessageError", "error");
+                break;
+            case "DeletedSuccess":
+                swal("Éxito", "La aplicación y todos sus componentes han sido eliminados con éxito", "info");
+                break;
+            case "BlockSuccess":
+                swal("Éxito", "La aplicación ha sido bloqueada con éxito", "info");
+                break;
+            case "UnBlockSuccess":
+                swal("Éxito", "La aplicación ha sido desbloqueada con éxito", "info");
+                break;
+            default:
+    }
+
+</script>
+<script src="~/js/jsApplication.js"></script>
+<script src="~/js/Common.js"></script>
+<script src="~/js/jsProfile.js"></script>
+<script src="~/js/jsModule.js"></script>
+<script src="~/js/jsPermission.js"></script>

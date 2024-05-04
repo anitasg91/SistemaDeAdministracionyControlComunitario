@@ -1,0 +1,93 @@
+﻿@model SAyCC.Entities.SystemAdmin.PermissionEntity
+
+@{
+    ViewData["Title"] = "Permisos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+        <label>Aplicación:</label>
+        <br />
+        <select id="hfIdAppEdit" class="form-control" onchange="onDdlAplicacionChange();">
+            @{
+                var app = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.Applications;
+                foreach (var item in app)
+                {
+                    <option value="@item.Id">@item.Descripcion</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+        <label>Perfil:</label>
+        <br />
+        <select asp-for="IdPerfil" id="ddlPerfil" class="form-control" onchange="onDllPerfilesChanged();">
+            @{
+                var prof = (List<SAyCC.Entities.SystemAdmin.ProfileEntity>)ViewBag.Profiles;
+                foreach (var item in prof)
+                {
+                    <option value="@item.Id">@item.Detalle</option>
+                }
+            }
+        </select>
+    </div>
+</div>
+<br />
+<div id="dvTablaPermissionMod" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:400px;">
+    <table id="table_FourthId">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Módulo</th>
+                <th scope="col">Perfil</th>
+                <th scope="col">Aplicación</th>
+                <th scope="col">Permisos</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @{
+                var Permiso = (List<SAyCC.Entities.SystemAdmin.PermissionEntity>)ViewBag.Permission;
+                foreach (var item in Permiso)
+                {
+                    <tr>
+                        <td class="ajustes"><input type="hidden" asp-for="Id" value="@item.Id">@item.Id</td>
+                        <td>
+                            <input type="hidden" name="permission[0].IdModulo" value="@item.IdModulo">@item.Modulo
+                        </td>
+                        <td><input type="hidden" name="permission[0].IdPerfil" value="@item.IdPerfil"> @item.Perfil</td>
+                        <td >@item.Descripcion</td>
+                        <td class="dt-center">
+                            <div class="row">
+                                <div class="col-4"><input type="checkbox" class="dt-center" @item.chkAlta name="Alta"> Alta </div>
+                                <div class="col-4"><input type="checkbox" class="dt-center" @item.chkModificacion namer="Modificacion"> Modificación </div>
+                                <div class="col-4"><input type="checkbox" class="dt-center" @item.chkConsulta name="Consulta"> Consulta </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+     var resul = "@ViewBag.Resultado";
+        switch (resul) {
+            case "SaveSuccess":
+                swal("Éxito", "El registro ha sido creado con éxito.", "success");
+                break;
+            case "SaveError":
+                swal("ERROR", "@ViewBag.MessageError", "error");
+                break;
+    }
+
+    function onDdlAplicacionChange() {
+        configureTabPermission();
+        onDllPerfilesChanged();
+       // $("#dvTablaPermissionMod").empty();
+    }
+
+</script>
+<script src="~/js/jsPermission.js"></script>
+<script src="~/js/Common.js"></script>

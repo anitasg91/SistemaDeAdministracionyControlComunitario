@@ -1,0 +1,190 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+    <style>
+        input {
+            display: none;
+        }
+
+        .button {
+            padding: 5px 20px 5px 20px;
+            background-color: #999;
+            color: #fff;
+            float: left;
+            margin-right: 10px;
+            cursor: pointer;
+            font-family: sans-serif;
+            border-radius: 5px;
+        }
+
+            .button:active, .button:hover {
+                background-color: #666;
+            }
+
+        #elemento {
+            width: 100px;
+            height: 100px;
+            background-color: aquamarine;
+            color: #fff;
+            margin-top: 50px;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        #button1:checked ~ #elemento {
+            margin-left: 0;
+            transition: all 2s;
+            -moz-transition: all 2s;
+            -webkit-transition: all 2s;
+            -o-transition: all 2s;
+        }
+
+        #button2:checked ~ #elemento {
+            margin-left: 370px;
+            transition: all 2s;
+            -moz-transition: all 2s;
+            -webkit-transition: all 2s;
+            -o-transition: all 2s;
+        }
+
+        #button3:checked ~ #elemento {
+            border-radius: 100px;
+            transition: all 2s;
+            -moz-transition: all 2s;
+            -webkit-transition: all 2s;
+            -o-transition: all 2s;
+        }
+
+        #button4:checked ~ #elemento {
+            opacity: 0;
+            transition: all 2s;
+            -moz-transition: all 2s;
+            -webkit-transition: all 2s;
+            -o-transition: all 2s;
+        }
+
+        #button5:checked ~ #elemento {
+            width: 200px;
+            height: 200px;
+            transition: all 2s;
+            -moz-transition: all 2s;
+            -webkit-transition: all 2s;
+            -o-transition: all 2s;
+        }
+
+        #button6:checked ~ #animacion {
+            transform: rotate(360deg) !important;
+            -webkit-transform: rotate(360deg) !important;
+            transition: all 2s !important;
+            -moz-transition: all 2s !important;
+            -webkit-transition: all 2s !important;
+            -o-transition: all 2s !important;
+        }
+    </style>
+    <div style=" padding:1%;" class="container">
+
+        <div class="row">
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <label style="float:left;">Filtro: </label><br />
+                <select class="form-control" id="ddlFiltro">
+                    <option selected value="0">Todos</option>
+                    <option value="1">Por aplicación</option>
+                    <option value="2">Perfil</option>
+                    <option value="3">Nombre</option>
+                </select>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <label style="float:left;">Valor: </label><br />
+                <select class="form-control" id="ddlResultado">
+                    <option selected value="1">Delegación</option>
+                    <option value="2">Iglesia</option>
+                    <option value="3">Agua Potable</option>
+                    <option value="3">Actividades Deportivas y culturales</option>
+                </select>
+                <input class="form-control hide" placeholder="Teclee nombre o apellido" id="txtNombre" />
+
+            </div>
+
+        </div>
+        <br />
+        @*<div class="center">
+            <input type="radio" name="control" id="button1" />
+            <label for="button1" class="button" name="izquierda">Izquierda</label>
+
+            <input type="radio" name="control" id="button2" />
+            <label for="button2" class="button" name="derecha">Derecha</label>
+
+            <input type="radio" name="control" id="button3" />
+            <label for="button3" class="button" name="circulo">Circulo</label>
+
+            <input type="radio" name="control" id="button4" />
+            <label for="button4" class="button" name="invisible">Invisible</label>
+
+            <input type="radio" name="control" id="button5" />
+            <label for="button5" class="button" name="aumentar">Aumentar</label>
+
+            <input type="radio" name="control" id="button6" />
+            <label for="button6" class="button" name="rotar">Rotar</label>
+
+            <div class="clear"></div>
+            <div id="elemento"></div>
+        </div>*@
+
+
+
+        @*============================================================================*@
+
+
+
+
+
+        <div id="animacion" class="row">
+            @{
+                var users = (List<SAyCC.Entities.Login.UserEntity>)ViewBag.Users;
+                foreach (var item in users)
+                {
+                    var imgn = string.IsNullOrEmpty(item.ImagenUpload) ? null : Convert.FromBase64String(item.ImagenUpload);
+                    <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                        <div class="row">
+                            <div style="margin-top:5%;" class="col-xl-11 col-lg-11 col-md-11 col-sm-11 col-xs-12">
+                                <div style="border-radius:1em; background-color:#0f6c7b29 !important;border: 0.5px solid #0f6c7b29;" class="row">
+                                    <div style="background-color:#0f6c7b !important; text-align:center; color:white;border-radius: 1em 0; box-shadow: 2px 2px 4px black;"
+                                         class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 bg-success">
+                                        <label>@string.Concat(item.Nombre, " ", item.APaterno, " ", item.AMaterno)</label><br />
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-xs-12">
+
+                                        @if (imgn != null)
+                                        {
+                                            <img class="rounded-circle" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(imgn))" style="margin-top: 10%; width:100%; height:80%;">
+                                        }
+                                        else
+                                        {
+                                            <img class="rounded-circle" src="~/images/user.png" style="margin-top: 10%; width:130%; height:100%;">
+                                        }
+
+                                    </div>
+                                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                                        <label style="margin-top: 5%;">@item.Perfil</label><br />
+                                        <label>@item.Telefono</label><br />
+                                    </div>
+                                    <div style="text-align:center;" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <label>@item.Email</label><br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            }
+
+
+        </div>
+    </div>
+

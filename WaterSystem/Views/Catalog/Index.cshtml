@@ -1,0 +1,190 @@
+﻿@model SAyCC.Entities.SystemAdmin.ProfileEntity
+
+@{
+    ViewData["Title"] = "Catalogos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <body style="overflow-x: hidden;">
+        <div id="dvContenedorInfoGral" class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <label style="float:left;">Catálogo: </label><br />
+                <select id="ddlCatalogo" class="form-control" onchange="ddlCatalogoOnChange();">
+                    <option value="1">Tipo de Lectura</option>
+                    @*<option value="2">Desglose</option>*@
+                    <option value="2">Folio</option>
+                </select>
+            </div>
+            <div id="dvAplicacion" class="col-md-3 col-sm-3 col-xs-12 hide">
+                <label>Aplicación:</label>
+                <br />
+                <select asp-for="IDAplicacion" id="ddlIDAplicacion" class="form-control" onchange=" getProf();">
+                    @{
+                        var app = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.Applications;
+                        foreach (var item in app)
+                        {
+                            <option value="@item.Id">@item.Descripcion</option>
+                        }
+                    }
+                </select>
+                <input type="hidden" id="hfIdAppEdit" value="0" />
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-12">
+                <div style="margin: 34px 0 0 0; float: left; height: 35px;" class="btn btn-info" onclick="showModalbyCatalog();">
+                    <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                </div>
+            </div>
+        </div>
+        <div id="dvTablaCatalog" class="datagrid" style="height:500px; overflow-y:scroll; margin-top:5%;">
+            <table id="table_id">
+                <thead>
+                    <tr>
+                        <th class="dt-center" scope="col">No</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Inicial</th>
+                        <th scope="col">Limite</th>
+                        <th scope="col">Monto</th>
+                        <th class="dt-center" scope="col"><i class="fas fa-cog fa-1x"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                            var cat = (SAyCC.Entities.WaterSystem.CatalogEntityWS)ViewBag.Catalogs;
+                            foreach (var item in cat.TipoLectura)
+                        {
+                                        <tr>
+                                            <td class="dt-center ajustes">@item.Id</td>
+                                            <td>@item.Descripcion</td>
+                                            <td>@item.Inicial</td>
+                                            <td>@item.Limite</td>
+                                            <td>@item.Precio</td>
+                                            <td class="dt-center ajustes">
+                                                <i onclick="showMdlEditCatalog(@item.Id, '@item.Descripcion');" style="color:dodgerblue; cursor:pointer;" class="fas fa-edit fa-lg"></i>
+                                                <i onclick="showMdlDeleteCatalog(@item.Id);" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i>
+                                            </td>
+                                        </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+        <div style="margin: 10% 0;" id="dvMdlNeProfile" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <form asp-controller="Catalog" asp-action="saveCatalog" method="post">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input asp-for="IDCatalog" class="form-control" type="hidden" />
+                            <input id="hfIdProfile" class="form-control" type="hidden" value="0" />
+                            <input id="hfIDApp" asp-for="IDAplicacion" class="form-control" type="hidden" />
+
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                                    <label>Descripción:</label><br />
+                                    <input id="txtNombreProfile" asp-for="Detalle" class="form-control" placeholder="Descripción" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                            <button type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div style="margin: 10% 0;" id="dvMdlDeleteCatalog" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <partial name="~/Views/Catalog/DeleteCatalog.cshtml" />
+        </div>
+        <div style="margin: 2% 0;" id="dvMdlEditProfile" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <partial name="~/Views/Catalog/editProfile.cshtml" />
+        </div>
+        <div style="margin: 10% 0;" id="dvMdlblockUnblockProfile" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <partial name="~/Views/Catalog/blockUnblockProfile.cshtml" />
+        </div>
+        <div style="margin: 10% 0;" id="dvMdlDeleteProfile" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <partial name="~/Views/Catalog/deleteProfile.cshtml" />
+        </div>
+        <div style="margin: 10% 0;" id="dvMdlWaterMeter" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <input id="hfIdWaterMeter" class="form-control" type="hidden" value="0" name="IdWaterMeter" />
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="lblTitleWaterMeterNE" class="modal-title"><i class="fas fa-clock fa-lg"></i> Nuevo Medidor</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <partial name="~/Views/Catalog/WaterMeter.cshtml" />
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <br /><label>Monto:</label><br />
+                                <input class="form-control Monto" placeholder="Monto" autocomplete="off" maxlength="18" type="number" />
+                                @*<select id="dllIdManzana" class="form-control">
+            </select>*@
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnCancelWaterMeter" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                        <div type="submit" class="btn btn-success" onclick="ModifyWaterMeterEdit($('#hfIdWaterMeter').val(),5);"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="margin: 10% 0;" id="dvMdlWaterMeterAction" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <input id="hfIdWaterMeterAction" class="form-control" type="hidden" value="0" />
+            <input id="hfIdModifyTypeWaterMeterAction" class="form-control" type="hidden" value="0" />
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="lblTittleWaterMeterAction" class="modal-title"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div id="dvMsjWaterMeterAction" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                                <label id="lblMsjWaterMeterAction"></label><br />
+                            </div>
+                            <div id="dvSearchUser" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                                <label>Nombre del usuario:</label><br />
+                                <input id="txtUserName" class="form-control" placeholder="Teclee nombre o apellidos..." autocomplete="off" onkeyup="txtUserNameOnkeyup();" />
+                                <input id="hfIdTitularNew" class="form-control" type="hidden" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnCloseWaterMeterAction" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                        <div type="submit" class="btn btn-success" onclick="ModifyWaterMeter();"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+<script type="text/javascript">
+    var result = "@ViewBag.resultado";
+    switch (result) {
+        case "Success":
+            swal("Éxito", "Los datos fueron  guardador exitosamente.", "success");
+            break;
+        case "Error":
+            swal("Error", "@ViewBag.MensajeErr", "error");
+            break;
+        default:
+    }
+</script>
+<script src="~/js/Common.js"></script>
+<script src="~/js/jsProfile.js"></script>
+<script src="~/js/jsCatalog.js"></script>

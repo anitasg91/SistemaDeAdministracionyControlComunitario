@@ -1,0 +1,36 @@
+﻿@model SAyCC.Entities.SystemAdmin.ModuleEntity
+<input class="hfIdModule" type="hidden" value="0" />
+<div class="col-lg-4 col-md-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Nombre:</label><br />
+    <input asp-for="Titulo" class="form-control txtTituloM" placeholder="Nombre" autocomplete="off" />
+    <span asp-validation-for="Titulo" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-lg-4 col-md-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Descripción:</label><br />
+    <input asp-for="Descripcion" class="form-control txtDescripcionM" placeholder="Descripción" autocomplete="off" />
+    <span asp-validation-for="Descripcion" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Icono:</label><br />
+    <input asp-for="i_class" class="form-control txtIconoM" placeholder="Icono" autocomplete="off" />
+    <span asp-validation-for="i_class" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Controlador:</label><br />
+    <input asp-for="Controlador" class="form-control txtControladorM" placeholder="Controlador" autocomplete="off" />
+    <span asp-validation-for="Controlador" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Acción:</label><br />
+    <input asp-for="Accion" class="form-control txtAccionM" placeholder="Acción" autocomplete="off" />
+    <span asp-validation-for="Accion" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Orden:</label>
+    <br />
+    <input asp-for="Orden" class="form-control txtOrdenM" placeholder="0" autocomplete="off" maxlength="2" />
+    <span asp-validation-for="Orden" class="text-danger" style="font-size:small"></span>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

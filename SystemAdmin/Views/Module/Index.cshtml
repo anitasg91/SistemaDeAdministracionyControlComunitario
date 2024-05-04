@@ -1,0 +1,200 @@
+﻿@model SAyCC.Entities.SystemAdmin.ModuleEntity
+
+@{
+    ViewData["Title"] = "Módulos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+    <div class="row">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="saveNewApplication();">
+                <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+            </div>
+        </div>
+    </div>
+    <br />
+    <div id="dvTabla" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:500px;">
+        <table id="table_SecondId">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Aplicacón</th>
+                    <th scope="col">Estatus</th>
+                    <th scope="col">Fecha Alta</th>
+                    <th scope="col">Usuario Alta</th>
+                    <th scope="col">Fecha Mod</th>
+                    <th scope="col">Usuario Mod</th>
+                    <th class="dt-center" scope="col">
+                        <i class="fas fa-cog fa-1x"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @{
+                    var Mod = (List<SAyCC.Entities.SystemAdmin.ModuleEntity>)ViewBag.Mods;
+                    foreach (var item in Mod)
+                    {
+                        string fechaAlta = item.FechaAlta.ToString("dd/MM/yyyy");
+                        string fechaMod = string.IsNullOrEmpty(item.FechaModificacion.ToString()) ? "" : Convert.ToDateTime(item.FechaModificacion).ToString("dd/MM/yyyy");
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.Titulo</td>
+                            <td>@item.Descripcion</td>
+                            <td>@item.Aplicacion</td>
+                            <td class="dt-center" style="color:@item.Color"><i class="@item.Estatus fa-lg"></i></td>
+                            <td class="dt-center">@fechaAlta</td>
+                            <td>@item.NombreUsuarioAlta</td>
+                            <td class="dt-center">@fechaMod</td>
+                            <td>@item.NombreUsuarioMod</td>
+                            <td class="dt-center ajustes">
+                                <i onclick="editComponent(1,@item.Id);" style="color:dodgerblue; cursor:pointer;" class="fas fa-edit fa-lg"></i>
+                                <i onclick="blockUnblockComponent(1,@item.Id,@(item.Activo? 1: 0));" style="color:gray; cursor:pointer;" class="@item.Action fa-lg"></i>
+                                <i onclick="deleteComponent(1,@item.Id);" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div style="margin: 5% 0;" id="dvMdlNewUser" class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <input id="hfId" asp-for="Id" class="form-control" type="hidden" value="0" />
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lblTittleModal"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <partial name="NewModule" />
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label>Aplicación:</label>
+                            <br />
+                            <select asp-for="IdAplicacion" id="hfIdAppEdit" class="form-control">
+                                @{
+                                    var app = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.Applications;
+                                    foreach (var item in app)
+                                    {
+                                        <option value="@item.Id">@item.Descripcion</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger dvCloseModalNewModal" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                    <div onclick="saveModule();" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</div>
+                </div>
+            </div>
+        </div>
+</div>
+<div style="margin: 10% 0;" id="dvMdlActions" class="modal fade bd-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <form asp-controller="Application" asp-action="execAction" method="post">
+        <input id="hfIdApp" class="form-control" type="hidden" value="0" name="IdApp" />
+        <input id="hfTypeAction" class="form-control" type="hidden" value="0" name="TypeAction" />
+        <input id="hfTypeStatus" class="form-control" type="hidden" value="0" name="Status" />
+
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lblTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                            <label id="lblMensaje"></label><br />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script>
+    var resul = "@ViewBag.Resultado";
+        switch (resul) {
+            case "SaveSuccess":
+                swal("Éxito", "El registro ha sido guardado con éxito.", "info")
+                break;
+            case "SaveError":
+                swal("ERROR", "@ViewBag.MessageError", "error");
+                break;
+            case "Error":
+                swal("ERROR", "@ViewBag.MessageError", "error");
+                break;
+            case "DeletedSuccess":
+                swal("Éxito", "La aplicación y todos sus componentes han sido eliminados con éxito", "info");
+                break;
+            case "BlockSuccess":
+                swal("Éxito", "La aplicación ha sido bloqueada con éxito", "info");
+                break;
+            case "UnBlockSuccess":
+                swal("Éxito", "La aplicación ha sido desbloqueada con éxito", "info");
+                break;
+            default:
+    }
+
+    function saveNewApplication() {
+        $("#lblTittleModal").html("<i class='fas fa-store fa-lg'></i> Nueva Aplicación");
+        $("#hfId").val(0);
+        $("#dvStatus").addClass("hide");
+        $("#dvFechaAlta").addClass("hide");
+        $("#dvUsuarioAlta").addClass("hide");
+        $("#dvFechaMod").addClass("hide");
+        $("#dvUsuarioMod").addClass("hide");
+        $('#dvMdlNewUser').modal();
+    }
+
+    function editApplication(IdApp) {
+        $("#lblTittleModal").html("<i class='fas fa-edit fa-lg'></i> Editar Aplicación");
+        $("#hfId").val(IdApp);
+        $("#dvStatus").removeClass("hide");
+        $("#dvFechaAlta").removeClass("hide");
+        $("#dvUsuarioAlta").removeClass("hide");
+        $("#dvFechaMod").removeClass("hide");
+        $("#dvUsuarioMod").removeClass("hide");
+        $('#dvMdlNewUser').modal();
+    }
+
+    function execAction(TypeAction, IdApp, status) {
+        $("#hfIdApp").val(IdApp);
+        $("#hfTypeAction").val(TypeAction);
+        $("#hfTypeStatus").val(status);
+        switch (TypeAction) {
+            case 1:
+                $("#lblTitle").html("<i class='fas fa-ban fa-lg'></i> Desactivar Aplicación");
+                $("#lblMensaje").text("Si desactiva la aplicación, éste y todos sus complementos ya no podrán utilizarse en el sistema. ¿Desea desactivar la aplicación?");
+                break;
+            case 2:
+                $("#lblTitle").html("<i class='fas fa-trash fa-lg'></i> Borrar Aplicación");
+                $("#lblMensaje").text("Si elimina la aplicación, éste y todos sus componentes serán removidos. ¿Esta seguro de eliminar la aplicación?");
+                break;
+            default:
+        }
+
+        $('#dvMdlActions').modal();
+    }
+
+</script>
+<script src="~/js/Common.js"></script>
+<script src="~/js/jsModule.js"></script>

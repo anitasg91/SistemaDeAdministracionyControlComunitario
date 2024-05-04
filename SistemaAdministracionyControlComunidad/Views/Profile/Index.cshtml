@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewData["Title"] = "MiPerfil";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+
+@*@section Menudynamic{
+    <ul class="nav nav-tabs">
+        <li>
+            <a class="nav-link active" data-toggle="tab" href="#Perfil">
+                <i class="fas fa-user"></i>&nbsp;&nbsp;Mi Perfil
+            </a>
+        </li>
+        <li>
+            <a class="nav-link" data-toggle="tab" href="#Contraseña">
+                <i class="fas fa-key"></i>&nbsp;&nbsp;Cambio de Contraseña
+            </a>
+        </li>
+        <li>
+            <a class="nav-link" data-toggle="tab" onclick="location='http://stcmetro.metrocdmx.info/AsignacionAplicacion/Index'">
+                <i class="fas fa-desktop"></i>&nbsp;&nbsp;Selección de Aplicaciones
+            </a>
+        </li>
+    </ul>
+}*@
+    <div class="tab-content">
+        <div id="Perfil" class="tab-pane active">
+            <br />
+            @Html.Partial("Perfil")
+            @Html.Partial("CambioContraseña")
+        </div>
+        <div id="Contraseña" class="tab-pane fade">
+            <br />
+            @Html.Partial("CambioContraseña")
+        </div>
+    </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

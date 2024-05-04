@@ -1,0 +1,201 @@
+﻿
+@{
+    ViewData["Title"] = "PrincipalView";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+    <style>
+        /* Make the image fully responsive */
+        .carousel-inner img {
+            width: 100%;
+            height: 200px;
+        }
+
+        .fondoCarousel {
+            background-image: url('../../images/FondoClaro3.jpg');
+        }
+        .css {
+            width: 100%;
+            text-align:center;
+        }
+        .PrioridadAlta {
+            color: #dc3545 !important;
+        }
+        .PrioridadMedia {
+            color: #ffc107 !important;
+        }
+        .PrioridadBaja {
+            color: #28a745 !important;
+        }
+        .containerCarousel {
+            /*padding: 5% 0 5% 10% !important;*/
+            padding: 1% 0 5% 10% !important;
+        }
+        .containerCarousel:first-child {
+            border: 1px solid black;
+            border-radius: 1em 0;
+            box-shadow: 5px 5px black;
+        }
+        .AdviseDetail {
+            border: 1px solid #888888;
+            border-radius: 1em 0;
+            box-shadow: 5px 5px 9px #888888;
+            margin: 1%;
+            padding: 1%;
+        }
+        .AdviseDetailImg {
+            margin-top: 1%;
+            padding-top: 1%;
+        }
+    </style>
+<div id="demo" class="carousel slide" data-ride="carousel">
+
+    <!-- Indicators -->
+    <ul class="carousel-indicators">
+        <li data-target="#demo" data-slide-to="0" class="active"></li>
+        <li data-target="#demo" data-slide-to="1"></li>
+        <li data-target="#demo" data-slide-to="2"></li>
+        <li data-target="#demo" data-slide-to="3"></li>
+    </ul>
+
+    <!-- The slideshow -->
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <div class="css bg-danger PrioridadAlta">.</div>
+            <img style="position:absolute" src="~/images/FondoClaro3.jpg" alt="Chicago" width="1100" height="500">
+            <div class="row containerCarousel">
+                <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 AdviseDetailImg">
+                    <i class="fas fa-user-cog fa-6x PrioridadAlta"></i>
+                </div>
+                <div style="left:4%;" class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9 AdviseDetail">
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Titulo:</label>
+                            <label>Junta</label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Fecha emisión:</label>
+                            <label>10-20-2020</label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Fecha del evento:</label>
+                            <label>15-12-2020</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label>Asunto:</label>
+                            <label>Se convoca a toda la población en general, a una junta el día 25-10-2020, a las 12 del día en la escuela. Para tratar temas de suma importancia. Aquel que falte, sera multado con una cantidad de $200, mismos que se usaran para la fiesta del 12 de diciembre.</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="css bg-warning PrioridadMedia">.</div>
+            <img style="position:absolute" src="~/images/FondoClaro3.jpg" alt="Chicago" width="1100" height="500">
+            <div class="row containerCarousel">
+                <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 AdviseDetailImg">
+                    <i class="fas fa-church fa-6x PrioridadMedia"></i>
+                </div>
+                <div style="left:4%;" class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9 AdviseDetail">
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Titulo:</label>
+                            <label>¡¡¡PROMOCIONES!!!</label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Fecha emisión:</label>
+                            <label>10-20-2020</label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Vigencia:</label>
+                            <label>Del 01-01-2023 al 31-01-2023</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label>Asunto:</label>
+                            <label>
+                                Promociones dos por uno. En la compra de un paquete, llevate 2, por tan solo ¡¡¡$31,000!!
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="css bg-success PrioridadBaja">.</div>
+            <img style="position:absolute" src="~/images/FondoClaro3.jpg" alt="Chicago" width="1100" height="500">
+            <div class="row containerCarousel">
+                <div  class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 AdviseDetailImg">
+                    <i class="fas fa-tint fa-6x PrioridadBaja"></i>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-10 AdviseDetail">
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Titulo:</label>
+                            <label>Pago de agua</label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Fecha emisión:</label>
+                            <label>10-20-2020</label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Fecha del evento:</label>
+                            <label>15-12-2020</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label>Asunto:</label><br />
+                            <label>No olviden pasar a pagar su recibo de agua el día 15-12-2020 a partir de las 12pm.</label>
+                        </div>
+                    </div>
+
+                </div>
+                
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="css bg-success PrioridadBaja">.</div>
+            <img style="position:absolute" src="~/images/FondoClaro3.jpg" alt="Chicago" width="1100" height="500">
+            <div class="row containerCarousel">
+                <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 AdviseDetailImg">
+                    <i class="fas fa-futbol fa-6x PrioridadBaja"></i>
+                </div>
+                <div style="left:4%;" class="col-xs-12 col-sm-12 col-md-9 col-lg-9 col-xl-9 AdviseDetail">
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Titulo:</label>
+                            <label>Junta</label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Fecha emisión:</label>
+                            <label>10-20-2020</label>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                            <label>Fecha del evento:</label>
+                            <label>15-12-2020</label>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <label>Asunto:</label>
+                            <label>A todos los organizadores de la feria, se les espera el día sabado 11-12-2020, a las 5am, para iniciar con las actividades.</label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Left and right controls -->
+    <a class="carousel-control-prev" href="#demo" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </a>
+    <a class="carousel-control-next" href="#demo" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </a>
+</div>
+
+
+
+
+

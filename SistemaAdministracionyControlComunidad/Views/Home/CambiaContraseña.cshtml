@@ -1,0 +1,53 @@
+﻿@model ContrasenaViewModel
+@{
+    ViewData["Title"] = "CambiaContraseña";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #bodyVistaRecup {
+        background-image: url('../../images/fondo.png');
+        background-attachment: fixed;
+        background-size: 2130px 1200px;
+    }
+
+    #content {
+        background-image: url('../../images/fondodesenfoque1.jpg');
+        background-attachment: fixed;
+        background-size: 2110px 1200px;
+        padding: 20px;
+        margin: 100px auto;
+        width: 600px;
+        border-radius: 2em 0;
+        box-shadow: 0 0 5px #3f3d3dba;
+        opacity: 0.9;
+    }
+</style>
+<body id="bodyVistaRecup">
+    <div id="content">
+        <section>
+            <form asp-controller="Home" asp-action="CambioContraseña" method="post" autocomplete="off">
+                <div class="col">
+                    <center><h4 style="color:aliceblue; text-shadow:2px 2px 1px #fe7e1b">CAMBIAR CONTRASEÑA</h4></center>
+                    <br />
+                    <b style="color:aliceblue; text-shadow:2px 2px 1px #fe7e1b">Contraseña Actual</b>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="off" />
+                    <center><span asp-validation-for="Input.Password" style="font-size:small; font-weight:bold; color:aliceblue;  text-shadow:2px 2px 1px #f80000"></span></center>
+                    <b style="color:aliceblue; text-shadow:2px 2px 1px #fe7e1b">Contraseña Nueva</b>
+                    <input asp-for="Input.PasswordNuevo" class="form-control" autocomplete="off" />
+                    <center><span asp-validation-for="Input.PasswordNuevo" style="font-size:small; font-weight:bold; color:aliceblue;  text-shadow:2px 2px 1px #f80000"></span></center>
+                    <b style="color:aliceblue; text-shadow:2px 2px 1px #fe7e1b">Confirmación de Contraseña</b>
+                    <input asp-for="Input.PasswordConfirmacion" class="form-control" autocomplete="off" />
+                    <center><span asp-validation-for="Input.PasswordConfirmacion" style="font-size:small; font-weight:bold; color:aliceblue;  text-shadow:2px 2px 1px #f80000"></span></center>
+                </div>
+                <br />
+                <br />
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <center><button type="submit" class="btn btn-info">Guardar</button></center>
+                </div>
+            </form>
+        </section>
+    </div>
+</body>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

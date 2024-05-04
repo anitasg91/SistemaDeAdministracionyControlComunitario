@@ -1,0 +1,120 @@
+﻿@model SAyCC.Entities.Login.UserEntity
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style>
+    .row {
+        margin: 2% 0 2% 0 !important;
+    }
+</style>
+<body style="overflow-x: hidden;">
+    <div>
+        <div class="row">
+            @if (ViewBag.Alta)
+            {
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="newUser();">
+                        <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                    </div>
+                </div>
+            }
+        </div>
+        <br />
+        <div class="datagrid" style="height:500px; overflow-y:scroll;">
+            <table id="table_id">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Identificador</th>
+                        <th scope="col">Perfil</th>
+                        <th scope="col">Manzana</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">E-Mail</th>
+                        <th scope="col">Fecha Alta</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">
+                            <i class="fas fa-cog fa-1x"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var Users = (List<SAyCC.Entities.Login.UserEntity>)ViewBag.tableUser;
+                        foreach (var item in Users)
+                        {
+                            string fechaAlta = item.FechaAlta.ToString("dd/MM/yyyy");
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.NombreCompleto</td>
+                                <td>@item.Identificador</td>
+                                <td>@item.Perfil</td>
+                                <td>@item.Manzana</td>
+                                <td>@item.Telefono</td>
+                                <td>@item.Email</td>
+                                <td>@fechaAlta</td>
+                                <td style="color:@item.Color" class="dt-center ajustes"><i class="@item.Estatus fa-lg"></i></td>
+                                <td class="dt-center ajustes">
+                                    <i onclick="editUser(1,@item.Id);" style="color:dodgerblue; cursor:pointer;" class="fas fa-user-edit fa-lg"></i>
+                                    @if (ViewBag.Alta || ViewBag.Modificacion)
+                                    {
+                                        <i onclick="blockUnblockUser(1,@item.Id,@(item.Activo? 1: 0));" style="color:gray; cursor:pointer;" class="@item.Action fa-lg"></i>
+                                    }
+                                    @if (ViewBag.Alta)
+                                    {
+                                        <i onclick="deleteUser(1,@item.Id);" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="margin: 1% 0;" id="dvMdlNewUser" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <partial name="~/Views/Home/modalNewUser.cshtml" model="Model" />
+    </div>
+</body>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<script type="text/javascript">
+
+         var resul = "@ViewBag.Resultado";
+        switch (resul) {
+            case "SaveSuccess":
+                swal("Éxito", "El usuario ha sido creado con éxito." + "@ViewBag.userSession", "success");
+                break;
+            case "UpdateSuccess":
+                swal("Éxito", "El usuario ha sido actualizado con éxito." + "@ViewBag.userSession", "success");
+                break;
+            case "SaveError":
+                swal("ERROR", "@ViewBag.MessageError", "error");
+                break;
+           @* case "Error":
+                swal("ERROR", "@ViewBag.MessageError", "error");
+                break;
+            case "DeletedSuccess":
+                swal("Éxito", "La aplicación y todos sus componentes han sido eliminados con éxito", "info");
+                break;
+            case "BlockSuccess":
+                swal("Éxito", "La aplicación ha sido bloqueada con éxito", "info");
+                break;
+            case "UnBlockSuccess":
+                swal("Éxito", "La aplicación ha sido desbloqueada con éxito", "info");
+                break;
+            default:*@
+    }
+
+    @*var result = "@ViewBag.Actualizacion";
+    if (result == "ok") {
+        swal("Actualización","Los datos fueron actualizados","success");
+    }*@
+</script>
+<script src="~/js/Common.js"></script>
+<script src="~/js/jsHome.js"></script>
+<script src="~/js/jsUser.js"></script>

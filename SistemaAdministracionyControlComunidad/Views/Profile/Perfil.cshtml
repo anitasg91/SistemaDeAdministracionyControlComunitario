@@ -1,0 +1,111 @@
+﻿@model SAyCC.Entities.Login.UserEntity
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    var getlist = ViewBag.Datos as SAyCC.Entities.Login.UserEntity;
+    string nombre = getlist.Nombre.ToString();
+    string apellidop = getlist.APaterno.ToString();
+    string apellidom = getlist.AMaterno.ToString();
+    string email = getlist.Email.ToString();
+    string telefono = getlist.Telefono.ToString();
+    int Id = getlist.Id;
+}
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.0.min.js"></script>
+
+<form asp-controller="Profile" asp-action="guardaImagenFileUpload" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <input asp-for="Id" class="form-control" type="hidden" value="@Id" />
+        <div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+            <div style="text-align:center;float:left;" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <br /><br />
+                @if (ViewBag.ImagenBytesIlustrative != null)
+                {
+                    <div id="imgFoto"><img style="width:100%; margin:5px 0 25px 0; border-radius:1em;" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(ViewBag.ImagenBytesIlustrative))" style="background-size:inherit;" /></div>
+                }
+                else
+                {
+                    <img style="width:100%; margin:5px 0 25px 0;" src="~/images/defaultImgProfile.jpg" class="img-fluid" alt="example placeholder">
+                }
+
+                <div class="custom-file" style="margin:0 0 5px 0;border:none;">
+                    <input type="file" class="custom-file-input" name="FileUpload" id="FileUpload">
+                    <label class="custom-file-label" for="customFile">Elegir imagen</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h4>Mi Cuenta</h4>
+                <label>Nombre:</label><br />
+                <input asp-for="Nombre" class="form-control" placeholder="Nombre(s)" disabled="disabled" id="nombre" value="@nombre" />
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12" style="float:left">
+                <label>Apellido Paterno:</label><br />
+                <input asp-for="APaterno" class="form-control" placeholder="Apellido Paterno" disabled="disabled" id="apellidop" value="@apellidop" />
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12" style="float:left">
+                <label>Apellido Materno:</label><br />
+                <input asp-for="AMaterno" class="form-control" placeholder="Apellido Materno" disabled="disabled" id="apellidom" value="@apellidom" />
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12" style="float:left">
+                <label>Telefono:</label><br />
+                <input asp-for="Telefono" class="form-control" placeholder="Telefono" id="telefono" value="@telefono" />
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12" style="float:left">
+                <label>Email:</label>
+                <br />
+                <input asp-for="Email" class="form-control" placeholder="Email" id="email" value="@email" autocomplete="off" />
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12" style="float:left">
+                <label>Contraseña:</label><br />
+                <input asp-for="Password" class="form-control" placeholder="Contraseña" id="txtPassw" autocomplete="off"/>
+            </div>
+            <div id="dvConfirmPassw" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 hide" style="float:left;">
+                <label>Confirmar contraseña:</label><br />
+                <input asp-for="ConfirmPassw" class="form-control" placeholder="Confirmar contraseña" id="ConfirmPassw" autocomplete="off"/>
+            </div>
+            <div style="margin:5px 0 0 0;border:none;" class="col-md-12 col-sm-12 col-xs-12 form-group has-feedback float-lg-right">
+                <button type="submit" class="btn btn-success" style="float:right" id="botton">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+<script type="text/javascript">
+    //function editar() {
+    //    var checkbox = document.getElementById("Editarcheck");
+    //    if (checkbox.checked == true) {
+    //        document.getElementById("email").disabled = false;
+    //        document.getElementById("telefono").disabled = false;
+    //        document.getElementById("botton").disabled = false;
+    //    } else {
+    //        document.getElementById("email").disabled = true;
+    //        document.getElementById("telefono").disabled = true;
+    //        document.getElementById("botton").disabled = true;
+    //    }
+    //}
+
+    var result = "@ViewBag.Actualizacion";
+    if (result == "ok") {
+        swal("Actualización","Los datos fueron actualizados","success");
+    }
+
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    $("#txtPassw").on("change", function () {
+        $("#dvConfirmPassw").removeClass("hide");
+    });
+    
+
+</script>
+

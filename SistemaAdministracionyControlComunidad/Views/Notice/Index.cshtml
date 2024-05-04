@@ -1,0 +1,76 @@
+﻿@model SAyCC.Entities.Login.NoticeEntity
+
+@{
+    ViewData["Title"] = "Aviso";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+@*<script src="~/lib/jquery/dist/jquery.js"></script>*@
+
+<script src="~/js/jsNotice.js"></script>
+
+<style>
+</style>
+<style>
+    .row {
+        margin: 2% 0 2% 0 !important;
+    }
+</style>
+<body style="overflow-x: hidden;">
+    <div>
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="newNotice();">
+                    <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:500px;">
+            <table id="table_id">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Título</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Fecha Exp.</th>
+                        <th scope="col">Fecha Evento</th>
+                        <th scope="col">Origen</th>
+                        <th scope="col">
+                            <i class="fas fa-cog fa-1x"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var Users = (List<SAyCC.Entities.Login.NoticeEntity>)ViewBag.tableNotice;
+                        foreach (var item in Users)
+                        {
+                            string FechaCreacion = item.FechaCreacion.ToString("dd/MM/yyyy");
+                            string FechaEvento = item.FechaEvento.ToString("dd/MM/yyyy");
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Titulo</td>
+                                <td>@item.descripcionTipoAviso
+                                <td>@item.Descripcion</td>
+                                <td>@FechaCreacion</td>
+                                <td>@FechaEvento</td>
+                                <td class="dt-center ajustes"><i class="@item.iconoAplicacion fa-lg"></i></td>
+                                <td class="dt-center ajustes">
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="margin: 1% 0;" id="dvMdlNewNotice" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <partial name="~/Views/Notice/modalNewNotice.cshtml" model="Model" />
+    </div>
+</body>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+}
+

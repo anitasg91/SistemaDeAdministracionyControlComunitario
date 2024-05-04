@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAyCC.Login", "SistemaAdministracionyControlComunidad\SAyCC.Login.csproj", "{C284A8DD-64C4-4DA2-B3B1-79EC75578C40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAyCC.Login", "SistemaAdministracionyControlComunidad\SAyCC.Login.csproj", "{C284A8DD-64C4-4DA2-B3B1-79EC75578C40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAyCC.Bussiness", "SAyCC.Negocio\SAyCC.Bussiness.csproj", "{6977860E-0E82-44E0-A9C4-121BDF17189B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAyCC.Bussiness", "SAyCC.Negocio\SAyCC.Bussiness.csproj", "{6977860E-0E82-44E0-A9C4-121BDF17189B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAyCC.Data", "SAyCC.Data\SAyCC.Data.csproj", "{FC08D944-4204-4356-A3D6-C58C66E8D48D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAyCC.Data", "SAyCC.Data\SAyCC.Data.csproj", "{FC08D944-4204-4356-A3D6-C58C66E8D48D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAyCC.Entities", "SAyCC.Entities\SAyCC.Entities.csproj", "{8D817417-863A-4930-A88E-4F417F6CC467}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAyCC.Entities", "SAyCC.Entities\SAyCC.Entities.csproj", "{8D817417-863A-4930-A88E-4F417F6CC467}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAyCC.AguaPotable", "SAyCC.AguaPotable\SAyCC.AguaPotable.csproj", "{5FBB3103-CD93-4AE6-BBA8-27EEDB9A6952}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemAdmin", "SystemAdmin\SystemAdmin.csproj", "{44B99C77-AD68-4969-822A-0198D346BA7A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WaterSystem", "WaterSystem\WaterSystem.csproj", "{F7AFA3F2-FD19-42E8-93EB-0797CB3FD9D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GG.Servicios", "GG.Servicios\GG.Servicios.csproj", "{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +39,18 @@ Global
 		{8D817417-863A-4930-A88E-4F417F6CC467}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D817417-863A-4930-A88E-4F417F6CC467}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D817417-863A-4930-A88E-4F417F6CC467}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FBB3103-CD93-4AE6-BBA8-27EEDB9A6952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FBB3103-CD93-4AE6-BBA8-27EEDB9A6952}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FBB3103-CD93-4AE6-BBA8-27EEDB9A6952}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FBB3103-CD93-4AE6-BBA8-27EEDB9A6952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44B99C77-AD68-4969-822A-0198D346BA7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44B99C77-AD68-4969-822A-0198D346BA7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44B99C77-AD68-4969-822A-0198D346BA7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44B99C77-AD68-4969-822A-0198D346BA7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7AFA3F2-FD19-42E8-93EB-0797CB3FD9D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7AFA3F2-FD19-42E8-93EB-0797CB3FD9D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7AFA3F2-FD19-42E8-93EB-0797CB3FD9D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7AFA3F2-FD19-42E8-93EB-0797CB3FD9D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

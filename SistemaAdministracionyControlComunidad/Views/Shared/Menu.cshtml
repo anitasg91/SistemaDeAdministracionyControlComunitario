@@ -1,0 +1,13 @@
+﻿
+@{
+    var App = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.App;
+    foreach (var item in App)
+    {
+        <li>
+            <a class="nav-link" href="~/@item.Controlador/@item.Accion/@item.Id">
+                <i class="@item.Icono"></i> @item.Descripcion
+            </a>
+        </li>
+    }
+}
+

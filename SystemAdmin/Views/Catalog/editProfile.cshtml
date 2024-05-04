@@ -1,0 +1,77 @@
+﻿<div class="modal-dialog modal-xl">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-edit fa-lg"></i> Editar perfil</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#GeneralInfoPerfil">Información General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#AsignPermissions">Acceso a otras aplicaciones</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active container" id="GeneralInfoPerfil">
+                    <div class="row typemodal">
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label>Nombre:</label>
+                            <br />
+                            <input id="txtDetalleProfileEdit" class="form-control" placeholder="Nombre" />
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label>Estatus:</label>
+                            <br />
+                            <input id="lblEstatusP" class="form-control inputDetail" disabled="disabled" />
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label>Fecha Alta:</label>
+                            <br />
+                            <input id="lblFechaAltaP" class="form-control inputDetail" disabled="disabled" />
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label>Usuario Alta:</label>
+                            <br />
+                            <input id="lblUsuarioAltaP" class="form-control inputDetail" disabled="disabled" />
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label>Fecha Mod:</label>
+                            <br />
+                            <input id="lblFechaModP" class="form-control inputDetail" disabled="disabled" />
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <label>Aplicación:</label>
+                            <br />
+                            <input id="lblAplicacionP" class="form-control inputDetail" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane container" id="AsignPermissions">
+                    <div class="row typemodal">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 dvAddApps">
+                            <label>Seleccionar Aplicación:</label>
+                            <select id="ddlIDAplicacionEditProf" class="form-control">
+                            </select>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 dvAddApps">
+                            <div style="margin-top: 32px !important; float: left; height: 35px;" class="btn btn-info" onclick="saveAsignacionAplicacion(0);">
+                                <i class="fas fa-plus fa-1x" style="color:white"></i> Asignar
+                            </div>
+                        </div>
+                        <div id="dvTablaAppPerm" class="col-xs-12 col-sm-12 col-xs-12 datagrid" style="overflow:scroll; height:250px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="btnCloseEditProfile" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+            <div type="submit" class="btn btn-success" onclick="NewProfile();"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</div>
+        </div>
+    </div>
+</div>
+

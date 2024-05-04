@@ -1,0 +1,98 @@
+﻿@model SAyCC.Entities.Login.NoticeEntity
+    <Form asp-controller="Notice" asp-action="saveNotice" method="post" enctype="multipart/form-data">
+        <input id="hfIdNoticeEdit" asp-for="Id" class="form-control" type="hidden" value="0" />
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-user fa-lg"></i> Nuevo Aviso</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @*<ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a id="aInfoGral" class="nav-link active" data-toggle="tab" href="#home">Información General</a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="aWaterMeter" class="nav-link" data-toggle="tab" href="#WaterMeter">Medidor</a>
+                        </li>
+                    </ul>*@
+
+                    <div class="tab-content">
+                        <div class="tab-pane active container" id="home">
+                            <div class="row">
+                                @*<partial name="~/Views/Home/GeneralDataUser.cshtml" model="Model" />*@
+
+                                <div class="col-xl-6 col-lg-6 col-md-4 col-sm-6 col-xs-12">
+                                    <label>Título:</label><br />
+                                    <input asp-for="Titulo" class="form-control Nombre" placeholder="Titulo" />
+                                    <span asp-validation-for="Titulo" class="text-danger"></span>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                                    <label>Tipo:</label>
+                                    <br />
+                                    <select asp-for="IdTipoAviso" id="ddlIdTipo" class="form-control">
+                                        @{
+                                            var TipoAviso = (List<SAyCC.Entities.Login.TipoAvisoEntity>)ViewBag.TipoAviso;
+                                            foreach (var item in TipoAviso)
+                                            {
+                                                <option value="@item.Id">@item.Descripcion</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                                    <label>Fecha y hora programada:</label><br />
+                                    <input asp-for="FechaEvento" class="form-control AMaterno" placeholder="Apellido Materno" />
+                                    <span asp-validation-for="FechaEvento" class="text-danger"></span>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                                    <label>Área designada:</label>
+                                    <br />
+                                    <select asp-for="IdAplicacion" id="ddlIDAplicacion" class="form-control">
+                                        @{
+                                            var app = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.Applications;
+                                            foreach (var item in app)
+                                            {
+                                                <option value="@item.Id">@item.Descripcion</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                                    <label>Prioridad:</label>
+                                    <br />
+                                    <select asp-for="IdPrioridad" id="ddlIDPrioridad" class="form-control">
+                                        @{
+                                            var priori = (List<SAyCC.Entities.Common.PrioridadEntity>)ViewBag.Prioridad;
+                                            foreach (var item in priori)
+                                            {
+                                                <option value="@item.Id">@item.Descripcion</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-4 col-sm-12 col-xs-12">
+                                    <label>Descripción:</label><br />
+                                    <textarea asp-for="Descripcion" class="form-control APaterno" placeholder="Descripción" rows="5"> </textarea>
+                                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</button>
+
+                </div>
+            </div>
+        </div>
+    </Form>

@@ -1,0 +1,19 @@
+﻿@model SAyCC.Entities.Login.UserEntity
+
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Descripción:</label><br />
+    <input class="form-control NoMedidor" placeholder="Descripción" autocomplete="off" maxlength="50" />
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Cantidad Inicial:</label><br />
+    <input class="form-control LecturaAnterior" placeholder="Cantidad Inicial" autocomplete="off" maxlength="18" type="number" />
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Cantidad Limite:</label><br />
+    <input class="form-control LecturaActual" placeholder="Cantidad Limite" autocomplete="off" maxlength="18" type="number" />
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 dvAddWaterMeter">
+    <div style="margin: 34px 0 0 0; float: left; height: 35px;" class="btn btn-info" onclick="AddNMedidor();">
+        <i class="fas fa-plus fa-1x" style="color:white"></i> Agregar
+    </div>
+</div>

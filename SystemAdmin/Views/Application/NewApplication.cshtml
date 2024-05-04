@@ -1,0 +1,28 @@
+﻿@model SAyCC.Entities.Login.ApplicationEntity
+<div class="col-lg-4 col-md-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Nombre:</label><br />
+    <input asp-for="Descripcion" class="form-control txtDescripcion" placeholder="Nombre" autocomplete="off" />
+    <span asp-validation-for="Descripcion" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Icono:</label><br />
+    <input asp-for="Icono" class="form-control txtIcono" placeholder="Icono" autocomplete="off" />
+    <span asp-validation-for="Icono" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Acción:</label><br />
+    <input asp-for="Accion" class="form-control txtAccion" placeholder="Acción" autocomplete="off" />
+    <span asp-validation-for="Accion" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Controlador:</label><br />
+    <input asp-for="Controlador" class="form-control txtControlador" placeholder="Controlador" autocomplete="off" />
+    <span asp-validation-for="Controlador" class="text-danger" style="font-size:small"></span>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Dominio:</label>
+    <br />
+    <input asp-for="Dominio" class="form-control txtDominio" placeholder="Dominio" autocomplete="off" />
+    <span asp-validation-for="Dominio" class="text-danger" style="font-size:small"></span>
+</div>
+

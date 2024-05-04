@@ -1,0 +1,96 @@
+﻿@model SAyCC.Entities.Login.UserEntity
+
+<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+    <div style="text-align:center;float:left;" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <br /><br />
+        @*@if (ViewBag.ImagenBytesIlustrative != null)
+            {
+                <div id="imgFoto"><img style="width:100%; margin:5px 0 25px 0; border-radius:1em;" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(ViewBag.ImagenBytesIlustrative))" style="background-size:inherit;" /></div>
+            }
+            else
+            {
+                <img style="width:100%; margin:5px 0 25px 0;" src="~/images/defaultImgProfile.jpg" class="img-fluid" alt="example placeholder">
+            }*@
+        <img style="width:100%; margin:5px 0 25px 0;" src="~/images/defaultImgProfile.jpg" class="img-fluid imgUser" alt="example placeholder">
+        <div class="custom-file" style="margin:0 0 5px 0;border:none;">
+            <input type="file" class="custom-file-input" name="FileUpload" id="FileUpload">
+            <label class="custom-file-label" for="customFile">Elegir imagen</label>
+        </div>
+    </div>
+</div>
+<div class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
+    <div class="row">
+        <div class="col-lg-4 col-md-4 col-md-4 col-sm-12 col-xs-12">
+            <label>Nombre:</label><br />
+            <input asp-for="Nombre" class="form-control Nombre" placeholder="Nombre(s)" />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label>Apellido Paterno:</label><br />
+            <input asp-for="APaterno" class="form-control APaterno" placeholder="Apellido Paterno" />
+            <span asp-validation-for="APaterno" class="text-danger"></span>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label>Apellido Materno:</label><br />
+            <input asp-for="AMaterno" class="form-control AMaterno" placeholder="Apellido Materno" />
+            <span asp-validation-for="AMaterno" class="text-danger"></span>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label>Telefono:</label><br />
+            <input asp-for="Telefono" class="form-control Telefono" placeholder="Telefono" type="number" autocomplete="off" maxlength="10" />
+            <span asp-validation-for="Telefono" class="text-danger"></span>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label>E-mail:</label>
+            <br />
+            <input asp-for="Email" class="form-control Email" placeholder="Email" type="email" autocomplete="off" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label>Sexo:</label>
+            <br />
+            <select asp-for="Genero" class="form-control ddlSexo">
+                <option value="0">Femenino</option>
+                <option value="1">Masculino</option>
+            </select>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label>Manzana:</label>
+            <br />
+            <select asp-for="IdManzana" class="form-control ddlManzana">
+                @{
+                    var Apple = (List<SAyCC.Entities.SystemAdmin.CatalogEntity>)ViewBag.CatalogApple;
+                    foreach (var item in Apple)
+                    {
+                        <option value="@item.Id">@item.Descripcion</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label>Perfil:</label>
+            <br />
+            <select asp-for="IdPerfil" class="form-control ddlPerfil">
+                @{
+                    var prof = (List<SAyCC.Entities.SystemAdmin.ProfileEntity>)ViewBag.Profiles;
+                    foreach (var item in prof)
+                    {
+                        <option value="@item.Id">@item.Detalle</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <label>Fecha Nac:</label>
+            <br />
+            <input asp-for="FechaNacimiento" type="date" class="form-control FechaNacimiento" autocomplete="off" />
+            <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+        </div>
+        @*<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <label>¿Crear usuario de sesión?</label>
+                <br />
+                <input type="checkbox" asp-for="CreateUser" /> Sí
+            </div>*@
+    </div>
+    <partial name="~/Views/Home/SessionUser.cshtml" />
+</div>

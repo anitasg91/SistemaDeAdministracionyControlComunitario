@@ -1,8 +1,109 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+<style>
+    body {
+        background-image: url('../../images/fondo.png');
+        background-attachment: fixed;
+        background-size: 2130px 1200px;
+    }
+
+    #content {
+        background-image: url('../../images/fondodesenfoque1.jpg');
+        background-attachment: fixed;
+        background-size: 2110px 1200px;
+        padding: 20px;
+        margin: 100px auto;
+        width: 600px;
+        border-radius: 2em 0;
+        box-shadow: 0 0 5px #3f3d3dba;
+        opacity: 0.9;
+    }
+</style>
+<body>
+    <div id="content">
+        <div class="text-center">
+            <h1 class="display-4 text-uppercase" style="color:aliceblue; text-shadow:2px 2px 1px #fe7e1b;">INICIAR SESIÓN</h1>
+        </div>
+        <center>
+            <div class="col-md-8">
+                <section>
+                    <form asp-controller="Home" asp-action="validateUserExistLogin" method="post" autocomplete="off">
+                        <div class="form-group text-left">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text"><i class="fas fa-user fa-1x" style="color:black"></i></div>
+                                </div>
+                                @*<input asp-for="SessionStart" class="form-control" placeholder="Inserte usuario" id="iniciosesion" onblur="validar();" required />*@
+                                <input asp-for="SessionStart" class="form-control" placeholder="Inserte usuario" id="iniciosesion" required />
+                            </div>
+                            <span asp-validation-for="SessionStart" class="text-danger" id="iniciosesionspan"></span>
+                        </div>
+                        <div class="form-group text-left">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text"><i class="fas fa-lock fa-1x" style="color:black"></i></div>
+                                </div>
+                                <input type="password" asp-for="Password" class="form-control" placeholder="Inserte contraseña" required />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <hr />
+                        <div>
+                            <a class="text-light" style="text-shadow:2px 2px 1px #fe7e1b; cursor:pointer;" onclick="location.href='@Url.Action("RecoverPassword","Home")'">Olvidé mi Contraseña</a>
+                        </div>
+                        <hr />
+                        <div>
+                            <button type="submit" class="btn btn-info"><i class="fas fa-sign-in-alt fa-1x" style="color:white"></i> Iniciar Sesión</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </center>
+    </div>
+</body>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/login.js"></script>
+
+    <script type="text/javascript">
+
+        var cambio = "@ViewBag.CambioPassword";
+        if (cambio == "1") {
+        swal("ACTUALIZACIÓN", "Los Contraseña fue actualizada", "success");
+        }
+        if (cambio == "0") {
+            swal("ERROR", "Error al cambiar la contraseña, favor de contactar al administrador", "error");
+        }
+        var std = "@ViewBag.RecuperaPassword";
+
+        if (std == "0") {
+
+            swal("ERROR","El correo ingresado no se encuntra en el sistema.", "error")
+        }
+        if (std == "1") {
+            swal("OK", "El correo fue envíado con éxito", "success")
+        }
+        var resul = "@ViewBag.Resultado";
+        switch (resul) {
+            case "ErrorLogin":
+                swal("ERROR", "La contraseña es incorrecta.", "error")
+                break;
+            case "BlockLogin":
+                swal("USUARIO BLOQUEADO", "Favor de contactar al administrador", "info")
+                break;
+            case "inactiveLogin":
+                swal("USUARIO INACTIVO O BLOQUEADO", "Favor de Contactar al Administrador.", "info")
+                break;
+            case "ErrorInfo":
+                swal("ERROR", "El usuario no se encuentra registrado, contacte al administrador.", "error");
+                break;
+            case "PerfilBlock":
+                swal("PERFIL INACTIVO", "El perfil se encuentra inactivo, contacte al administrador.", "error");
+                break;
+            default:
+        }
+    </script>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>

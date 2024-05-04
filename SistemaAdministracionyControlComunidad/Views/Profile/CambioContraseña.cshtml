@@ -1,0 +1,46 @@
+﻿@*@model ContrasenaViewModel
+
+<form asp-controller="MiPerfil" asp-action="CambioContraseña" method="post">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <h4>LLene los datos solicitados:</h4>
+    </div>
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <b>Contraseña Actual</b>
+        <input asp-for="Input.Password" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Input.Password" class="text-danger" style="font-size:small"></span>
+    </div>
+    <div class="col-md-6 col-sm-6 col-xs-6" style="float:left">
+        <b>Contraseña Nueva</b>
+        <br />
+        <input asp-for="Input.PasswordNuevo" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Input.PasswordNuevo" class="text-danger" style="font-size:small"></span>
+    </div>
+    <div class="col-md-6 col-sm-6 col-xs-6" style="float:right">
+        <b>Confirmación de Contraseña</b>
+        <br />
+        <input asp-for="Input.PasswordConfirmacion" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Input.PasswordConfirmacion" class="text-danger" style="font-size:small"></span>
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <button type="submit" class="btn btn-success">Guardar</button>
+    </div>
+</form>*@
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+    <script type="text/javascript">
+
+    var result = "@ViewBag.Actualizacion";
+        if (result == "ok") {
+            swal("Actualización", "Los datos fueron actualizados", "success");
+        }
+        if (result == "error") {
+            swal("Error", "Error al actualizar los datos", "error");
+        }
+
+    </script>
