@@ -1,0 +1,175 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model SAyCC.Entities.SystemAdmin.PermisoPaginaPerfilResponse
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    bool IsNew = Model.Perfil.Id == 0;
+    string check = Model.Perfil.Activo || IsNew ? "checked" : "";
+    var canCreate = IsNew && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear });
+    var canEdit = !IsNew && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar });
+    var canAsign = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.AsignarPermisos });
+    var deshabilitarEdit = canCreate || canEdit ? "" : "disabled";
+    var deshabilitarAsign = canAsign ? "" : "disabled";
+    var checkDisab = canEdit && !IsNew ? "" : "disabled";
+}
+
+<div class="accordion" id="DataProfile">
+    <div class="card box-shadow-none">
+        <div class="card-header pl-0 pr-0" id="DataProfileCard">
+            <h2 class="mb-0">
+                <button class="btn text-bold btn-block text-left p-0" type="button" data-toggle="collapse" data-target="#collapseDataProfile" aria-expanded="false" aria-controls="collapseDataProfile">
+                    <span class="text-lg">Información general</span> <i class="fas fa-caret-down rotate-icon mt-1 float-right"></i>
+                </button>
+            </h2>
+        </div>
+        <div id="collapseDataProfile" class="collapse show" aria-labelledby="DataProfileCard" data-parent="#DataProfile">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-4 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <input id="hfIdPerfil" type="hidden" value="@(Model.Perfil.Id)" />
+                            <label>Nombre:</label>
+                            <input class="form-control" id="Detalle" type="text" value="@(Model.Perfil.Detalle)" @deshabilitarEdit />
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="displayBlock">Estatus</label>
+                            <input id="chkEstatus" style="margin-left: 1px;" class="form-check-input checkbox" type="checkbox" @check @checkDisab />
+                            <label class="form-check-label" for="chkEstatus">Activo</label>
+                        </div>
+                    </div>
+                    @if (!IsNew) {
+                        <div class="col-xl-4 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Usuario alta:</label>
+                                <span class="form-control inputDetail">@(Model.Perfil.NombreUsuarioAlta)</span>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Fecha alta:</label>
+                                <span class="form-control inputDetail">@(Model.Perfil.FechaAlta.ToString("dd/MM/yyyy"))</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="row">
+                    @if (!IsNew) {
+                    <div class="col-xl-4 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Última modificación:</label>
+                            <span class="form-control inputDetail" id="FechaModificacion">@(Model.Perfil.FechaModificacion == null ? "" : Convert.ToDateTime(Model.Perfil.FechaModificacion).ToString("dd/MM/yyyy")) </span>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Usuario que modificó:</label>
+                            <span class="form-control inputDetail">@(Model.Perfil.NombreUsuarioMod)</span>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label>Aplicación:</label>
+                            <span class="form-control inputDetail">@(Model.Perfil.Aplicacion)</span>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion" id="PageList">
+    <div class="card box-shadow-none">
+        <div class="card-header pl-0 pr-0" id="PageListCard">
+            <h2 class="mb-0">
+                <button class="btn text-bold btn-block text-left p-0" type="button" data-toggle="collapse" data-target="#collapsePageList" aria-expanded="false" aria-controls="collapsePageList">
+                    <span class="text-lg">Páginas/Módulos</span> <i class="fas fa-caret-down rotate-icon mt-1 float-right"></i>
+                </button>
+            </h2>
+        </div>
+        <div id="collapsePageList" class="collapse show" aria-labelledby="PageListCard" data-parent="#PageList">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12">
+                        <ul id="ulRolesList" class="ulConfigPermissions">
+                            <li class="HeadConfigPermissions">Páginas</li>
+                            @foreach (var item in Model.Paginas.OrderBy(x=>x.Orden))
+                            {
+                                if ((item.Id == (int)RestrictedPages.Aplicaciones || item.Id == (int)RestrictedPages.Catalogos) && !_sessions.IsSuperAdmin)
+                                {
+                                    continue;
+                                }
+                                var propCheck = Model.PermisosPagina.Where(_ => _.IdPagina == item.Id).Any(_ => _.PermisosPaginas.Any(x => x.Asignado))? "checked" : "";
+
+                                <li class="li-row-value">
+                                    <input name="chkPages" class="form-check-input checkbox chkPages"
+                                           type="checkbox" id="chkPage_@item.Id" value="@item.Id" @propCheck @deshabilitarAsign />
+                                    <label class="form-check-label" for="chkPage_@item.Id">@item.Titulo</label>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div style="border-left: 3px #C4C4C4 solid;" class="col-xl-8 col-lg-7 col-md-6 col-sm-12">
+                        <div class="row">
+                            @{
+                                //foreach (var item in Model.PermisosPagina.Where(_ => _.PermisosPaginas.Any(x => x.Asignado)).ToList())
+                                foreach (var item in Model.PermisosPagina.OrderBy(x => x.Orden))
+                                {
+                                    if (item.IdPagina == (int)RestrictedPages.Aplicaciones && !_sessions.IsSuperAdmin)
+                                    {
+                                        continue;
+                                    }
+                                    string oculto = item.PermisosPaginas.Any(x => x.Asignado) ? "" : "oculto";
+
+                                    <div id="divPermisoByPagina_@item.IdPagina"
+                                         class="col-xl-4 col-lg-6 col-md-12 col-sm-12 @oculto">
+                                        <ul id="ulRolesList" class="ulConfigPermissions ulConfigPage">
+                                            <li class="HeadConfigPermissions HeadConfigPage">@item.Pagina</li>
+                                            @foreach (var pp in item.PermisosPaginas)
+                                            {
+                                                var propCheck = pp.Asignado ? "checked" : "";
+                                                <li class="li-row-value">
+                                                    <input style="margin-left: -0.9em;" class="form-check-input checkbox chkPermisosPaginas" type="checkbox" id="PermisosPaginas_@pp.Id" data-id="@pp.Id" data-idpadre="@item.IdPagina" @propCheck @deshabilitarAsign />
+                                                    <label class="form-check-label" for="PermisosPaginas_@pp.Id">@pp.NombrePermiso</label>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+
+                            }
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 btn-flotante">
+        <div style="float: right;">
+            <div id="btnCancel" class="btn btn-danger">
+                <i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar
+            </div>
+            @if (canCreate || canEdit || canAsign)
+            {
+              <div id="btnSave" class="btn btn-success">
+                  <i class="fas fa-plus fa-1x" style="color:white"></i> Guardar
+              </div>
+            }
+        </div>
+    </div>
+   @*  <div class="col-md-2 col-sm-12">
+        <input id="btnCancel" type="button" class="btn rounded-pill btnManagmentSave bg-danger" value="Cancelar" />
+    </div> *@
+    
+  @*   <div class="col-md-2 col-sm-12">
+        <input id="btnSave" type="button" class="btn rounded-pill btnManagmentSave" value="Guardar" />
+    </div> *@
+    
+</div>
+

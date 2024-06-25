@@ -1,5 +1,4 @@
-﻿
-function newApplication() {
+﻿function newApplication() {
     $(".primerModal").removeClass("primerModal");
     $(".txtDescripcion").val("");
     $(".txtIcono").val("");
@@ -45,7 +44,7 @@ function getDetailApplication(IdApp) {
                     createTableModules(entidad.modules);
                     createTableProfiles(entidad.profiles);
                     configureTabPermission();
-                    createTablePermission(entidad.permission);
+                   // createTablePermission(entidad.permission);
 
                     // $("#aModules").addClass('disabled');
 
@@ -67,7 +66,11 @@ function getDetailApplication(IdApp) {
 }
 
 function createTableProfiles(lista) {
-    var theadTitle = ["#", "Nombre", "Estatus", "<i class='fas fa-cog fa-1x'></i>"];
+    var theadTitle = ["#", "Nombre", "Estatus"];
+    if (PermisosParaTabPerfiles.some(perm => _permissionCurrentPage.includes(perm))) {
+        theadTitle.push("<i class='fas fa-cog fa-1x'></i>");
+    }
+
     if (lista.length == 0)
         $("#aPermission").addClass('disabled');
     else

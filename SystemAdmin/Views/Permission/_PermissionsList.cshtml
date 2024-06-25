@@ -1,0 +1,55 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model SAyCC.Entities.SystemAdmin.PermissionListEntity
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    var canAsingRole = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Asignar_Rol }) ? "" : "disabled";
+    var canAsingBlock = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Asignar_Manzana }) ? "" : "disabled";
+
+}
+
+<div class="row">
+    
+    @{
+        <div class="col-4">
+            <ul id="ulRolesList" class="ulConfigPermissions">
+                <li class="HeadConfigPermissions">Roles</li>
+                <li class="li-row-value">
+                    <input class="form-check-input checkbox" type="checkbox" id="miCheckRole_0" @canAsingRole />
+                    <label class="form-check-label" for="miCheckRole_0">Todos los roles</label>
+                </li>
+                @foreach (var item in Model.Role)
+                {
+                    if (item.Id == (int)roles.Superadmin && !_sessions.IsSuperAdmin)
+                    {
+                        continue;
+                    }
+                    if(item.Activo){ 
+                    var hasRol = Model.UserProfile.Any(_ => _.Id == item.Id)?"checked":"";
+                    <li class="li-row-value">
+                        <input class="form-check-input checkbox" type="checkbox" id="miCheckRole_@item.Id" value="@item.Id" @hasRol @canAsingRole />
+                        <label class="form-check-label" for="miCheckRole_@item.Id">@item.Detalle </label>
+                    </li>
+                    }
+                }
+            </ul>
+        </div>
+        <div style="max-height: 450px !important;" class="col-4">
+            <ul id="ulBlockList" class="ulConfigPermissions">
+                <li class="HeadConfigPermissions">Manzanas</li>
+                <li class="li-row-value">
+                    <input class="form-check-input checkbox" type="checkbox" id="miCheckBlock_0" @canAsingBlock />
+                    <label class="form-check-label" for="miCheckBlock_0">Todas las manzanas</label>
+                </li>
+                @foreach (var item in Model.Block)
+                {
+                    var hasBlock = Model.UserBlock.Any(_ => _.Id == item.Id) ? "checked" : "";
+                    <li class="li-row-value">
+                        <input class="form-check-input checkbox" type="checkbox" id="miCheckBlock_@item.Id" value="@item.Id" @hasBlock @canAsingBlock />
+                        <label class="form-check-label" for="miCheckBlock_@item.Id">@item.Descripcion </label>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+
+</div>

@@ -1,0 +1,56 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model List<SAyCC.Entities.SystemAdmin.ProfileEntity>
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+@{
+    ViewData["Title"] = "Crear roles y permisos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <label>Aplicación:</label>
+        <br />
+        <select id="hfIdAppEdit" class="form-control filters">
+            @{
+                var app = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.Applications;
+                foreach (var item in app)
+                {
+                    <option value="@item.Id">@item.Descripcion</option>
+                }
+            }
+        </select>
+    </div>
+    @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear }))
+    {
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div id="btnNuevo" style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info">
+                <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+            </div>
+        </div>
+    }
+</div>
+<br />
+<div id="divTable">
+    @Html.Partial("~/Views/PermisoPaginaPerfil/_Table.cshtml", Model)
+</div>
+<div id="dvModals"></div>
+<script>
+    $(function () {
+        $('.collapse').collapse();
+        let IdPagina = "@_sessions.IdCurrentPage";
+        $("#liMenu_" + IdPagina).addClass('PaginaActiva');
+    });
+     var resul = "@ViewBag.Resultado";
+        switch (resul) {
+            case "SaveSuccess":
+                swal("Éxito", "El registro ha sido creado con éxito.", "success");
+                break;
+            case "SaveError":
+                swal("ERROR", "@ViewBag.MessageError", "error");
+                break;
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/pako@2.0.3/dist/pako.min.js"></script>
+<script src="~/js/jsPermisoPaginaPerfil.js"></script>
+<script src="~/js/Common.js"></script>

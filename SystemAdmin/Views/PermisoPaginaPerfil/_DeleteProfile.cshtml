@@ -1,0 +1,32 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model int
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+<div style="margin: 10% 0;" id="ModalDeleteProfile" class="modal fade bd-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <input type="hidden" id="hfIdPerfilDelete" value="@Model" />
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lblTitle" class="modal-title"><i class="fas fa-trash-alt fa-lg"></i> Eliminar perfil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <p>Si elimina el perfil ya no se podrá usar en el sistema.</p>
+                        <h5>¿Desea continuar?</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnDeleteNo" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Borrar}))
+                {
+                    <div id="btnDeleteYes" type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Http
+@using SAyCC.SystemAdmin.Utilities
+@inject IHttpContextAccessor contextAccesor
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+@{
+    var Mod = _sessions.AllPagesByAppList;
+   // var userADID = contextAccesor.HttpContext.Session.GetString("IdUser");
+    var obtieneHijos = Mod.Where(_ => _.IDPadre != null).OrderBy(_=>_.Orden).ToList();
+    var paginas = Mod.Except(obtieneHijos);
+    //var isSuperAdmin = _sessions.RolesAsign.Any(x => x.Id == (int)roles.Superadmin);
+
+    foreach (var item in paginas.OrderBy(x => x.Orden))
+    {
+        var hijos = obtieneHijos.Where(_=>_.IDPadre == item.Id).OrderBy(_=>_.Orden).ToList();
+        if (!hijos.Any())
+        {
+            <li id="liMenu_@item.Id">
+                <a class="nav-link" href="~/@item.Controlador/@item.Accion/@item.Id">
+                    <i class="@item.i_class"></i> @item.Titulo
+                </a>
+            </li>
+        }
+        else
+        {
+            <li>
+                <a class="nav-link collapsed" data-toggle="collapse" href="#collapse_@item.Id" role="button" aria-expanded="false"
+                   aria-controls="collapse_@item.Id">
+                    <i class="@item.i_class"></i> @item.Titulo
+                </a>
+                <ul class="collapse" id="collapse_@item.Id">
+                    @foreach (var child in hijos)
+                    {
+                        <li id="liMenu_@child.Id">
+                            <a style="margin-left: 5%;" class="nav-link" href="~/@child.Controlador/@child.Accion/@child.Id">
+                                <i class="@child.i_class"></i> @child.Titulo
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+
+    }
+
+}

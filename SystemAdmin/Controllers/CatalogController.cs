@@ -16,51 +16,35 @@ using System.Linq;
 
 namespace SystemAdmin.Controllers
 {
+    [SessionValidator]
     public class CatalogController : Controller
     {
-        public IActionResult Index()
+        private readonly IGenerals _generals;
+        public CatalogController(IGenerals generals)
         {
-            if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
-            {
-                #region Configura Menú
-                ViewBag.IdUser = HttpContext.Session.GetInt32(Sessions.IdUser);
-                ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), HttpContext.Session.GetInt32(Sessions.IdApp));
-                string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
-                ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
-                ViewBag.Alta = ViewBag.Modificacion = true;
-                ViewBag.NombreUsuario = HttpContext.Session.GetString(Sessions.UserName);
-                #endregion
-
-                ViewBag.resultado = TempData["resultado"];
-                ViewBag.MensajeErr = TempData["MensajeErr"];
-
-                ViewBag.Applications = GetApplications();
-                ViewBag.Catalogs = GetCatalog((int)Enumerador.CatalogType.Apple);
-                return View();
-            }
-            else
-            {
-                return Redirect(DBSet.urlRedirect);
-            }
+            _generals = generals;
         }
-
-        public void validateSession()
+        public IActionResult Index(int? id)
         {
-            if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
-            {
-                int IdUser = (int)HttpContext.Session.GetInt32(Sessions.IdUser);
-                int IdApp = (int)HttpContext.Session.GetInt32(Sessions.IdApp);
-                int RolUser = (int)HttpContext.Session.GetInt32(Sessions.RolUser);
-                HttpContext.Session.SetInt32(Sessions.IdUser, (int)IdUser);
-                HttpContext.Session.SetInt32(Sessions.IdApp, (int)IdApp);
-                HttpContext.Session.SetInt32(Sessions.RolUser, (int)RolUser);
-            }
-            else
-            {
-                Redirect(DBSet.urlRedirect);
-            }
-        }
+            #region Varibles de configuración para armar el Menú
+              if (id != new int?())
+              {
+                  //Importante guardar la paginaActual cada que se navegue
+                  HttpContext.Session.SetInt32(Sessions.CurrentPage, (int)id);
+                  if (!_generals.AllPagesByAppList.Any(_ => _.Id == id)) {
+                      return View(PartialViewEnum.PageNotAccess);
+                  }
+              }
+            #endregion
 
+            ViewBag.resultado = TempData["resultado"];
+            ViewBag.MensajeErr = TempData["MensajeErr"];
+
+            ViewBag.Applications = GetApplications();
+            ViewBag.Catalogs = GetCatalog((int)Enumerador.CatalogType.Apple);
+            return View();
+        }
+        
         public List<CatalogEntity> GetCatalog(int IDCatalog) {
             using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
             {
@@ -68,11 +52,11 @@ namespace SystemAdmin.Controllers
                 return resultado;
             }
         }
-        public List<ModuleEntity> GetModulesAllowed(int? IdPerfil, int? IdApp)
+        public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
         {
             using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
             {
-                var resultado = AppNegocio.GetModulesAllowed(IdPerfil, IdApp);
+                var resultado = AppNegocio.GetModulesAllowed(IdUsuario, IdApp);
                 return resultado;
             }
         }
@@ -88,7 +72,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult saveProfile(int IdProfile, int IdApp, string Descripcion)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<ProfileEntity> resultado;
@@ -111,7 +94,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult blockUnblockProfile(int IdProfile, int Status, int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<ProfileEntity> resultado;
@@ -132,7 +114,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult DeleteProfile(int IdProfile, int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<ProfileEntity> resultado;
@@ -154,7 +135,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult getDetailProfile(int IdPerfil)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.GetProfiles(IdPerfil:IdPerfil).FirstOrDefault();
@@ -167,7 +147,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult getModules(int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.GetModulesAllowed(IdApp: IdApp);
@@ -177,7 +156,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult getProfiles(int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.GetProfilesByAppActives(IdApp);
@@ -187,7 +165,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult getPermission(int IdPerfil, int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.getPermission(IdPerfil, IdApp);
@@ -197,7 +174,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult DeleteCatalog(int IDCatalog, int Id)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<CatalogEntity> resultado;
@@ -238,7 +214,6 @@ namespace SystemAdmin.Controllers
         //}
         public IActionResult SaveCatalog(int IDCatalog, int Id, string Detalle, int IDAplicacion)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<CatalogEntity> resultado;
@@ -275,7 +250,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult GetCatalogJson(int IDCatalog)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<CatalogEntity> res;
@@ -292,18 +266,16 @@ namespace SystemAdmin.Controllers
             }
         }
 
-        public JsonResult getProfilesWithStats(int IdApp)
+        /*public JsonResult getProfilesWithStats(int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.GetProfiles(IdApp: IdApp);
                 return Json(new { data = resultado });
             }
-        }
+        }*/
         public JsonResult GetWaterMeterJson()
         {
-            validateSession();
             using (WaterSystemBusiness nego = new WaterSystemBusiness())
             {
                 List<WaterMeterEntity> res;
@@ -322,7 +294,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult ModifyWaterMeter(int IdWaterMeter, int ModifyTypeWaterMeter, string NoMedidor, decimal? LecturaAnterior, decimal? LecturaActual, int? IdManzana, int? IdTitular)
         {
-            validateSession();
             List<WaterMeterEntity> res = new List<WaterMeterEntity>();
             try
             {
@@ -372,7 +343,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult getUserByParameter(string name)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.getUserByParameter(name);
@@ -381,7 +351,14 @@ namespace SystemAdmin.Controllers
             }
         }
 
-
+        public JsonResult GetPermissionCatalogJson(int? IdPermiso = new int?())
+        {
+            using (ApplicationBusiness nego = new ApplicationBusiness())
+            {
+                var resultado = nego.GetPermissionCatalog(IdPermiso);
+                return Json(new { data = resultado });
+            }
+        }
 
 
 

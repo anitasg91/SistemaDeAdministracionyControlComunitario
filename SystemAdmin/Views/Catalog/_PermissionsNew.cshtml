@@ -1,0 +1,19 @@
+﻿@model SAyCC.Entities.SystemAdmin.PermissionCatalogEntity
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Nombre:</label><br />
+    <input class="form-control" placeholder="Nombre" autocomplete="off" type="text" value="@Model.Nombre" />
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Descripción:</label><br />
+    <input class="form-control" placeholder="Descripción" autocomplete="off" type="text" value="@Model.Descripcion" />
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Estatus:</label><br />
+    <input class="form-control" placeholder="Descripción" autocomplete="off" type="text" />
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Fecha creación:</label><br />
+    <input class="form-control" placeholder="Descripción" autocomplete="off" type="text" value="@Model.FechaCreacion" />
+</div>

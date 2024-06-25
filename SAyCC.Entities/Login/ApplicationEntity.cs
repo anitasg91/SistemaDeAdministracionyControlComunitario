@@ -33,7 +33,7 @@ namespace SAyCC.Entities.Login
         public string NombreUsuarioMod { get; set; }
        public List<ModuleEntity> Modules { get; set; }
        public List<ProfileEntity> Profiles { get; set; }
-       public List<PermissionEntity> permission { get; set; }
+       //public List<PermissionEntity> permission { get; set; }
 
     }
 }

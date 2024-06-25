@@ -1,0 +1,128 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model SAyCC.Entities.SystemAdmin.CatalogResponse
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+@{
+    ViewData["Title"] = "Catalogos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    // var _permissions = _sessions.PermissionPageCurrent;
+    bool HasAnyCatalog = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Administrar_Manzana, (int)PermisoEn.Administrar_Mes, (int)PermisoEn.Administrar_Permisos });
+    bool HasBlock = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Administrar_Manzana });
+    bool HasMonth = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Administrar_Mes });
+    bool HasPermission = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Administrar_Permisos });
+
+    var idCatalogo = Model.Catalog.Any() ? Model.Catalog.FirstOrDefault().IdCatalogType : Model.PermissionCatalog.Any() ? 3 : 0;
+    var perm = _sessions.PermissionPageCurrent;
+    bool esManzana = idCatalogo == (int)CatalogManager.Manzana;
+    bool esMes = idCatalogo == (int)CatalogManager.Mes;
+    bool esPermiso = idCatalogo == (int)CatalogManager.Permisos;
+
+    bool CreateBlock = esManzana && perm.Any(x => x.Id == (int)PermisoEn.Crear_Manzana);
+    bool CreateMonth = esMes && perm.Any(x => x.Id == (int)PermisoEn.Crear_Mes);
+    bool CreatePermission = esPermiso && perm.Any(x => x.Id == (int)PermisoEn.Crear_Permiso);
+    bool TP = perm.Any(x => x.Id == (int)PermisoEn.TodosLP);
+}
+
+    <body style="overflow-x: hidden;">
+        <div id="dvContenedorInfoGral" class="row">
+        @if (HasAnyCatalog){
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <label style="float:left;">Catálogo: </label><br />
+            <select id="ddlCatalogManager" class="form-control filters">
+                    @{
+                        var app = (List<SAyCC.Entities.SystemAdmin.CatalogEntity>)ViewBag.CatalogManager;
+                        foreach (var item in app)
+                    {
+                        if ((item.Id == (int)CatalogManager.Manzana && !HasBlock)
+                        || (item.Id == (int)CatalogManager.Mes && !HasMonth)
+                        || (item.Id == (int)CatalogManager.Permisos && !HasPermission)
+                        ){
+                            continue;    
+                        }
+                            <option value="@item.Id">@item.Descripcion</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            string oculto = (CreateBlock || CreateMonth || CreatePermission || TP) ? "" : "oculto";
+
+            <div class="col-md-2 col-sm-2 col-xs-12">
+                <div id="btnNuevo" style="margin: 34px 0 0 0; float: left; height: 35px; cursor:pointer;" class="btn btn-info @oculto">
+                  <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                </div>
+              </div>
+        }
+        </div>
+        @if (HasAnyCatalog){
+            <div id="dvTablaCatalog" class="datagrid" style="margin-top:5%;">
+            @if (HasBlock || HasMonth)
+            {
+                @Html.Partial(PartialViewEnum.BlockMonthTable, Model.Catalog)
+            }
+            else{
+            @Html.Partial(PartialViewEnum.PermissionTable, Model.PermissionCatalog)
+            }
+            </div>
+        }
+        else{
+        @Html.Partial(PartialViewEnum.SharedNotAsign, Constantes.CatalogNotAsigned)
+        }
+        <div style="margin: 10% 0;" id="ModalLock" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <input id="hfIdLock" class="form-control" type="hidden" value="0" />
+        <input id="hfActivo" class="form-control" type="hidden" value="0" />
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lblTitleLock"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                                <label id="lblDescripcionLock"></label><br />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnLockNo" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                        <div name="btnLockSi" type="submit" class="btn btn-success" ><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+<div id="dvModalCatalog">
+    @if (HasBlock || HasMonth){
+        SAyCC.Entities.SystemAdmin.CatalogEntity ce = new SAyCC.Entities.SystemAdmin.CatalogEntity();
+        @Html.Partial(PartialViewEnum.CatalogNewFront, ce)
+    }
+    else {
+        SAyCC.Entities.SystemAdmin.PermissionCatalogEntity pc = new SAyCC.Entities.SystemAdmin.PermissionCatalogEntity();
+        @Html.Partial(PartialViewEnum.PermissionsNewFront, pc)
+    }
+</div>
+
+<script type="text/javascript">
+    const _permissionCurrentPage = JSON.parse('@Json.Serialize(_sessions.PermissionPageCurrent.Select(x => x.Id))');
+    $(function () {
+        let IdPagina = "@_sessions.IdCurrentPage";
+        $("#liMenu_" + IdPagina).addClass('PaginaActiva');
+    });
+    var result = "@ViewBag.resultado";
+    switch (result) {
+        case "Success":
+            swal("Éxito", "Los datos fueron  guardador exitosamente.", "success");
+            break;
+        case "Error":
+            swal("Error", "@ViewBag.MensajeErr", "error");
+            break;
+        default:
+    }
+</script>
+<script src="~/js/Common.js"></script>
+@* <script src="~/js/jsProfile.js"></script> *@
+<script src="~/js/jsCatalogManager.js"></script>

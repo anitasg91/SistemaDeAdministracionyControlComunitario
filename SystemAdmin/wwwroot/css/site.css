@@ -69,3 +69,291 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+
+
+
+/**List**/
+ul {
+    counter-reset: li; /* Initiate a counter */
+    list-style: none; /* Remove default numbering */
+    *list-style: decimal; /* Keep using default numbering for IE6/7 */
+    font: 15px 'trebuchet MS', 'lucida sans';
+    padding: 0;
+    margin-bottom: 4em;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);   
+}
+
+    ul ul {
+        margin: 0 0 0 2em; /* Add some left margin for inner lists */
+    }
+
+
+.rectangle-list span {
+    position: relative;
+    display: block;
+    padding: .4em .4em .4em .8em;
+    *padding: .4em;
+    margin: .5em 0 .5em 2.5em;
+    background: #ddd;
+    color: #444;
+    text-decoration: none;
+    transition: all .3s ease-out;
+}
+
+    .rectangle-list span:hover {
+        background: #eee;
+        cursor:pointer;
+    }
+
+    .rectangle-list span:before {
+        content: counter(li);
+        counter-increment: li;
+        position: absolute;
+        /*left: -2.5em;*/
+        top: 50%;
+        margin-top: -1em;
+        background: #fa8072;
+        height: 2em;
+        width: 2em;
+        line-height: 2em;
+        text-align: center;
+        font-weight: bold;
+        right: -2em !important;
+    }
+
+    .rectangle-list span:after {
+        position: absolute;
+        content: '';
+        border: .5em solid transparent;
+        left: -1em;
+        top: 50%;
+        margin-top: -.5em;
+        transition: all .3s ease-out;
+    }
+
+    .rectangle-list span:hover:after {
+        left: -.5em;
+        border-left-color: #fa8072;
+    }
+
+
+    /*.rectangle-list span:before {
+        content: counter(li);
+        counter-increment: li;
+        position: absolute;
+        left: -16%;
+        top: 50%;
+        margin-top: -5.5%;
+        background: #fa8072;
+        height: 100%;
+        width: 13%;
+        line-height: 200%;
+        text-align: center;
+        font-weight: bold;
+    }*/
+
+.trFila {
+    cursor: pointer;
+}
+    .trFila td {
+        border-radius: 20px !important;
+    }
+    .trFila:hover {
+        background-color: #6c757d !important;
+        color:white !important;
+    }
+
+.selectUser {
+    background-color: #28a745 !important;
+}
+    .selectUser:hover {
+        background-color: #28a745 !important;
+    }
+
+.iconUser {
+    position: fixed;
+    left: 36%;
+    font-size: 1.5em;
+    margin: 0;
+    padding: 0;
+}
+
+.oculto {
+    display:none !important;
+}
+
+.selectUser td span, .trFila:hover td span {
+    color: white !important;
+}
+
+.HeadConfigPermissions {
+    background-color: #07a3c1;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: bold;
+    /*border-left: 1px solid #0070A8;*/
+    text-align: center;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+}
+.ulConfigPermissions {
+   /* border: 2px solid #07a3c1 !important;*/
+    padding-bottom: 5%;
+    border-radius: 0px 0px 10px 10px;
+    max-height: 100% !important;
+    /*overflow-x: hidden;
+    overflow-y: scroll;*/
+    overflow: auto;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+.ulConfigPermissions li {
+    padding-top: 3%;
+    margin: 0 4%;
+    padding-left: 5%;
+}
+
+.ulConfigPermissions li * {
+    cursor: pointer;
+}
+.HeadConfigPage {
+    background-color: #38c107ad !important;
+}
+.ulConfigPage {
+    /*border: 1px solid #38c107ad !important;*/
+    border:none !important;
+}
+
+.li-row-value {
+    border: 1px solid #C4C4C4;
+    border-top-width: 0;
+    padding: 1% !important;
+    padding-left: 9% !important;
+    margin: 0 !important;
+}
+
+.li-row-value:last-child {
+    border-radius: 0 0 10px 10px;
+    padding-bottom: 2% !important;
+    box-shadow: 0px 4px 4px #C4C4C4;
+}
+
+    .checkbox {
+        width: 1em;
+        height: 1em;
+        position: relative !important;
+    }
+
+.btnManagmentSave {
+    margin: 10px 3%;
+    width: 94%;
+    background-color: #28a745;
+    color: black;
+    font-weight: 700;
+    padding: 10px;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+.PaginaActiva {
+    background-color: #138496 !important;
+}
+
+.displayBlock {
+display:block !important;
+}
+
+
+.contenido {
+    max-height: 600px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+
+
+    .contenido::-webkit-scrollbar {
+        /* Oculta la barra de desplazamiento en navegadores webkit (Chrome, Safari, etc.) */
+        display: none;
+    }
+
+.btn-flotante {
+    position: absolute !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: 12% !important;
+    width: auto !important;
+    right: 20px !important;
+    background-color: #fff !important;
+    border-radius: 100px !important;
+}
+
+/* Estilos opcionales para el tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+/* Estilo del texto adicional */
+#ddlPermissionPage option::before {
+    content: attr(data-title);
+    display: none; /* Ocultar inicialmente */
+    position: absolute;
+    background-color: red;
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-top: -25px; /* Ajustar según sea necesario */
+    margin-left: 5px; /* Ajustar según sea necesario */
+}
+
+/* Mostrar el texto adicional cuando el hover */
+#ddlPermissionPage option:hover::before {
+    display: inline-block;
+}
+
+.pointer {
+    cursor:pointer !important;
+}
+
+.requerido {
+    background-color: #dc35450f !important;
+    border: 1px solid red !important;
+}

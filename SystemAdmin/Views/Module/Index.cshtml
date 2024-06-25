@@ -131,6 +131,10 @@
 }
 
 <script>
+    $(function () {
+        let IdPagina = "@ViewBag.IdPagina";
+        $("#liMenu_" + IdPagina).addClass('PaginaActiva');
+    });
     var resul = "@ViewBag.Resultado";
         switch (resul) {
             case "SaveSuccess":

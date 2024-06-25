@@ -1,4 +1,7 @@
-﻿<div class="modal-dialog modal-xl">
+﻿@using SAyCC.SystemAdmin.Utilities;
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions;
+
+<div class="modal-dialog modal-xl">
     <div class="modal-content noBorder">
         <div class="modal-header">
             <h5 class="modal-title"><i class='fas fa-edit fa-lg'></i> Editar Módulo</h5>
@@ -7,39 +10,77 @@
             </button>
         </div>
         <div class="modal-body">
-            <div class="row typemodal">
-                <partial name="~/Views/Module/NewModule.cshtml" />
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <label>Estatus:</label>
-                    <br />
-                    <input class="form-control inputDetail" disabled="disabled" id="lblEstatusMod" />
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <label>Fecha Alta:</label>
-                    <br />
-                    <input class="form-control inputDetail" disabled="disabled" id="lblFechaAltaMOD" />
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <label>Usuario Alta:</label>
-                    <br />
-                    <input class="form-control inputDetail" disabled="disabled" id="lblUsuarioAltaMod" />
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <label>Fecha Mod:</label>
-                    <br />
-                    <input class="form-control inputDetail" disabled="disabled" id="lblFechaModMod" />
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <label>Usuario Mod:</label>
-                    <br />
-                    <input class="form-control inputDetail" disabled="disabled" id="lblUsuarioModMod" />
+            
+            <div class="modal-body">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a id="aInfoGralPages" class="nav-link active" data-toggle="tab" href="#GeneralInfoPages">Información General</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="aPermissionPages" class="nav-link" data-toggle="tab" href="#PermissionPages">Permisos</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active container" id="GeneralInfoPages">
+                        <div class="row typemodal">
+                            <partial name="~/Views/Module/NewModule.cshtml" />
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label>Estatus:</label>
+                                <br />
+                                <input class="form-control inputDetail" disabled="disabled" id="lblEstatusMod" />
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label>Fecha Alta:</label>
+                                <br />
+                                <input class="form-control inputDetail" disabled="disabled" id="lblFechaAltaMOD" />
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label>Usuario Alta:</label>
+                                <br />
+                                <input class="form-control inputDetail" disabled="disabled" id="lblUsuarioAltaMod" />
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label>Fecha Mod:</label>
+                                <br />
+                                <input class="form-control inputDetail" disabled="disabled" id="lblFechaModMod" />
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                <label>Usuario Mod:</label>
+                                <br />
+                                <input class="form-control inputDetail" disabled="disabled" id="lblUsuarioModMod" />
+                            </div>
+                        </div>
+                    </div>
+                    @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Ver_Pestaña_Permisos })) {
+                        <div class="tab-pane container" id="PermissionPages">
+                            @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Asignar_Permiso }))
+                            {
+                                <div id="dvAsignP" style="margin-top:1%;" class="row">
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                        <select id="ddlPermissionPage" class="form-control">
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                        <div style="float:right;" id="btnAddPermissions" class="btn btn-info">
+                                            <i class="fas fa-plus fa-1x" style="color:white"></i> Agregar
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div style="margin-top:1%;" class="row">
+                                <div id="dvTablePermissionByPage" class="col-xs-12 col-sm-12 col-xs-12 datagrid"></div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
 
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-danger dvCloseModalNewModal" data-dismiss="modal" onclick='$(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
-            <div type="submit" class="btn btn-success" onclick="updateModule();"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</div>
+            @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar_Pagina })){
+                <div type="submit" class="btn btn-success" onclick="updateModule();"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</div>
+            }
         </div>
     </div>
 </div>

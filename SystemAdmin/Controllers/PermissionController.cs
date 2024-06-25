@@ -4,61 +4,57 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SAyCC.Bussiness.Common;
 using SAyCC.Bussiness.Login;
 using SAyCC.Bussiness.SystemAdmin;
+using SAyCC.Entities.Common;
 using SAyCC.Entities.Login;
 using SAyCC.Entities.SystemAdmin;
 using SAyCC.SystemAdmin.Utilities;
+using static SAyCC.Entities.Common.Enumerador;
 
 namespace SystemAdmin.Controllers
 {
+     [SessionValidator]
     public class PermissionController : Controller
     {
-        public IActionResult Index()
+        private readonly IGenerals _generals;
+        public PermissionController(IGenerals generals)
         {
-            validateSession();
-            #region Configura Menú
-            ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), HttpContext.Session.GetInt32(Sessions.IdApp));
-            string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
-            ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
-            ViewBag.Alta = ViewBag.Modificacion = true;
-            ViewBag.NombreUsuario = HttpContext.Session.GetString(Sessions.UserName);
+            _generals = generals;
+        }
+
+        public IActionResult Index(int? id)
+        {
+            #region Varibles de configuración para armar el Menú
+              if (id != new int?())
+              {
+                  //Importante guardar la paginaActual cada que se navegue
+                  HttpContext.Session.SetInt32(Sessions.CurrentPage, (int)id);
+                  if (!_generals.AllPagesByAppList.Any(_ => _.Id == id)) {
+                      return View(PartialViewEnum.PageNotAccess);
+                  }
+              }
             #endregion
 
-            List<ApplicationEntity> apps = GetApplications();
-            List<ProfileEntity> perm = GetProfiles(apps.FirstOrDefault().Id);
             ViewBag.resultado = TempData["resultado"];
             ViewBag.MensajeErr = TempData["MensajeErr"];
+
+            List<ApplicationEntity> apps = GetApplications();
             ViewBag.Applications = apps;
-            ViewBag.Profiles = perm;
-            ViewBag.Permission = getPermission(perm.FirstOrDefault().Id, apps.FirstOrDefault().Id);
+            ViewBag.ConfigurationsPermissions = GetConfigurationPermissions(apps.FirstOrDefault().Id);
+            var userList = GetUsersList();
 
-            return View();
+            return View(userList);
         }
-
-        public void validateSession()
-        {
-            if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
-            {
-                int IdUser = (int)HttpContext.Session.GetInt32(Sessions.IdUser);
-                int IdApp = (int)HttpContext.Session.GetInt32(Sessions.IdApp);
-                int RolUser = (int)HttpContext.Session.GetInt32(Sessions.RolUser);
-                HttpContext.Session.SetInt32(Sessions.IdUser, (int)IdUser);
-                HttpContext.Session.SetInt32(Sessions.IdApp, (int)IdApp);
-                HttpContext.Session.SetInt32(Sessions.RolUser, (int)RolUser);
-            }
-            else
-            {
-                Redirect(DBSet.urlRedirect);
-            }
-        }
-
-        public List<ModuleEntity> GetModulesAllowed(int? IdPerfil, int? IdApp)
+        
+        public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
         {
             using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
             {
-                var resultado = AppNegocio.GetModulesAllowed(IdPerfil, IdApp);
+                var resultado = AppNegocio.GetModulesAllowed(IdUsuario, IdApp);
                 return resultado;
             }
         }
@@ -91,7 +87,6 @@ namespace SystemAdmin.Controllers
 
         public JsonResult saveAsignacionAplicacion(int Id, int IdProfile, int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<ProfileEntity> resultado = new List<ProfileEntity>() { new ProfileEntity() { Id = IdProfile } };
@@ -108,5 +103,100 @@ namespace SystemAdmin.Controllers
             }
         }
 
+        public List<UserUtilityEntity> GetUsersList()
+        {
+            using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
+            {
+                var resultado = AppNegocio.GetUsersListForPermissions();
+                return resultado;
+            }
+        }
+
+        public PermissionListEntity GetConfigurationPermissions(int IdApp) {
+            using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
+            {
+                PermissionListEntity entity = new PermissionListEntity();
+
+                entity.Block = AppNegocio.GetCatalog((int)Enumerador.CatalogType.Apple);
+                entity.Role = AppNegocio.GetProfiles(null,IdApp = IdApp);
+
+                //var resultado = AppNegocio.GetConfigurationPermissions(IdApp);
+                return entity;
+            }
+        }
+
+        public JsonResult SaveConfigPermission(string model)
+        {
+            try
+            {
+                PermissionsConfigJson entity = JsonConvert.DeserializeObject<PermissionsConfigJson>(model);
+                PermissionsConfigRequest request = new PermissionsConfigRequest();
+
+                foreach (var item in entity.Block)
+                {
+                    UsuarioManzana block = new UsuarioManzana()
+                    {
+                        IdManzana = item,
+                        IdUsuario = entity.IdUsuario,
+                        IdAplicacion = entity.IdAplicacion
+                    };
+                    request.Block.Add(block);
+                }
+                foreach (var item in entity.Roles)
+                {
+                    UsuarioPerfil role = new UsuarioPerfil() { 
+                    IdUsuario = entity.IdUsuario,
+                    IdPerfil = item,
+                    IdAplicacion = entity.IdAplicacion
+                    };
+                    request.Roles.Add(role);
+                }
+                using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
+                {
+                    AppNegocio.SaveConfigPermissionsByUser(request);
+                }
+
+                return Json(new { success = true, message = "Se han guardado los datos con éxito." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPermissionsByApp( int IdApp)
+        {
+            try
+            {
+              var list =  GetConfigurationPermissions(IdApp);
+
+              return PartialView("_PermissionsList", list);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPermissionsListByUser(int IdUser, int IdApp)
+        {
+            try
+            {
+                PermissionListEntity response = GetConfigurationPermissions(IdApp);
+                using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
+                {
+                    response.UserProfile = AppNegocio.GetRolesByUserAndAplication(IdUser, IdApp);
+                    response.UserBlock = AppNegocio.GetBlockByUserAndAplication(IdUser, IdApp);
+                }
+
+                return PartialView(PartialViewEnum.PermissionsList, response);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

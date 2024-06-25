@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SAyCC.Bussiness.Common;
 using SAyCC.Bussiness.Login;
 using SAyCC.Bussiness.SystemAdmin;
@@ -14,39 +15,35 @@ using SAyCC.SystemAdmin.Utilities;
 
 namespace SystemAdmin.Controllers
 {
+    [SessionValidator]
     public class ApplicationController : Controller
     {
-        //public IActionResult Index(int? id)
+        private readonly IGenerals _generals;
+        public ApplicationController(IGenerals generals)
+        {
+            _generals = generals;
+        }
+
         public IActionResult Index(int? id)
         {
             try
             {
-                if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
+                #region Varibles de configuración para armar el Menú
+                if (id != new int?())
                 {
-                    #region Configura Menú
-                    if(id != new int?())
-                    HttpContext.Session.SetInt32(Sessions.IdModule,(int)id);
-
-                    ViewBag.IdUser = HttpContext.Session.GetInt32(Sessions.IdUser);
-                    string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
-                    ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
-                    var mods = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), (int)HttpContext.Session.GetInt32(Sessions.IdApp));
-                    ViewBag.Modules = mods;
-                    int IDMod =(int) HttpContext.Session.GetInt32(Sessions.IdModule);
-                    ViewBag.Alta = mods.FirstOrDefault(x => x.Id == IDMod).Alta;
-                    ViewBag.Modificacion = mods.FirstOrDefault(x => x.Id == IDMod).Modificacion;
-                    ViewBag.NombreUsuario = HttpContext.Session.GetString(Sessions.UserName);
-                    #endregion
-
-                    ViewBag.MessageError = HttpContext.Session.GetString(Sessions.MessageError);
-                    ViewBag.Resultado = TempData["resultado"];
-                    ViewBag.Applications = GetApplications();
-                    return View();
+                    //Importante guardar la paginaActual cada que se navegue
+                    HttpContext.Session.SetInt32(Sessions.CurrentPage, (int)id);
+                    if (!_generals.AllPagesByAppList.Any(_ => _.Id == id)) {
+                        return View(PartialViewEnum.PageNotAccess);
+                    }
                 }
-                else
-                {
-                    return Redirect(DBSet.urlRedirect);
-                }
+                #endregion
+
+                ViewBag.MessageError = HttpContext.Session.GetString(Sessions.MessageError);
+                ViewBag.Resultado = TempData["resultado"];
+                ViewBag.Applications = GetApplications();
+                return View();
+
             }
             catch (Exception e)
             {
@@ -56,28 +53,11 @@ namespace SystemAdmin.Controllers
             }
         }
 
-        public void validateSession()
-        {
-            if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
-            {
-                int IdUser = (int)HttpContext.Session.GetInt32(Sessions.IdUser);
-                int IdApp = (int)HttpContext.Session.GetInt32(Sessions.IdApp);
-                int RolUser = (int)HttpContext.Session.GetInt32(Sessions.RolUser);
-                HttpContext.Session.SetInt32(Sessions.IdUser, (int)IdUser);
-                HttpContext.Session.SetInt32(Sessions.IdApp, (int)IdApp);
-                HttpContext.Session.SetInt32(Sessions.RolUser, (int)RolUser);
-            }
-            else
-            {
-                Redirect(DBSet.urlRedirect);
-            }
-        }
-
-        public List<ModuleEntity> GetModulesAllowed(int? IdPerfil, int? IdApp)
+        public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
         {
             using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
             {
-                var resultado = AppNegocio.GetModulesAllowed(IdPerfil, IdApp);
+                var resultado = AppNegocio.GetModulesAllowed(IdUsuario, IdApp);
                 return resultado;
             }
         }
@@ -93,15 +73,14 @@ namespace SystemAdmin.Controllers
 
         public JsonResult getDetailApplication(int IdApp)
         {
-            validateSession();
             using (LoginBusiness nego = new LoginBusiness())
             {
                 var resultado = nego.getApplications(IdApp).FirstOrDefault();
                 resultado.Modules = GetModulesAllowed(new int?(), IdApp);
                 resultado.Profiles = GetProfiles(IdApp);
 
-                if (resultado.Profiles.Count()>0)
-                resultado.permission = getPermission(resultado.Profiles.FirstOrDefault().Id, IdApp);
+                /*if (resultado.Profiles.Count()>0)
+                resultado.permission = getPermission(resultado.Profiles.FirstOrDefault().Id, IdApp);*/
                 return Json(new { data = resultado });
             }
         }
@@ -110,7 +89,6 @@ namespace SystemAdmin.Controllers
         {
             try
             {
-                validateSession();
                 using (ApplicationBusiness nego = new ApplicationBusiness())
                 {
                     if (Entidad.Id == 0)
@@ -119,8 +97,8 @@ namespace SystemAdmin.Controllers
                         Entidad.IdUsuarioModificacion = (int)HttpContext.Session.GetInt32(Sessions.IdUser);
 
                     nego.saveApplication(Entidad);
-                    if (Entidad.permission != null && Entidad.permission.Count>0)
-                    nego.savePermission(Entidad.permission);
+                    /*if (Entidad.permission != null && Entidad.permission.Count>0)
+                    nego.savePermission(Entidad.permission);*/
                 }
                 TempData["resultado"] = "SaveSuccess";
             }
@@ -136,7 +114,6 @@ namespace SystemAdmin.Controllers
         {
             try
             {
-                validateSession();
                 using (ApplicationBusiness nego = new ApplicationBusiness())
                 {
                     switch (TypeAction)

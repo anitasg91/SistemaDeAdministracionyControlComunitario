@@ -35,7 +35,8 @@ namespace WaterSystem.Controllers
                 if (id != new int?())
                     HttpContext.Session.SetInt32(Sessions.IdModule, (int)id);
                 ViewBag.IdUser = HttpContext.Session.GetInt32(Sessions.IdUser);
-                ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), (int)HttpContext.Session.GetInt32(Sessions.IdApp));
+                //ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), (int)HttpContext.Session.GetInt32(Sessions.IdApp));
+                ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.IdUser), (int)HttpContext.Session.GetInt32(Sessions.IdApp));
                 string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
                 ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
                 ViewBag.Alta = ViewBag.Modificacion = true;
@@ -103,11 +104,11 @@ namespace WaterSystem.Controllers
                 return false;
         }
 
-        public List<ModuleEntity> GetModulesAllowed(int? IdPerfil, int? IdApp)
+        public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
         {
             using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
             {
-                var resultado = AppNegocio.GetModulesAllowed(IdPerfil, IdApp);
+                var resultado = AppNegocio.GetModulesAllowed(IdUsuario, IdApp);
                 return resultado;
             }
         }

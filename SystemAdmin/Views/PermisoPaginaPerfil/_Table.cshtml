@@ -1,0 +1,78 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model List<SAyCC.Entities.SystemAdmin.ProfileEntity>
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    var hasAnyPerm = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar,
+            (int)PermisoEn.AsignarPermisos, (int)PermisoEn.Visualizar, (int)PermisoEn.Activar, (int)PermisoEn.Desactivar});
+    bool puedeEditar = (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.AsignarPermisos, (int)PermisoEn.Editar }));
+    var iconoEdit = puedeEditar ? "tasks" : "eye";
+    var titleEdit = puedeEditar ? "Editar/Asignar" : "Ver";
+    var colorEdit = puedeEditar ? "success" : "info";
+
+}
+
+<div class="row">
+    <div class="col-12 datagrid">
+        <table id="table_id">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Estatus</th>
+                    <th scope="col">Usuario creación</th>
+                    <th scope="col">Fecha de alta</th>
+                    <th scope="col">Fecha de Modificacion</th>
+                    <th scope="col">Usuario Modificacion</th>
+                    @if (hasAnyPerm)
+                    {
+                      <th scope="col">
+                          <i class="fas fa-cog fa-1x"></i>
+                      </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    if (item.Id == (int)roles.Superadmin && !_sessions.IsSuperAdmin )
+                    {
+                        continue;
+                    }
+                    var icono = item.Activo ? "fa-check-circle" : "fa-ban";
+                    var iconoAjustes = item.Activo ? "fa-ban" : "fa-unlock";
+                    var colorIcono = item.Activo ? "text-success" : "text-danger";
+                    var titleBanUn = item.Activo ? "Desactivar" : "Activar";
+                    <tr>
+                        <td>@item.Detalle</td>
+                        <td class="text-center">
+                            <i class="fas @icono fa-lg @colorIcono"></i>
+                        </td>
+                        <td>@item.NombreUsuarioAlta</td>
+                        <td>@item.FechaAlta.ToString("dd/MM/yyyy")</td>
+                        <td>@(item.FechaModificacion != null ? Convert.ToDateTime(item.FechaModificacion).ToString("dd/MM/yyyy") : "")</td>
+                        <td>@item.NombreUsuarioMod</td>
+                        @if (hasAnyPerm)
+                        {                      
+                            <td class="text-center ajustes">
+                                @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.AsignarPermisos, (int)PermisoEn.Editar, (int)PermisoEn.Visualizar }))
+                                {
+                                    <i name="Asign" data-id="@item.Id" class="fas fa-@iconoEdit fa-lg text-@colorEdit pointer" title="@titleEdit"></i>
+                                }
+                                @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP })
+                               || (item.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.Desactivar  }))
+                               || (!item.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.Activar })))
+                                {
+                                    <i name="btnLock" data-id="@item.Id" data-estatus="@item.Activo" title="@titleBanUn"
+                                    class="fas @iconoAjustes fa-lg text-secondary pointer"></i>
+                                }
+                                @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Borrar }))
+                                {
+                                    <i name="btnDelete" data-id="@item.Id" class="fas fa-trash fa-lg text-danger pointer" title="Eliminar"></i>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -4,6 +4,7 @@ using SAyCC.Entities.WaterSystem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Policy;
 
 namespace SAyCC.Entities.Login
 {
@@ -38,16 +39,39 @@ namespace SAyCC.Entities.Login
         public bool Sexo { get; set; }
         public int Genero { get; set; }
         public int IdManzana { get; set; }
-        public int IdPerfil { get; set; }
+        //public int IdPerfil { get; set; }
         public string ImagenUpload { get; set; }
         [Required(ErrorMessage = "El campo es obligatorio")]
         public DateTime FechaNacimiento { get; set; }
         public string Perfil { get; set; }
         public string NombreCompleto { get { return Nombre + " " + APaterno + " " + AMaterno; } }
         public string Manzana { get; set; }
-        public string Estatus { get { return Activo ? "fas fa-check-circle" : "fas fa-ban"; } }
-        public string Action { get { return Activo ? "fas fa-ban" : "fas fa-unlock"; } }
-        public string Color { get { return Activo ? "Green" : "Red"; } }
+        public string Estatus
+        {
+            get
+            {
+                return IdEstatus == (int)EstatusUsuario.Activo ? "fas fa-check-circle" :
+                     IdEstatus == (int)EstatusUsuario.Inactivo ? "fas fa-ban" :
+                     IdEstatus == (int)EstatusUsuario.Eliminado ? "fa fa-times-circle" :
+                     IdEstatus == (int)EstatusUsuario.EnvíoEliminación || IdEstatus == (int)EstatusUsuario.EnvíoInactivación
+                    || IdEstatus == (int)EstatusUsuario.EnvíoActivación || IdEstatus == (int)EstatusUsuario.EnvíoRecuperación ?
+                    "fa fa-share" : "fa fa-clock";
+            }
+        }
+        public string Action { get { return IdEstatus == (int)EstatusUsuario.Activo ? "fas fa-ban" : "fas fa-unlock"; } }
+        //public string Color { get { return Activo ? "Green" : "Red"; } }
+        public string Color
+        {
+            get
+            {
+                return IdEstatus == (int)EstatusUsuario.Activo ? "text-success" :
+                    IdEstatus == (int)EstatusUsuario.Inactivo ? "text-secondary" :
+                     IdEstatus == (int)EstatusUsuario.Eliminado ? "text-danger" :
+                     IdEstatus == (int)EstatusUsuario.EnvíoEliminación || IdEstatus == (int)EstatusUsuario.EnvíoInactivación
+                    || IdEstatus == (int)EstatusUsuario.EnvíoActivación || IdEstatus == (int)EstatusUsuario.EnvíoRecuperación ?
+                    "text-info" : "text-warning";
+            }
+        }
         public List<WaterMeterEntity> Medidor { get; set; }
         public Boolean CreateUser { get; set; }
         public Boolean SendEmail { get; set; }
@@ -56,8 +80,15 @@ namespace SAyCC.Entities.Login
         public byte[] ImgFromBase64string { get { return string.IsNullOrEmpty(ImagenUpload) ? null : Convert.FromBase64String(ImagenUpload); } }
         public string ImgToBase64string { get { return string.IsNullOrEmpty(ImagenUpload) ? null : Convert.ToBase64String(ImgFromBase64string); } }
 
+        public int IdEstatus { get; set; }
+        public string NombreEstatus { get; set; }
+        public bool HasApprovalSubdelegate { get; set; } = false;
+        public bool HasApprovalJudge { get; set; } = false;
+        public bool HasApprovalTreasurer { get; set; } = false;
 
-
+        public string ApprovalSubdelegate { get { return HasApprovalSubdelegate ? "Aprobado por el subdelegado" : ""; } }
+        public string ApprovalJudge { get { return HasApprovalJudge ? "Aprobado por el juez" : ""; } }
+        public string ApprovalTreasurer { get { return HasApprovalTreasurer ? "Aprobado por el tesorero" : ""; } }
 
     }
 }

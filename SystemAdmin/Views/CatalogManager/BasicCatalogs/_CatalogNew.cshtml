@@ -1,0 +1,42 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@using static SAyCC.Entities.Common.Enumerador
+@model SAyCC.Entities.SystemAdmin.CatalogEntity
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+@{
+    var esManzana = Model.IdCatalogType == (int)CatalogType.Apple;
+    var EditarManzana = esManzana && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar_Manzana});
+    var EditarMes = !esManzana && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar_Mes });
+    var habilitarEditar = EditarManzana || EditarMes || (Model.Id == 0) ? "" : "disabled";
+    var classDetail = EditarManzana || EditarMes || (Model.Id == 0) ? "" : "inputDetail";
+
+}
+
+<div style="margin: 10% 0;" id="ModalCatalogo" class="modal fade bd-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lblTitle" class="modal-title"><i class="fas fa-clock fa-lg"></i> Nueva manzana</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="hfId" type="hidden" value="@Model.Id" />
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <label>Nombre:</label><br />
+                        <input id="txtNombre" class="form-control @classDetail" placeholder="Nombre" autocomplete="off" type="text" value="@Model.Descripcion" @habilitarEditar />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                @if ((Model.Id > 0 && (EditarManzana || EditarMes)) || (Model.Id == 0))
+                {
+                    <div id="btnSave" type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

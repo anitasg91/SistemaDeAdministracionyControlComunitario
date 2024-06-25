@@ -24,7 +24,8 @@ namespace SAyCC.Entities.Common
         {
             Apple = 1,
             Month = 2,
-            Profile = 3
+            Permission = 3,
+                Profile
         }
         /// <summary>
         ///   Disassociate = Desasocia el medidor del usuario, para poder reasignarlo a alguien más. 

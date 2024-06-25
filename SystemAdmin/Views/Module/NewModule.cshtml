@@ -1,35 +1,99 @@
-﻿@model SAyCC.Entities.SystemAdmin.ModuleEntity
+﻿@using SAyCC.SystemAdmin.Utilities
+@model SAyCC.Entities.SystemAdmin.ModuleEntity
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    var hasAnyPerm = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP,
+            (int)PermisoEn.Editar_Pagina, (int)PermisoEn.Crear_Pagina});
+}
+
 <input class="hfIdModule" type="hidden" value="0" />
 <div class="col-lg-4 col-md-4 col-md-4 col-sm-12 col-xs-12">
     <label>Nombre:</label><br />
+    @if (hasAnyPerm){
     <input asp-for="Titulo" class="form-control txtTituloM" placeholder="Nombre" autocomplete="off" />
     <span asp-validation-for="Titulo" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtTituloM inputDetail" disabled="disabled" />
+    }
 </div>
 <div class="col-lg-4 col-md-4 col-md-4 col-sm-12 col-xs-12">
     <label>Descripción:</label><br />
+    @if (hasAnyPerm){
     <input asp-for="Descripcion" class="form-control txtDescripcionM" placeholder="Descripción" autocomplete="off" />
     <span asp-validation-for="Descripcion" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtDescripcionM inputDetail" disabled="disabled" />
+    }
 </div>
 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
     <label>Icono:</label><br />
+    @if (hasAnyPerm){
     <input asp-for="i_class" class="form-control txtIconoM" placeholder="Icono" autocomplete="off" />
     <span asp-validation-for="i_class" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtIconoM inputDetail" disabled="disabled" />
+    }
 </div>
-<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-    <label>Controlador:</label><br />
-    <input asp-for="Controlador" class="form-control txtControladorM" placeholder="Controlador" autocomplete="off" />
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">    
+    <label>¿Es hijo?</label><br />
+    <input style="margin-left: 1px;" class="form-check-input checkbox HasChild" type="checkbox" id="HasChild" @(hasAnyPerm?"":"disabled") />
+    <label class="form-check-label" for="HasChild">Sí</label>
+</div>
+<div class="divFather col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 oculto">
+    <label>Asignar a:</label><br />
+     @if (hasAnyPerm){
+    <select asp-for="IDPadre" class="form-control ddlIDPadre">
+    </select>
     <span asp-validation-for="Controlador" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <select class="form-control ddlIDPadre inputDetail" disabled> </select>
+    }
 </div>
-<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+
+<div id="divtxtControladorM" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <label>Controlador:</label><br />
+    @if (hasAnyPerm)
+    {
+        <input asp-for="Controlador" class="form-control txtControladorM" placeholder="Controlador" autocomplete="off" />
+        @* <span asp-validation-for="Controlador" class="text-danger" style="font-size:small"></span> *@
+    }
+    else
+    {
+        <input type = "text" class="form-control txtControladorM inputDetail" disabled="disabled" />
+    }
+</div>
+<div id="divtxtAccionM" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
     <label>Acción:</label><br />
+    @if (hasAnyPerm)
+    {
     <input asp-for="Accion" class="form-control txtAccionM" placeholder="Acción" autocomplete="off" />
-    <span asp-validation-for="Accion" class="text-danger" style="font-size:small"></span>
+    @* <span asp-validation-for="Accion" class="text-danger" style="font-size:small"></span> *@
+    }
+    else
+    {
+        <input type="text" class="form-control txtAccionM inputDetail" disabled="disabled" />
+    }
 </div>
 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
     <label>Orden:</label>
     <br />
+    @if (hasAnyPerm)
+    {
     <input asp-for="Orden" class="form-control txtOrdenM" placeholder="0" autocomplete="off" maxlength="2" />
     <span asp-validation-for="Orden" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtAccionM inputDetail" disabled="disabled" />
+    }
 </div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

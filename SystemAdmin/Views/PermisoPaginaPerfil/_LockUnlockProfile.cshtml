@@ -1,0 +1,42 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model SAyCC.Entities.SystemAdmin.ProfileEntity
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    var Title = Model.Activo ? "Bloquear perfil" : "Desbloquear perfil";
+    var Icono = Model.Activo ? "lock" : "lock-open";
+    var Mensaje = Model.Activo ? Constantes.LockProfile : Constantes.UnLockProfile;
+
+    var HasUnlock = !Model.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Activar });
+    var Haslock = Model.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Desactivar });
+}
+
+<div style="margin: 10% 0;" id="ModalLockUnlockProfile" class="modal fade bd-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <input type="hidden" id="hfIdPerfilLock" value="@Model.Id" />
+    <input type="hidden" id="hfEstatusPerfil" value="@Model.Activo.ToString().ToLower()" />
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lblTitle" class="modal-title"><i class="fas fa-@Icono fa-lg"></i> @Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="hfId" type="hidden" value="@Model.Id" />
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <p>@Mensaje</p>
+                        <h5>¿Desea continuar?</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnLockNo" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                @if (HasUnlock || Haslock)
+                {
+                    <div id="btnLockYes" type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

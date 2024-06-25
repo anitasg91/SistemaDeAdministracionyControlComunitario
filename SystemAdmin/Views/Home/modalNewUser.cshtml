@@ -1,4 +1,11 @@
 ﻿@model SAyCC.Entities.Login.UserEntity
+@using SAyCC.SystemAdmin.Utilities
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+@{
+    var IsEdit = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar, (int)PermisoEn.Crear });
+    bool SeeTab = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Ver_Pestaña_Medidor});
+}
 
     <Form asp-controller="Home" asp-action="saveUser" method="post" enctype="multipart/form-data">
         <input id="hfIdUserEdit" asp-for="Id" class="form-control" type="hidden" value="0" />
@@ -15,21 +22,31 @@
                         <li class="nav-item">
                             <a id="aInfoGral" class="nav-link active" data-toggle="tab" href="#home">Información General</a>
                         </li>
+                      @if (SeeTab)
+                      {
                         <li class="nav-item">
                             <a id="aWaterMeter" class="nav-link" data-toggle="tab" href="#WaterMeter">Medidor</a>
                         </li>
+                      }
+                    <li class="nav-item" id="liHistorial">
+                        <a id="aHistorial" class="nav-link" data-toggle="tab" href="#Historial">Estatus de Movimiento</a>
+                    </li>
                     </ul>
 
                     <div class="tab-content">
                         <div class="tab-pane active container" id="home">
                             <div class="row">
                                 <partial name="~/Views/Home/GeneralDataUser.cshtml" model="Model" />
-
                             </div>
                         </div>
+                      @if (SeeTab)
+                      {
                         <div class="tab-pane container" id="WaterMeter">
                             <div class="row">
-                                <partial name="~/Views/Home/WaterMeter.cshtml" />
+                                @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Asignar_Medidor }))
+                                {
+                                    <partial name="~/Views/Home/WaterMeter.cshtml" />
+                                }
                             </div>
                             <div id="tableMedidor" class="datagrid" style="height:200px; overflow-y:scroll;">
                                 <table id="table_SecondId">
@@ -39,12 +56,24 @@
                                             <th scope="col">Número</th>
                                             <th scope="col">Lectura_Actual</th>
                                             <th scope="col">Lectura_Anterior</th>
-                                            <th scope="col"><i class='fas fa-cog fa-1x'></i></th>
+                                            @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Eliminar_Medidor }))
+                                            {
+                                              <th scope="col"><i class='fas fa-cog fa-1x'></i></th>
+                                            }
                                         </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                      }
+                        <div class="tab-pane container" id="Historial">
+                            <div class="row">
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <label>Estatus</label> <br />
+                                    <label>Enviado a:</label> <br />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -53,8 +82,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar, (int)PermisoEn.Crear,(int)PermisoEn.Asignar_Medidor })){
                     <button type="submit" class="btn btn-success" onclick="return configInfoNewUser();"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</button>
-
+                }
                 </div>
             </div>
         </div>

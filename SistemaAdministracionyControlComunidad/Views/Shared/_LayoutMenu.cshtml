@@ -17,6 +17,7 @@
     </environment>
     <script src="~/lib/jquery/dist/jquery.js"></script>
 
+    <link rel="stylesheet" href="~/css/SitePrincipal.css" />
     <link rel="stylesheet" href="~/css/LayoutPrincipal.css" />
     <link rel="stylesheet" href="~/css/CommonStyles.css" />
     <link href="~/lib/font-awesome-5-css/css/all.min.css" rel="stylesheet" />
@@ -43,11 +44,11 @@
                             <img class="rounded-circle" src="~/images/user.png" width="80" height="80">
                         }
                     </a>
-                    <h6 style="font-weight: bold;">@ViewBag.NombreUsuario</h6>
+                    <h6 style="font-weight: bolder;">@ViewBag.NombreUsuario</h6>
                     <br />
                 </center>
                 <div id="Menudynamic">
-                    <h6 style="text-align:center;vertical-align:middle; font-weight:bold;"> Mis Aplicaciones</h6>
+                    <h6 style="text-align:center;vertical-align:middle; font-weight:bolder;"> Mis Aplicaciones</h6>
                     <div class="dropdown-divider"></div>
                     <ul class="nav nav-tabs">
                         @{
@@ -58,11 +59,16 @@
                                                      string.Concat(item.Dominio, "/", item.Controlador, "/", item.Accion, "/", ViewBag.IdUser, "/", item.Id);
 
                                 <li>
-                                    <a class="nav-link" href="@hrefApp">
-                                        <i class="@item.Icono"></i> @item.Descripcion
+                                    <a style="font-weight: bold;" class="nav-link" href="@hrefApp">
+                                        <i class="@item.Icono iconoMenu"></i> @item.Descripcion
                                     </a>
                                 </li>
                             }
+                            <li>
+                                <a style="font-weight: bold;" class="nav-link" asp-controller="Notice" asp-action="index">
+                                    <i class="fas fa-comment-alt fa-lg iconoMenu"></i> Avisos
+                                </a>
+                            </li>
                         }
                         @*@Html.Partial("Menu")*@
 

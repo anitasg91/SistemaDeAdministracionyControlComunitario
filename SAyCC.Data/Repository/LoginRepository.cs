@@ -80,7 +80,7 @@ namespace SAyCC.Data.Repository
                     login.ImagenUpload = DatosReader["ImagenUpload"].ToString();
                     login.Perfil = DatosReader["Perfil"].ToString();
                     login.Activo = Convert.ToBoolean(DatosReader["Activo"].ToString());
-                    login.IdPerfil = int.Parse(DatosReader["IdPerfil"].ToString());
+                    //login.IdPerfil = int.Parse(DatosReader["IdPerfil"].ToString());
 
                     Lista.Add(login);
                 }
@@ -182,6 +182,9 @@ namespace SAyCC.Data.Repository
                     aviso.nombreUsuario = DatosReader["nombreUsuario"].ToString();
                     aviso.IdTipoAviso = Convert.ToInt32(DatosReader["IdTipoAviso"].ToString());
                     aviso.descripcionTipoAviso = DatosReader["descripcionTipoAviso"].ToString();
+                    aviso.IdPrioridad = Convert.ToInt32(DatosReader["IdPrioridad"].ToString());
+                    aviso.PrioridadDescripcion = DatosReader["PrioridadDescripcion"].ToString();
+                    aviso.PrioridadClase = DatosReader["PrioridadClase"].ToString();
                     ListaAviso.Add(aviso);
                 }
                 return ListaAviso;
@@ -247,7 +250,8 @@ namespace SAyCC.Data.Repository
                     new SqlParameter("IdUsuario",SqlDbType.Int){Value = ent.IdUsuario },
                     new SqlParameter("Titulo",SqlDbType.VarChar){Value = ent.Titulo },
                     new SqlParameter("Descripcion",SqlDbType.VarChar){Value = ent.Descripcion },
-                    new SqlParameter("FechaEvento",SqlDbType.DateTime){Value = ent.FechaEvento }
+                    new SqlParameter("FechaEvento",SqlDbType.DateTime){Value = ent.FechaEvento },
+                    new SqlParameter("IdPrioridad",SqlDbType.Int){Value = ent.IdPrioridad }
                     };
                 DatosReader = DataObj.EjecutaSP(LoginSP.SaveNotice, _Parametros);
                 return int.Parse(DatosReader.RecordsAffected.ToString());

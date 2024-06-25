@@ -27,7 +27,8 @@ namespace SAyCC.Login.Controllers
                 string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
                 ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
 
-                ViewBag.Users = GetUserList().Where(x => x.IdPerfil != (int)Enumerador.Perfil.Usuario && x.Activo).ToList();
+                //ViewBag.Users = GetUserList().Where(x => x.IdPerfil != (int)Enumerador.Perfil.Usuario && x.Activo).ToList();
+                ViewBag.Users = GetUserList().Where(x => x.Activo).ToList(); //Revisar no muestre usuarios, solo roles de alta gerencia
                 return View();
             }
             else

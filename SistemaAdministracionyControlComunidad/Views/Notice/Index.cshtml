@@ -1,4 +1,5 @@
-﻿@model SAyCC.Entities.Login.NoticeEntity
+﻿@using SAyCC.Login.Utilities
+@model SAyCC.Entities.Login.NoticeEntity
 
 @{
     ViewData["Title"] = "Aviso";
@@ -25,7 +26,7 @@
             </div>
         </div>
         <br />
-        <div class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:500px;">
+        <div class="col-xs-12 col-sm-12 col-xs-12 datagrid" style="overflow:scroll; height:500px;">
             <table id="table_id">
                 <thead>
                     <tr>
@@ -36,7 +37,7 @@
                         <th scope="col">Fecha Exp.</th>
                         <th scope="col">Fecha Evento</th>
                         <th scope="col">Origen</th>
-                        <th scope="col">
+                        <th class="dt-center" scope="col">
                             <i class="fas fa-cog fa-1x"></i>
                         </th>
                     </tr>
@@ -46,6 +47,9 @@
                         var Users = (List<SAyCC.Entities.Login.NoticeEntity>)ViewBag.tableNotice;
                         foreach (var item in Users)
                         {
+                            string strPrioridad = item.IdPrioridad == (int)Prioridad.Bajo ? "PrioridadBaja" :
+                            item.IdPrioridad == (int)Prioridad.Medio ? "PrioridadMedia" : "PrioridadAlta";
+
                             string FechaCreacion = item.FechaCreacion.ToString("dd/MM/yyyy");
                             string FechaEvento = item.FechaEvento.ToString("dd/MM/yyyy");
                             <tr>
@@ -55,8 +59,10 @@
                                 <td>@item.Descripcion</td>
                                 <td>@FechaCreacion</td>
                                 <td>@FechaEvento</td>
-                                <td class="dt-center ajustes"><i class="@item.iconoAplicacion fa-lg"></i></td>
+                                <td class="dt-center @strPrioridad ajustes"><i class="@item.iconoAplicacion"></i></td>
                                 <td class="dt-center ajustes">
+                                    <i style="color:dodgerblue; cursor:pointer;" class="fas fa-edit fa-md"></i>
+                                    <i  style="color:red; cursor:pointer;" class="fas fa-trash fa-md"></i>
                                 </td>
                             </tr>
                         }
@@ -73,4 +79,3 @@
     <partial name="_ValidationScriptsPartial" />
 
 }
-

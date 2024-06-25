@@ -1,5 +1,7 @@
-﻿@model SAyCC.Entities.SystemAdmin.PermissionEntity
-
+﻿@using SAyCC.SystemAdmin.Utilities
+@* @model SAyCC.Entities.SystemAdmin.PermissionEntity *@
+@model List<SAyCC.Entities.SystemAdmin.UserUtilityEntity>
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
 @{
     ViewData["Title"] = "Permisos";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -9,7 +11,7 @@
     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
         <label>Aplicación:</label>
         <br />
-        <select id="hfIdAppEdit" class="form-control" onchange="onDdlAplicacionChange();">
+        <select id="hfIdAppEdit" class="form-control filters">
             @{
                 var app = (List<SAyCC.Entities.Login.ApplicationEntity>)ViewBag.Applications;
                 foreach (var item in app)
@@ -19,22 +21,77 @@
             }
         </select>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-        <label>Perfil:</label>
-        <br />
-        <select asp-for="IdPerfil" id="ddlPerfil" class="form-control" onchange="onDllPerfilesChanged();">
-            @{
-                var prof = (List<SAyCC.Entities.SystemAdmin.ProfileEntity>)ViewBag.Profiles;
-                foreach (var item in prof)
-                {
-                    <option value="@item.Id">@item.Detalle</option>
-                }
-            }
-        </select>
-    </div>
 </div>
 <br />
-<div id="dvTablaPermissionMod" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:400px;">
+<div class="row">
+    <div class="col-3 datagrid">
+        <table id="table_id">
+            <thead>
+                <tr>
+                    <th scope="col">Usuarios</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr name="SelectUser" class="trFila" data-id="@item.Id">
+                        <td>
+                            <span>@item.Nombre</span>
+                            <i id="icon_@item.Id" class="fas fa-solid fa-play text-success iconUser oculto"></i>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-8">
+        @{
+            var ConfPermissions = (SAyCC.Entities.SystemAdmin.PermissionListEntity)ViewBag.ConfigurationsPermissions;
+        }
+        <div id="PermissionsList">
+            @Html.Partial("~/Views/Permission/_PermissionsList.cshtml", ConfPermissions)
+        </div>
+       @if(_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar })) {
+            <input id="btnSaveConfig" type="button" class="btn rounded-pill btnManagmentSave" value="Guardar Cambios" disabled />
+        }
+    </div>
+</div>
+
+@* <div  class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:400px;">
+    <table id="table_id">
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Asignar</th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                    <td>@item.Nombre</td>
+                    <td></td>
+                       
+                    </tr>
+                }
+        </tbody>
+    </table>
+</div> 
+
+<div class="row">
+    <div class="col-3">
+       
+        <ul class="rectangle-list">
+            @foreach (var item in Model)
+            {
+                <li><span>@item.Nombre</span></li>
+            }
+        </ul>
+    </div>
+</div>
+*@
+@* <div id="dvTablaPermissionMod" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:400px;">
     <table id="table_FourthId">
         <thead>
             <tr>
@@ -70,8 +127,15 @@
             }
         </tbody>
     </table>
-</div>
+</div> *@
+
 <script>
+    $(function () {
+        $('.collapse').collapse();
+        let IdPagina = "@_sessions.IdCurrentPage";
+        $("#liMenu_" + IdPagina).addClass('PaginaActiva');
+        EmptyConfiguration();
+    });
      var resul = "@ViewBag.Resultado";
         switch (resul) {
             case "SaveSuccess":
@@ -81,13 +145,6 @@
                 swal("ERROR", "@ViewBag.MessageError", "error");
                 break;
     }
-
-    function onDdlAplicacionChange() {
-        configureTabPermission();
-        onDllPerfilesChanged();
-       // $("#dvTablaPermissionMod").empty();
-    }
-
 </script>
 <script src="~/js/jsPermission.js"></script>
 <script src="~/js/Common.js"></script>

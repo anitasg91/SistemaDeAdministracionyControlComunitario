@@ -16,21 +16,44 @@ function createFila(theadTitle, EsEncabezado, IdTipoTable) {
             tdEnc += '<th scope="col">' + value + '</th>';
         }
         else {
-            var actions = '<td  class="dt-center ajustes"><i onclick="editComponent(' + IdTipoTable + "," + value.id + ');" style="color:dodgerblue; cursor:pointer;" class="fas fa-edit fa-lg"></i>' +
+            var actions = '<td class="dt-center ajustes"><i onclick="editComponent(' + IdTipoTable + "," + value.id + ');" style="color:dodgerblue; cursor:pointer;" class="fas fa-edit fa-lg"></i>' +
                 '<i onclick="blockUnblockComponent(' + IdTipoTable + ", " + value.id + ',' + (value.activo ? 1 : 0) + ');" style="color:gray; cursor:pointer;" class="' + value.action + ' fa-lg"></i>' +
                 '<i onclick="deleteComponent(' + IdTipoTable + ", " + value.id + ');" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i></td>';
             switch (IdTipoTable) {
-                case 1:
-                    tdEnc += '<tr><td>' + value.id + '</td><td>' + value.titulo + '</td><td>' + value.descripcion + '</td><td class=" dt-center" style="color:' + value.color + '"><i class="' + value.estatus + ' fa-lg"></i></td><td>' + value.orden + '</td>' + actions + '</tr>';
+                case 1: //Ya esta validado para la pestaña paginas del modulo aplicación
+                    let canEdit = ([1, 21].some(perm => _permissionCurrentPage.includes(perm)));
+                    let iconoEdit = canEdit ? "edit" : "eye";
+                    let titleEdit = canEdit ? "Editar" : "Ver";
+                    let opcionesPag = '<td  class="dt-center ajustes">'
+                        + (([1, 11, 21].some(perm => _permissionCurrentPage.includes(perm))) ? '<i onclick="editComponent(' + IdTipoTable + "," + value.id + ');" class="fas fa-' + iconoEdit + ' fa-lg pointer text-info" title="' + titleEdit +'"></i>' : "")
+                        +( ((value.activo &&  [1, 23].some(perm => _permissionCurrentPage.includes(perm))) || (!value.activo && [1, 22].some(perm => _permissionCurrentPage.includes(perm)))) ?
+                        '<i onclick="blockUnblockComponent(' + IdTipoTable + ", " + value.id + ',' + (value.activo ? 1 : 0) + ');" class="' + value.action + ' fa-lg pointer text-secondary" title="' + (value.activo ?"Desactivar":"Activar")+'"></i>' : "")
+                        + (([1, 24].some(perm => _permissionCurrentPage.includes(perm))) ? '<i onclick="deleteComponent(' + IdTipoTable + ", " + value.id + ');" class="fas fa-trash fa-lg pointer text-danger" title="Eliminar"></i>':"")
+                        + '</td>';
+
+                    tdEnc += '<tr><td>' + value.id + '</td><td>' + value.titulo + '</td><td>' + value.descripcion + '</td><td class=" dt-center" style="color:' + value.color + '"><i class="' + value.estatus + ' fa-lg"></i></td class="ajustes"><td>' + value.orden + '</td>'
+                        + (PermisosParaTabPaginas.some(perm => _permissionCurrentPage.includes(perm)) ? opcionesPag : "")
+                        + '</tr>';
                     break;
-                case 2:
-                    tdEnc += '<tr><td>' + value.id + '</td><td>' + value.detalle + '</td><td class=" dt-center" style="color:' + value.color + '"><i class="' + value.estatus + ' fa-lg"></i></td>' + actions + '</tr>';
+                case 2://Ya esta validado para la pestaña perfiles del modulo aplicación
+                    let canEditP = ([1, 30].some(perm => _permissionCurrentPage.includes(perm)));
+                    let iconoEditP = canEditP ? "edit" : "eye";
+                    let titleEditP = canEditP ? "Editar" : "Ver";
+                    let opcionesPerf = '<td  class="dt-center ajustes">'
+                        + (([1, 11, 30].some(perm => _permissionCurrentPage.includes(perm))) ? '<i onclick="editComponent(' + IdTipoTable + "," + value.id + ');" class="fas fa-' + iconoEditP + ' fa-lg pointer text-info" title="' + titleEditP + '"></i>' : "")
+                        + (((value.activo && [1, 32].some(perm => _permissionCurrentPage.includes(perm))) || (!value.activo && [1, 31].some(perm => _permissionCurrentPage.includes(perm)))) ?
+                        '<i onclick="blockUnblockComponent(' + IdTipoTable + ", " + value.id + ',' + (value.activo ? 1 : 0) + ');" class="' + value.action + ' fa-lg pointer text-secondary" title="' + (value.activo ? "Desactivar" : "Activar") + '"></i>' : "")
+                        + (([1, 33].some(perm => _permissionCurrentPage.includes(perm))) ? '<i onclick="deleteComponent(' + IdTipoTable + ", " + value.id + ');" class="fas fa-trash fa-lg pointer text-danger" title="Eliminar"></i>' : "")
+                        + '</td>';
+
+                    tdEnc += '<tr><td>' + value.id + '</td><td>' + value.detalle + '</td><td class=" dt-center" style="color:' + value.color + '"><i class="' + value.estatus + ' fa-lg"></i></td>'
+                        + (PermisosParaTabPerfiles.some(perm => _permissionCurrentPage.includes(perm)) ? opcionesPerf : "")
+                        + '</tr>';
                     break;
                 case 3:
                     tdEnc += '<tr><td class="ajustes"><input type="hidden" name="permission[' + cont + '].Id" value="' + value.id + '"/>' + value.id + '</td>'
                         + '<td><input type="hidden" name="permission[' + cont + '].IdModulo" value="' + value.idModulo + '"/> ' + value.modulo + '</td>'
                         + '<td><input type="hidden" name="permission[' + cont + '].IdPerfil" value="' + value.idPerfil + '"/> ' + value.perfil + '</td>'
-                        //+ '<td><i class="' + value.aplicacion + ' fa-lg"></i></td>'
                         + '<td>' + value.descripcion + '</i></td>'
                         + '<td class="dt-center"><div class="row">'
                         + '<div class="col-4"><input type = "checkbox" class="dt-center" name="permission[' + cont + '].strAlta" ' + value.chkAlta + '> Alta </div>'
@@ -58,16 +81,17 @@ function createFila(theadTitle, EsEncabezado, IdTipoTable) {
                         + '<i onclick="saveAsignacionAplicacion(' + value.id + ');" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i></td>';
                     tdEnc += '<tr><td class="ajustes">' + value.id + '</td><td>' + value.nombreApp + '</td><td class="ajustes dt-center" style="color:' + value.color + '"><i class="' + value.estatus + ' fa-lg"></i></td>' + actionsAppAllow + '</tr>';
                     break;
-                case 6:
+                case 6: //Ya esta validado para la pestaña medidor del modulo usuario
                     if (value.id != "Ningún dato disponible en esta tabla" && value.id != "No data available in table") {
                         var actionsOp = '<td class="dt-center ajustes">'
-                            + '<i onclick="deleteRow(' + value.numero + ');"style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i>'
+                            + (([1, 5].some(perm => _permissionCurrentPage.includes(perm))) ? '<i onclick="deleteRow(' + value.numero + ');" class="fas fa-trash fa-lg pointer text-danger"></i>' : "")
                             + '</td>';
                         tdEnc += '<tr><td class="dt-center ajustes"><input style="width:100%;" class="readOnly" readonly name="Medidor[' + cont + '].Id" value="' + value.id + '"/></td>'
                             + '<td class="dt-center"><input class="readOnly" readonly name="Medidor[' + cont + '].Numero" value="' + value.numero + '"/></td>'
                             + '<td class="dt-center"><input class="readOnly" readonly name="Medidor[' + cont + '].LecturaActual" value="' + value.lecturaActual + '"/></td>'
                             + '<td class="dt-center"><input class="readOnly" readonly name="Medidor[' + cont + '].LecturaAnterior" value="' + value.lecturaAnterior + '"/></td >'
-                            + actionsOp + '</tr>';
+                            + ([1, 5].some(perm => _permissionCurrentPage.includes(perm)) ? actionsOp : "")
+                            + '</tr>';
                         cont++;
                     }
                     break;
@@ -91,6 +115,15 @@ function createFila(theadTitle, EsEncabezado, IdTipoTable) {
                             + (value.fechaBaja == null ? actionsOp : '<td class="dt-center" style="color:red;"> MEDIDOR DADO DE BAJA </td>') + '</tr>';
                         cont++;
                     }
+                    break;
+                case 8:
+                    tdEnc += '<tr><td>' + value.id + '</td><td>' + value.nombre + '</td><td>' + value.descripcion + '</td><td class=" dt-center" style="color:' + value.color + '"><i class="' + value.estatus + ' fa-lg"></i></td>' + actions + '</tr>';
+                    break;
+                case 9: //Ya esta validado para la pestaña permisos de módulo
+                    tdEnc += '<tr><td>' + value.id + '</td><td>' + value.nombre + '</td><td>' + value.descripcion + '</td>'
+                        + ([1, 27].some(perm => _permissionCurrentPage.includes(perm)) ?
+                            '<td class="dt-center ajustes"><i name="btnDeleteP" class="fas fa-trash fa-lg pointer text-danger" data-idpp="' + value.idPermisoPagina + '"></i></td>':"")
+                    + '</tr>';
                     break;
                 default:
             }
@@ -124,9 +157,9 @@ function editComponent(TypeCatalogo, Id) {
     $(".swal-overlay").remove();
     switch (TypeCatalogo) {
         case 1: //Para Modulo
+            var IdApp = $("#hfIdAppEdit").val();
             $("#lblTitle").html("<i class='fas fa-edit fa-lg'></i> Editar Modulo");
             $(".hfIdModule").val(Id);
-            var IdApp = $("#hfIdAppEdit").val();
             getDetailModule(Id, IdApp);
             $('#dvMdlEditModule').modal();
             $("body .modal-backdrop:nth-child(3n)").addClass("primerModal");
@@ -212,6 +245,9 @@ function createDropDownList(Lista, ddlName, typeId) {
             case 2:
                 option += '<option value="' + entidad.id + '">' + entidad.descripcion + '</option>';
                 break;
+            case 3:
+                option += '<option value="' + entidad.id + '">' + entidad.titulo + '</option>';
+                break;
             default:
         }
     });
@@ -263,15 +299,18 @@ function ddlCatalogoOnChange() {
             $("#dvAplicacion").addClass("hide");
             getCat();
             break;
-        case 3://Si es perfil
+        /*case 3://Si es perfil
             $("#dvAplicacion").removeClass("hide");
             getProf();
-            break;
+            break;*/
         case 4://Si es Medidor
             $("#dvAplicacion").addClass("hide");
             createDll("#dllIdManzana", "/Catalog/GetCatalogJson");
             getWaterMeterList();
             break;
+        case 5: //Si son permisos
+            $("#dvAplicacion").addClass("hide");
+            GetPermissionCatalogJson();
         default:
             $("#dvAplicacion").addClass("hide");
             break;
@@ -302,7 +341,7 @@ function getCat() {
     });
 }
 
-function getProf() {
+/*function getProf() {
     var idApp = $("#ddlIDAplicacion").val();
     $("#hfIdAppEdit").val(idApp);
     $("#hfIDApp").val(idApp);
@@ -327,7 +366,7 @@ function getProf() {
             alert('Error!!' + xhr + ", " + textStatus + ", " + errorThrown);
         }
     });
-}
+}*/
 function createDll(dllName, url) {
     var Params = {
         IDCatalog: 1
@@ -401,3 +440,4 @@ function txtOnkeyup(Params, url, contentName) {
         }
     });
 }
+

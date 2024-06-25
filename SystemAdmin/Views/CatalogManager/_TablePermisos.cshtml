@@ -1,0 +1,59 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model List<SAyCC.Entities.SystemAdmin.PermissionCatalogEntity>
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    var hasAnyPerm = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP,
+            (int)PermisoEn.Editar_Permiso, (int)PermisoEn.Activar_Permiso, (int)PermisoEn.Desactivar_Permiso,(int)PermisoEn.Visualizar });
+    var permiteEditar = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar_Permiso });
+    var icono = permiteEditar ? "edit" : "eye";
+    var title = permiteEditar ? "Editar" : "Ver";
+}
+
+<div class="row">
+    <div class="col-12 datagrid">
+        <table id="table_id">
+            <thead>
+                <tr>
+                    <th class="dt-center" scope="col">No</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Estatus</th>
+                    @if (hasAnyPerm)
+                    {
+                        <th class="dt-center" scope="col"><i class="fas fa-cog fa-1x"></i></th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="dt-center ajustes">@item.Id</td>
+                            <td>@item.Nombre</td>
+                            <td>@item.Descripcion</td>
+                            <td class="dt-center ajustes"><i class="@item.Estatus @item.Color fa-lg"></i></td>
+                            @if (hasAnyPerm){
+                            <td class="dt-center ajustes">
+                              @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar_Permiso, (int)PermisoEn.Visualizar }))
+                              {
+                                <i name="btnEdit" class="fas fa-@icono fa-lg text-info pointer" data-id="@item.Id" title="@title"></i>
+                              }
+                              @if (
+                               (item.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Desactivar_Permiso }))
+                               || (!item.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Activar_Permiso }))
+                               ){
+                                 <i name="btnLock" class="@item.Action fa-lg text-secondary pointer" data-id="@item.Id" data-active="@item.Activo"></i>
+                               }
+                              @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Eliminar_Permiso }) ){
+                                <i name="btnDelete" class="fas fa-trash fa-lg text-danger pointer" data-id="@item.Id" title="Eliminar"></i>
+                              }
+                            </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

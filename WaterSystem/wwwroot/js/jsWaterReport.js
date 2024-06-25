@@ -1,14 +1,21 @@
 ﻿$(function () {
     $('#btnDownloadFilePDF').click(function () {
-        var options = {
-            pagesplit: true
+        var contenidoDiv = document.getElementById('dvReport');
+        var opciones = {
+            margin: 0.2,
+            filename: 'ReciboAguaPotable.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 10 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
-        var pdf = new jsPDF('p', 'pt', 'a2');
-        pdf.addHTML($("#dvReport"), 5, 5, options, function () {
-            pdf.save('informe.pdf');
-        });
 
+        html2pdf()
+            .from(contenidoDiv)
+            .set(opciones)
+            .save();
     });
+
+
 });
 
 function showMdlViewReport(id) {

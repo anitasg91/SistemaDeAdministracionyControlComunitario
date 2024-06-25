@@ -47,21 +47,7 @@ namespace SistemaAdministracionyControlComunidad.Controllers
             }
             return View();
         }
-
-        //public IActionResult ApplicationAllowed()
-        //{
-        //    if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
-        //    {
-        //        int IdUser =(int)HttpContext.Session.GetInt32(Sessions.IdUser);
-        //        ViewBag.App = GetApplicationsAllowed(IdUser);
-        //        ViewBag.Usr = IdUser;
-        //        return View();
-        //    }
-        //    else
-        //    {
-        //        return Redirect("https://localhost:44336/");
-        //    }
-        //}
+        
         public List<ApplicationEntity> GetApplicationsAllowed(int IdUser)
         {
             using (LoginBusiness AppNegocio = new LoginBusiness())
@@ -92,11 +78,13 @@ namespace SistemaAdministracionyControlComunidad.Controllers
                 string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
                 ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
 
-                return View();
+                List<NoticeEntity> NoticeList = GetNotice();
+
+                return View(NoticeList);
             }
             else
             {
-                return Redirect("https://localhost:44336/");
+                return Redirect(Constantes.RutaLogin);
             }
         }
 
@@ -116,12 +104,7 @@ namespace SistemaAdministracionyControlComunidad.Controllers
             {
                 UsrNegocio.CierraSession(Id);
             }*/
-            HttpContext.Session.Remove(Sessions.IdUser);
-            HttpContext.Session.Remove(Sessions.IdApp);
-            HttpContext.Session.Remove(Sessions.RolUser);
-            HttpContext.Session.Remove(Sessions.UserName);
-            HttpContext.Session.Remove(Sessions.urlAplicacionRedirect);
-            HttpContext.Session.Remove(Sessions.ImagenUpload);
+            HttpContext.Session.Clear();
             return Redirect(DBSet.urlRedirect);
         }
 
@@ -233,5 +216,19 @@ namespace SistemaAdministracionyControlComunidad.Controllers
             return RedirectToAction("Index");
         }
         #endregion
+
+        #region HTTGET
+
+        public List<NoticeEntity> GetNotice()
+        {
+            using (LoginBusiness AppNegocio = new LoginBusiness())
+            {
+                var resultado = AppNegocio.getNoticeByIdUser(null);
+                return resultado;
+            }
+        }
+        #endregion
+
+
     }
 }

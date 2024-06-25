@@ -27,6 +27,11 @@ namespace SAyCC.Entities.SystemAdmin
 
         public List<AsignacionAplicacionEntity> AsignacionAplicacion { get; set; }
         public List<AsignacionAplicacionEntity> AppSinAcceso { get; set; }
-
+        //public PermissionCatalogEntity PermissionCatalog { get; set; } = new PermissionCatalogEntity();
+    }
+    public class ProfileSesionEntity
+    {
+        public int Id { get; set; }
+        public string Detalle { get; set; }
     }
 }

@@ -1,0 +1,61 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@using static SAyCC.Entities.Common.Enumerador
+@model List<SAyCC.Entities.SystemAdmin.CatalogEntity>
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    var hasAnyPermManz = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Visualizar,
+            (int)PermisoEn.Administrar_Manzana, (int)PermisoEn.Editar_Manzana, (int)PermisoEn.Eliminar_Manzana});
+    var hasAnyPermMes = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Visualizar,
+            (int)PermisoEn.Administrar_Mes, (int)PermisoEn.Editar_Mes, (int)PermisoEn.Eliminar_Mes});
+    var esManzana = Model.Any() && Model.FirstOrDefault().IdCatalogType == (int)CatalogType.Apple;
+
+    var EditarManzana = esManzana && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar_Manzana });
+    var EditarMes = !esManzana && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar_Mes });
+    var Visualizar = _sessions.HasAccessTo(new[] { (int)PermisoEn.Visualizar });
+
+    var iconoEditar = EditarManzana || EditarMes ? "edit" : "eye";
+    var titleEditar = EditarManzana || EditarMes ? "Editar" : "Ver";
+
+    var EliminarManzana = esManzana && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Eliminar_Manzana });
+    var EliminarMes = !esManzana && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Eliminar_Mes });
+}
+
+<div class="row">
+    <div class="col-12 datagrid">
+        <table id="table_id">
+            <thead>
+                <tr>
+                    <th class="dt-center" scope="col">No</th>
+                    <th scope="col">Descripción</th>
+                    @if ( (esManzana && hasAnyPermManz) || (!esManzana && hasAnyPermMes) ){
+                        <th class="dt-center" scope="col"><i class="fas fa-cog fa-1x"></i></th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var item in Model)
+                    {
+                        
+                        <tr>
+                            <td class="dt-center ajustes">@item.Id</td>
+                            <td>@item.Descripcion</td>
+                            @if ((esManzana && hasAnyPermManz) || (!esManzana && hasAnyPermMes))
+                            {
+                              <td class="dt-center ajustes">
+                                @if (EditarManzana || EditarMes || Visualizar) {
+                                  <i name="btnEdit" data-id="@item.Id" class="fas fa-@iconoEditar fa-lg text-info pointer" title="@titleEditar"></i>
+                                }
+                                @if (EliminarManzana || EliminarMes){
+                                  <i name="btnDelete" data-id="@item.Id" class="fas fa-trash fa-lg text-danger pointer"></i>
+                                }
+                              </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

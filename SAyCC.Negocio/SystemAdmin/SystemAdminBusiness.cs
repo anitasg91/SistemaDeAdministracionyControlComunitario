@@ -58,6 +58,24 @@ namespace SAyCC.Bussiness.SystemAdmin
                 return usuario;
             }
         }
+
+        public void ChangeStatusUser(int IdUsuario, int Estatus, string Motivo, int IdUsuarioModificacion)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                objDBD.ChangeStatusUser(DBSet.DBcnn, IdUsuario, Estatus, Motivo, IdUsuarioModificacion);
+                objDBD.Dispose();
+            }
+        }
+        public void ChangeStatusUserBySuperAdmin(int IdUsuario, int Estatus, string Motivo, int IdUsuarioModificacion)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                objDBD.ChangeStatusUserBySuperAdmin(DBSet.DBcnn, IdUsuario, Estatus, Motivo, IdUsuarioModificacion);
+                objDBD.Dispose();
+            }
+        }
+
         #endregion
 
         #region Aplicación
@@ -88,23 +106,25 @@ namespace SAyCC.Bussiness.SystemAdmin
         #endregion
 
         #region Modulos
-        public List<ModuleEntity> GetModulesAllowed(int? IdPerfil = new int?(), int? IdApp = new int?())
+        public List<ModuleEntity> GetModulesAllowed(int? IdUsuario = new int?(), int? IdApp = new int?())
         {
             using (AministrationRepository objDBD = new AministrationRepository())
             {
-                var Result = objDBD.GetModulesAllowed(DBSet.DBcnn, IdPerfil, IdApp);
+                var Result = objDBD.GetModulesAllowed(DBSet.DBcnn, IdUsuario, IdApp);
                 objDBD.Dispose();
                 return Result;
             }
         }
-        public void saveModules(int id, int IdApp, string Titulo, string Descripcion, string Icono, string Controlador, string Accion, int Orden, int? IdUsuarioAlta, int? IdUsuarioModificacion)
+
+        public void saveModules(int id, int IdApp, string Titulo, string Descripcion, string Icono, string Controlador, string Accion, int Orden, int? IdUsuarioAlta, int? IdUsuarioModificacion, int? IdPadre)
         {
             using (AministrationRepository objDBD = new AministrationRepository())
             {
-                objDBD.saveModules(DBSet.DBcnn, id, IdApp, Titulo, Descripcion, Icono, Controlador, Accion, Orden, IdUsuarioAlta, IdUsuarioModificacion);
+                objDBD.saveModules(DBSet.DBcnn, id, IdApp, Titulo, Descripcion, Icono, Controlador, Accion, Orden, IdUsuarioAlta, IdUsuarioModificacion, IdPadre);
                 objDBD.Dispose();
             }
         }
+        
         public void changeStatusModule(int Id, bool Status, int IdUsuarioModificacion)
         {
             using (AministrationRepository objDBD = new AministrationRepository())
@@ -113,6 +133,7 @@ namespace SAyCC.Bussiness.SystemAdmin
                 objDBD.Dispose();
             }
         }
+        
         public void DeleteModule(int Id)
         {
             using (AministrationRepository objDBD = new AministrationRepository())
@@ -121,10 +142,31 @@ namespace SAyCC.Bussiness.SystemAdmin
                 objDBD.Dispose();
             }
         }
+
+        public List<ModuleEntity> GetPagesFathers(int IdApp)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetPagesFathers(DBSet.DBcnn, IdApp);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+
         #endregion
 
         #region Perfiles
-        public List<ProfileEntity> GetProfiles(int? IdPerfil = new int?(), int? IdApp = new int?())
+        public List<ProfileSesionEntity> GetRolesByUserAndAplication(int IdUsuario, int IdApp)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetRolesByUserAndAplication(DBSet.DBcnn, IdUsuario, IdApp);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+        
+        public List<ProfileEntity> GetProfiles(int? IdPerfil = new int?(), int? IdApp = new int?())/*Borrar*/
         {
             using (AministrationRepository objDBD = new AministrationRepository())
             {
@@ -133,6 +175,7 @@ namespace SAyCC.Bussiness.SystemAdmin
                 return Result;
             }
         }
+        
         public void saveProfiles(int id, int IdApp, string Descripcion, int? IdUsuarioAlta, int? IdUsuarioModificacion)
         {
             using (AministrationRepository objDBD = new AministrationRepository())
@@ -141,6 +184,7 @@ namespace SAyCC.Bussiness.SystemAdmin
                 objDBD.Dispose();
             }
         }
+        
         public void changeStatusProfile(int Id, bool Status, int IdUsuarioModificacion)
         {
             using (AministrationRepository objDBD = new AministrationRepository())
@@ -149,6 +193,7 @@ namespace SAyCC.Bussiness.SystemAdmin
                 objDBD.Dispose();
             }
         }
+        
         public void DeleteProfile(int Id)
         {
             using (AministrationRepository objDBD = new AministrationRepository())
@@ -157,6 +202,7 @@ namespace SAyCC.Bussiness.SystemAdmin
                 objDBD.Dispose();
             }
         }
+        
         public List<ProfileEntity> GetProfilesByAppActives(int IdApp)
         {
             using (AministrationRepository objDBD = new AministrationRepository())
@@ -183,6 +229,112 @@ namespace SAyCC.Bussiness.SystemAdmin
             using (AministrationRepository objDBD = new AministrationRepository())
             {
                 objDBD.savePermission(DBSet.DBcnn, entidad);
+                objDBD.Dispose();
+            }
+        }
+
+        public void SaveConfigPermissionsByUser(PermissionsConfigRequest request)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                objDBD.SaveConfigPermissionsByUser(DBSet.DBcnn, request);
+                objDBD.Dispose();
+            }
+        }
+
+        public void SaveDetailProfileAndPermissionList(PermisoPaginaPerfilRequest request)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                objDBD.SaveDetailProfileAndPermissionList(DBSet.DBcnn, request);
+                objDBD.Dispose();
+            }
+        }
+
+        public List<PermissionPageCurrentEntity> GetPermissionPageByUserApp(int IdUsuario, int IdApp)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetPermissionPageByUserApp(DBSet.DBcnn, IdUsuario, IdApp);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+
+        public List<PermissionCatalogEntity> GetPermissionCatalog(int? IdPermiso = new int?())
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetPermissionCatalog(DBSet.DBcnn, IdPermiso);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+
+        public List<PermissionCatalogEntity> GetPermissionCatalogByNotExistInPage(int IdPagina)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetPermissionCatalogByNotExistInPage(DBSet.DBcnn, IdPagina);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+
+        public List<PermissionCatalogEntity> GetPermissionCatalogByPage(int IdPagina)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetPermissionCatalogByPage(DBSet.DBcnn, IdPagina);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+
+        public void SavePermissionPage(int IdPermiso, int IdPagina)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                objDBD.SavePermissionPage(DBSet.DBcnn, IdPermiso, IdPagina);
+                objDBD.Dispose();
+            }
+        }
+        public void DeletePermissionPagina(int IdPermisoPagina)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                objDBD.DeletePermissionPagina(DBSet.DBcnn, IdPermisoPagina);
+                objDBD.Dispose();
+            }
+        }
+
+        
+        public List<CatalogEntity> GetBlockAsignedToUser(int IdUsuario, int IdApp)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetBlockAsignedToUser(DBSet.DBcnn, IdUsuario, IdApp);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+        #endregion
+        #region Administrador de Catálogos
+        public List<CatalogEntity> GetCatalogManager(int? IdAplicacion = new int?())
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetCatalogManager(DBSet.DBcnn, IdAplicacion);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+
+        public void LockPermission(int IdLock, bool Activar)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                objDBD.LockPermission(DBSet.DBcnn, IdLock, Activar);
                 objDBD.Dispose();
             }
         }
@@ -214,6 +366,24 @@ namespace SAyCC.Bussiness.SystemAdmin
                 objDBD.Dispose();
             }
         }
+        public List<CatalogEntity> GetBlockByUserAndAplication(int IdUser, int IdAplication)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetBlockByUserAndAplication(DBSet.DBcnn, IdUser, IdAplication);
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+
+        public void SavePermissionCatalog(PermissionCatalogEntity entity)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                objDBD.SavePermissionCatalog(DBSet.DBcnn, entity);
+                objDBD.Dispose();
+            }
+        }
         #endregion
 
         #region Asignación
@@ -232,6 +402,16 @@ namespace SAyCC.Bussiness.SystemAdmin
             {
                 objDBD.saveAsignacionAplicacion(DBSet.DBcnn, Id, IdProfile, IdApp);
                 objDBD.Dispose();
+            }
+        }
+
+        public List<PermisosByPagina> GetPermissionPageAndAsign(int IdPerfil, int? IdApp = new int?(), int? IdPagina = new int?())
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetPermissionPageAndAsign(DBSet.DBcnn, IdPerfil, IdApp, IdPagina);
+                objDBD.Dispose();
+                return Result;
             }
         }
         #endregion
@@ -269,5 +449,17 @@ namespace SAyCC.Bussiness.SystemAdmin
                 return Result;
             }
         }
+
+        public List<UserUtilityEntity> GetUsersListForPermissions()
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                var Result = objDBD.GetUsersListForPermissions(DBSet.DBcnn);
+
+                objDBD.Dispose();
+                return Result;
+            }
+        }
+        
     }
 }

@@ -15,7 +15,7 @@
     <div>
         <br />
         <br />
-        <div class="datagrid" style="height:500px; overflow-y:scroll;">
+        <div class="datagrid" style="max-height:450px; overflow-y:scroll;">
             <table id="table_id">
                 <thead>
                     <tr>
@@ -48,7 +48,7 @@
                                 <td>@item.Telefono</td>
                                 <td>@item.Email</td>
                                 <td>@fechaAlta</td>
-                                <td style="color:@item.Color" class="dt-center ajustes"><i class="@item.Estatus fa-lg"></i></td>
+                                <td class="dt-center ajustes @item.Color"><i class="@item.Estatus fa-lg"></i></td>
                                 <td class="dt-center ajustes">
                                     <i onclick="editUser(1,@item.Id);" style="color:dodgerblue; cursor:pointer;" class="fas fa-file-invoice fa-lg" title="Reporte"></i>
                                     @*@if (ViewBag.Alta || ViewBag.Modificacion)
@@ -71,7 +71,11 @@
         @*<partial name="~/Views/Home/modalNewUser.cshtml" model="Model" />*@
     </div>
 </body>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+<script type="text/javascript">
+    $(function () {
+        localStorage.removeItem('IdManzana');
+    });
+</script>

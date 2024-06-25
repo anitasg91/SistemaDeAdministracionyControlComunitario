@@ -1,0 +1,51 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model SAyCC.Entities.SystemAdmin.PermissionCatalogEntity
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    bool canCreate = Model.Id == 0 && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear_Permiso });
+    bool canEdit = Model.Id > 0 && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar_Permiso });
+    var enabled = canCreate || canEdit ? "" : "disabled";
+    var classDetail = canCreate || canEdit ? "" : "inputDetail";
+
+}
+<div style="margin: 10% 0;" id="ModalPermissions" class="modal fade bd-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lblTitle" class="modal-title"><i class="fas fa-clock fa-lg"></i> Nuevo Permiso</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="hfId" type="hidden" value="@Model.Id" />
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <label>Nombre:</label><br />
+                        <input id="txtNombre" class="form-control @classDetail" placeholder="Nombre" autocomplete="off" type="text" value="@Model.Nombre" @enabled />
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <label>Descripción:</label><br />
+                        @* <input id="txtDescripcion" class="form-control" placeholder="Descripción" autocomplete="off" type="text" value="@Model.Descripcion" /> *@
+                        <textarea id="txtDescripcion" class="form-control @classDetail" placeholder="Descripción" autocomplete="off" type="text" @enabled>@Model.Descripcion </textarea>
+                    </div>
+                    <div id="dvEstatus" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 oculto">
+                        <label class="displayBlock">Estatus</label>
+                        <input id="chkEstatus" style="margin-left: 1px;" class="form-check-input checkbox" type="checkbox" @Model.Checked @enabled/>
+                        <label class="form-check-label" for="chkEstatus">Activo</label>
+                    </div>
+                    <div id="dvFecha" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 oculto">
+                        <label>Fecha creación:</label><br />
+                        <span class="form-control inputDetail"> @Model.strFechaCreacion</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
+                @if (canCreate || canEdit){
+                <div id="btnSave" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</div>
+                }
+                </div>
+        </div>
+    </div>
+</div>

@@ -1,14 +1,21 @@
-﻿@model SAyCC.Entities.Login.ApplicationEntity
+﻿@using SAyCC.SystemAdmin.Utilities;
+@model SAyCC.Entities.Login.ApplicationEntity;
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions;
 
 @{
     ViewData["Title"] = "Aplicación";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var hasAnyPerm = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar, (int)PermisoEn.Activar, (int)PermisoEn.Desactivar,(int)PermisoEn.Visualizar });
+    bool isEditable = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar });
+    string strIcono = isEditable ? "edit" : "eye";
+    string strTitle = isEditable ? "Editar" : "Ver";
 }
+
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <div>
     <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            @if (ViewBag.Alta)
+            @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear }))
             {
                 <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="newApplication();">
                     <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
@@ -17,7 +24,7 @@
         </div>
     </div>
     <br />
-    <div class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:500px;">
+    <div class="col-xs-12 col-sm-12 col-xs-12 datagrid">
         <table id="table_id">
             <thead>
                 <tr>
@@ -28,9 +35,12 @@
                     <th scope="col">Usuario Alta</th>
                     <th scope="col">Fecha Mod</th>
                     <th scope="col">Usuario Mod</th>
-                    <th class="dt-center" scope="col">
-                        <i class="fas fa-cog fa-1x"></i>
-                    </th>
+                    @if (hasAnyPerm)
+                    {
+                        <th class="dt-center" scope="col">
+                            <i class="fas fa-cog fa-1x"></i>
+                        </th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -49,17 +59,29 @@
                             <td>@item.NombreUsuarioAlta</td>
                             <td class="dt-center">@fechaMod</td>
                             <td>@item.NombreUsuarioMod</td>
-                            <td class="dt-center ajustes">
-                                <i onclick="editApplication(@item.Id);" style="color:dodgerblue; cursor:pointer;" class="fas fa-edit fa-lg"></i>
-                                @if (ViewBag.Alta || ViewBag.Modificacion)
-                                {
-                                    <i onclick="execAction(1,@item.Id,@(item.Activo? 1: 0));" style="color:gray; cursor:pointer;" class="@item.Action fa-lg"></i>
-                                }
-                                @if (ViewBag.Alta)
-                                {
-                                    <i onclick="execAction(2,@item.Id);" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i>
-                                }
-                            </td>
+                            @if (hasAnyPerm)
+                            {
+                                <td class="dt-center ajustes">
+                                    @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar, (int)PermisoEn.Visualizar }))
+                                    {
+                                        <i onclick="editApplication(@item.Id);" class="fas fa-@strIcono fa-lg pointer text-info" title="@strTitle"></i>
+                                    }
+                                    
+
+                                    @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP })
+                                        || (item.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.Activar }))
+                                        || (!item.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.Desactivar })))
+                                    {
+                                        <i onclick="execAction(1,@item.Id,@(item.Activo?1:0));" class="@item.Action fa-lg pointer text-secondary" title="@(item.Activo?"Desactivar":"Activar")"></i>
+                                    }
+
+                                    @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Borrar }))
+                                    {
+                                        <i onclick="execAction(2,@item.Id);" class="fas fa-trash fa-lg pointer text-danger" title="Eliminar"></i>
+                                    }
+                                </td>
+                            }
+                            
                         </tr>
                     }
                 }
@@ -106,27 +128,28 @@
                         <li class="nav-item">
                             <a id="aInfoGral" class="nav-link active" data-toggle="tab" href="#GeneralInfo">Información General</a>
                         </li>
-                        <li class="nav-item">
-                            <a id="aModules" class="nav-link" data-toggle="tab" href="#Modules">Módulos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a id="aProfiles" class="nav-link" data-toggle="tab" href="#Profiles">Perfiles</a>
-                        </li>
-                        <li class="nav-item">
-                            <a id="aPermission" class="nav-link" data-toggle="tab" href="#Permission">Permisos</a>
-                        </li>
+                        @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Ver_Pestaña_Paginas})){
+                            <li class="nav-item">
+                                <a id="aModules" class="nav-link" data-toggle="tab" href="#Modules">Páginas</a>
+                            </li>
+                        }
+                        @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Ver_Pestaña_Perfiles}))
+                        {
+                            <li class="nav-item">
+                                <a id="aProfiles" class="nav-link" data-toggle="tab" href="#Profiles">Perfiles</a>
+                            </li>
+                        }
+                        
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane active container" id="GeneralInfo">
                             <div class="row typemodal">
-                                @if (ViewBag.Alta || ViewBag.Modificacion)
+                               @*  @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear, (int)PermisoEn.Editar }))
                                 {
                                     <partial name="NewApplication" />
-                                }
-                                else
-                                {
-                                    <partial name="ConsutaApp" />
-                                }
+                                } *@
+                                <partial name="NewApplication" />
+
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
                                     <label>Estatus:</label>
                                     <br />
@@ -154,67 +177,58 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane container" id="Modules">
-                            <div>
-                                <div class="row">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                        @if (ViewBag.Alta)
-                                        {
-                                        <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="NewModule();">
-                                            <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                        @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Ver_Pestaña_Paginas}))
+                        {
+                            <div class="tab-pane container" id="Modules">
+                                <div>
+                                    <div class="row">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear_Pagina }))
+                                            {
+                                                <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="NewModule();">
+                                                    <i class="fas fa-plus fa-1x" style="color:white"></i> Nuevo
+                                                </div>
+                                            }
                                         </div>
+                                    </div>
+                                    <br />
+                                    <div id="dvTabla" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:300px;">
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Ver_Pestaña_Perfiles}))
+                        {
+                            <div class="tab-pane container" id="Profiles">
+                                <div>
+                                    <div style="margin-top: 1%;" class="row">
+                                        @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear_Perfil }))
+                                        {
+                                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                <label>Nombre:</label>
+                                                <br />
+                                                <input class="form-control" id="txtNombreProfile" placeholder="Nombre" />
+                                                <input id="hfIdProfile" type="hidden" class="form-control" value="0" />
+                                            </div>
+                                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-xs-12">
+                                                <div id="dvBtnNewProf" style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="NewProfile();">
+                                                    <i class="fas fa-plus-circle fa-1x" style="color:white"></i> Agregar
+                                                </div>
+                                            </div>
                                         }
                                     </div>
-                                </div>
-                                <br />
-                                <div id="dvTabla" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:300px;">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane container" id="Profiles">
-                            <div>
-                                <div style="margin-top: 1%;" class="row">
-                                    @if (ViewBag.Alta)
-                                    {
-                                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                        <label>Nombre:</label>
-                                        <br />
-                                        <input class="form-control" id="txtNombreProfile" placeholder="Nombre" />
-                                        <input id="hfIdProfile" type="hidden" class="form-control" value="0" />
-                                    </div>
-                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-xs-12">
-                                        <div id="dvBtnNewProf" style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="NewProfile();">
-                                            <i class="fas fa-plus-circle fa-1x" style="color:white"></i> Agregar
-                                        </div>
-                                    </div>
-                                    }
-                                </div>
-                                <br />
-                                <div id="dvTablaProfileMod" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:300px;">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane container" id="Permission">
-                            <div>
-                                <div style="margin-top: 1%;" class="row">
-                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                                        <label>Perfil:</label>
-                                        <br />
-                                        <select id="ddlPerfil" class="form-control" onchange="onDllPerfilesChanged();">
-                                        </select>
+                                    <br />
+                                    <div id="dvTablaProfileMod" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:300px;">
                                     </div>
                                 </div>
-                                <br />
-                                <div id="dvTablaPermissionMod" class="col-xs-12 col-sm-12 col-xs-12 datagrid " style="overflow:scroll; height:300px;">
-                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> Cancelar</button>
-                    @if (ViewBag.Alta || ViewBag.Modificacion)
+                    @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear, (int)PermisoEn.Editar }))
                     {
                         <button type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Guardar</button>
                     }
@@ -295,6 +309,14 @@
     <partial name="_ValidationScriptsPartial" />
 }
 <script>
+    const PermisosParaTabPaginas = [1, 11, 20, 21, 22, 23, 24];//Permisos necesarios para mostrar ajustes de las paginas
+    const PermisosParaTabPerfiles = [1, 11, 29, 30, 31, 32, 33];//Permisos necesarios para mostrar ajustes de los perfiles
+    const _permissionCurrentPage = JSON.parse('@Json.Serialize(_sessions.PermissionPageCurrent.Select(x => x.Id))');
+    $(function () {
+        let IdPagina = "@_sessions.IdCurrentPage";
+        $("#liMenu_" + IdPagina).addClass('PaginaActiva');
+    });
+
     $(".primerModal").removeClass("primerModal");
     var resul = "@ViewBag.Resultado";
         switch (resul) {

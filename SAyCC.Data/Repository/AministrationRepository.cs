@@ -1,4 +1,6 @@
-﻿using SAyCC.Data.StoredProcedures;
+﻿using Newtonsoft.Json;
+using SAyCC.Data.StoredProcedures;
+using SAyCC.Entities;
 using SAyCC.Entities.Login;
 using SAyCC.Entities.SystemAdmin;
 using SAyCC.Entities.WaterSystem;
@@ -6,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
+using static SAyCC.Entities.Common.Enumerador;
 
 namespace SAyCC.Data.Repository
 {
@@ -108,13 +112,20 @@ namespace SAyCC.Data.Repository
             user.IdUsuarioMod = string.IsNullOrEmpty(DatosReader["IdUsuarioMod"].ToString()) ? new int?() : Convert.ToInt32(DatosReader["IdUsuarioMod"].ToString());
             user.Sexo = Convert.ToBoolean(DatosReader["Sexo"].ToString());
             user.IdManzana = Convert.ToInt32(DatosReader["IdManzana"].ToString());
-            user.IdPerfil = Convert.ToInt32(DatosReader["IdPerfil"].ToString());
+            //user.IdPerfil = Convert.ToInt32(DatosReader["IdPerfil"].ToString());
             user.ImagenUpload = DatosReader["ImagenUpload"].ToString();
             user.FechaNacimiento = Convert.ToDateTime(DatosReader["FechaNacimiento"].ToString());
             user.Perfil = DatosReader["Perfil"].ToString();
             user.Manzana = DatosReader["Manzana"].ToString();
             user.Identificador = DatosReader["Identificador"].ToString();
             user.Usuario = DatosReader["Usuario"].ToString();
+            user.IdEstatus = Convert.ToInt32(DatosReader["IdEstatus"].ToString());
+            user.NombreEstatus = DatosReader["NombreEstatus"].ToString();
+            user.HasApprovalSubdelegate = Convert.ToBoolean(DatosReader["HasApprovalSubdelegate"].ToString());
+            user.HasApprovalJudge = Convert.ToBoolean(DatosReader["HasApprovalJudge"].ToString());
+            user.HasApprovalTreasurer = Convert.ToBoolean(DatosReader["HasApprovalTreasurer"].ToString());
+
+
             return user;
         }
         public string saveUser(string DBCnn, UserEntity entidad, ref int Id)
@@ -129,7 +140,7 @@ namespace SAyCC.Data.Repository
                     {
                         new SqlParameter("Id",SqlDbType.Int){Value = entidad.Id },
                         new SqlParameter("IdManzana",SqlDbType.Int){Value = entidad.IdManzana },
-                        new SqlParameter("IdPerfil",SqlDbType.Int){Value = entidad.IdPerfil },
+                        //new SqlParameter("IdPerfil",SqlDbType.Int){Value = entidad.IdPerfil },
                         new SqlParameter("IdUsuarioAlta",SqlDbType.Int){Value = entidad.IdUsuarioAlta },
                         new SqlParameter("IdUsuarioMod",SqlDbType.Int){Value = entidad.IdUsuarioMod },
                         new SqlParameter("Nombre",SqlDbType.VarChar){Value = entidad.Nombre },
@@ -157,6 +168,53 @@ namespace SAyCC.Data.Repository
             }
             return user;
         }
+
+        public void ChangeStatusUser(string DBCnn, int IdUsuario, int Estatus, string Motivo, int IdUsuarioModificacion)
+        {
+            try
+            {
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]
+                    {
+                        new SqlParameter(ParameterName.IdUsuario,SqlDbType.Int){Value = IdUsuario },
+                        new SqlParameter(ParameterName.Estatus,SqlDbType.Int){Value = Estatus },
+                        new SqlParameter(ParameterName.Motivo,SqlDbType.VarChar){Value = Motivo },
+                        new SqlParameter(ParameterName.IdUsuarioModificacion,SqlDbType.VarChar){Value = IdUsuarioModificacion },
+                    };
+                    DataObj.EjecutaSP(AministrationAppSP.ChangeStatusUser, _Parametros);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+
+        public void ChangeStatusUserBySuperAdmin(string DBCnn, int IdUsuario, int Estatus, string Motivo, int IdUsuarioModificacion)
+        {
+            try
+            {
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]
+                    {
+                        new SqlParameter(ParameterName.IdUsuario,SqlDbType.Int){Value = IdUsuario },
+                        new SqlParameter(ParameterName.Estatus,SqlDbType.Int){Value = Estatus },
+                        new SqlParameter(ParameterName.Motivo,SqlDbType.VarChar){Value = Motivo },
+                        new SqlParameter(ParameterName.IdUsuarioModificacion,SqlDbType.VarChar){Value = IdUsuarioModificacion },
+                    };
+                    DataObj.EjecutaSP(AministrationAppSP.ChangeStatusUserBySuperAdmin, _Parametros);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+
         #endregion
 
         #region Aplicación
@@ -264,15 +322,17 @@ namespace SAyCC.Data.Repository
         #endregion
 
         #region Modulos
-        public List<ModuleEntity> GetModulesAllowed(string DBCnn, int? IdPerfil, int? IdApp)
+        public List<ModuleEntity> GetModulesAllowed(string DBCnn, int? IdUsuario, int? IdApp)
         {
             SqlDataReader DatosReader;
             using (ContextoDB DataObj = new ContextoDB(DBCnn))
             {
                 SqlParameter[] _Parametros = new SqlParameter[]
                 {
+                        /*new SqlParameter("IdApp",SqlDbType.Int){Value = IdApp },
+                        new SqlParameter("IdPerfil",SqlDbType.Int){Value = IdPerfil },*/
+                        new SqlParameter("IdUsuario",SqlDbType.Int){Value = IdUsuario },
                         new SqlParameter("IdApp",SqlDbType.Int){Value = IdApp },
-                        new SqlParameter("IdPerfil",SqlDbType.Int){Value = IdPerfil },
                 };
                 DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetModules, _Parametros);
                 List<ModuleEntity> ListaAplicacion = new List<ModuleEntity>();
@@ -295,15 +355,20 @@ namespace SAyCC.Data.Repository
                     Mod.Aplicacion = DatosReader["Aplicacion"].ToString();
                     Mod.NombreUsuarioAlta = DatosReader["NombreUsuarioAlta"].ToString();
                     Mod.NombreUsuarioMod = DatosReader["NombreUsuarioMod"].ToString();
-                    Mod.Alta = Convert.ToBoolean(DatosReader["Alta"].ToString());
+                    Mod.IDPadre = string.IsNullOrEmpty(DatosReader["IdPadre"].ToString()) ? new int?() : Convert.ToInt32(DatosReader["IdPadre"].ToString());
+                    
+                    Mod.Alta = true;
+                    Mod.Modificacion = true;
+                    Mod.Consulta = true;
+                    /*Mod.Alta = Convert.ToBoolean(DatosReader["Alta"].ToString());
                     Mod.Modificacion = Convert.ToBoolean(DatosReader["Modificacion"].ToString());
-                    Mod.Consulta = Convert.ToBoolean(DatosReader["Consulta"].ToString());
+                    Mod.Consulta = Convert.ToBoolean(DatosReader["Consulta"].ToString());*/
                     ListaAplicacion.Add(Mod);
                 }
                 return ListaAplicacion;
             }
         }
-        public void saveModules(string DBCnn, int id, int IdApp, string Titulo, string Descripcion, string Icono, string Controlador, string Accion, int Orden, int? IdUsuarioAlta, int? IdUsuarioModificacion)
+        public void saveModules(string DBCnn, int id, int IdApp, string Titulo, string Descripcion, string Icono, string Controlador, string Accion, int Orden, int? IdUsuarioAlta, int? IdUsuarioModificacion, int? IdPadre)
         {
             try
             {
@@ -321,6 +386,7 @@ namespace SAyCC.Data.Repository
                         new SqlParameter("Orden",SqlDbType.Int){Value = Orden },
                         new SqlParameter("IdUsuarioAlta",SqlDbType.Int){Value = IdUsuarioAlta },
                         new SqlParameter("IdUsuarioModificacion",SqlDbType.Int){Value = IdUsuarioModificacion },
+                        new SqlParameter("IdPadre",SqlDbType.Int){Value = IdPadre },
                     };
                     DataObj.EjecutaSP(AministrationAppSP.SaveModule, _Parametros);
                 }
@@ -374,10 +440,54 @@ namespace SAyCC.Data.Repository
                 throw ex;
             }
         }
+        public List<ModuleEntity> GetPagesFathers(string DBCnn, int IdApp)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                        new SqlParameter("IdApp",SqlDbType.Int){Value = IdApp },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetPagesFathers, _Parametros);
+                List<ModuleEntity> ListaAplicacion = new List<ModuleEntity>();
+                while (DatosReader.Read())
+                {
+                    ModuleEntity Mod = new ModuleEntity();
+                    Mod.Id = Convert.ToInt32(DatosReader["Id"].ToString());
+                    Mod.Titulo = DatosReader["Titulo"].ToString();
+                    ListaAplicacion.Add(Mod);
+                }
+                return ListaAplicacion;
+            }
+        }
+
         #endregion
 
         #region Perfiles
-        public List<ProfileEntity> GetProfiles(string DBCnn, int? IdPerfil, int? IdApp)
+        public List<ProfileSesionEntity> GetRolesByUserAndAplication(string DBCnn, int IdUsuario, int IdApp)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                    new SqlParameter(ParameterName.IdUsuario,SqlDbType.Int){Value = IdUsuario },
+                    new SqlParameter(ParameterName.IdApp,SqlDbType.Int){Value = IdApp },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetRolesByUserAndAplication, _Parametros);
+                List<ProfileSesionEntity> list = new List<ProfileSesionEntity>();
+                while (DatosReader.Read())
+                {
+                    ProfileSesionEntity ent = new ProfileSesionEntity();
+                    ent.Id = Convert.ToInt32(DatosReader[DataReaderColumn.Id].ToString());
+                    ent.Detalle = DatosReader[DataReaderColumn.Detalle].ToString();
+                    list.Add(ent);
+                }
+                return list;
+            }
+        }
+        public List<ProfileEntity> GetProfiles(string DBCnn, int? IdPerfil, int? IdApp) /*Borrar*/
         {
             SqlDataReader DatosReader;
             using (ContextoDB DataObj = new ContextoDB(DBCnn))
@@ -563,6 +673,321 @@ namespace SAyCC.Data.Repository
             }
 
         }
+
+        public List<UserUtilityEntity> GetUsersListForPermissions(string DBCnn)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetUsers);
+                List<UserUtilityEntity> Lista = new List<UserUtilityEntity>();
+                while (DatosReader.Read())
+                {
+                    UserUtilityEntity user = new UserUtilityEntity();
+                    user.Id = Convert.ToInt32(DatosReader["Id"].ToString());
+                    user.Nombre = string.Concat(
+                        DatosReader["Nombre"].ToString(), " ",
+                        DatosReader["APaterno"].ToString(), " ",
+                        DatosReader["AMaterno"].ToString());
+                    user.Activo = Convert.ToBoolean(DatosReader["Activo"].ToString());
+
+                    Lista.Add(user);
+                }
+                return Lista.OrderBy(_=>_.Nombre).Where(_=>_.Activo).ToList();
+            }
+        }
+
+        public void SaveConfigPermissionsByUser(string DBCnn, PermissionsConfigRequest request)
+        {
+            try
+            {
+                DataTable rolesTable = ConvertirListaATabla(request, Relacion.UsuarioPerfil);
+                DataTable blockTable = ConvertirListaATabla(request, Relacion.UsuarioManzana);
+
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]{
+                new SqlParameter("@RolesTable", SqlDbType.Structured) { Value = rolesTable, TypeName = "Administracion.TipoTablaPerfiles" },
+                new SqlParameter("@BlockTable", SqlDbType.Structured) { Value = blockTable, TypeName = "Administracion.TipoTablaManzana" }
+                };
+
+                    DataObj.EjecutaSP(AministrationAppSP.SavePermissionsBulk, _Parametros);
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw  e;
+            }
+
+        }
+        private DataTable ConvertirListaATabla(PermissionsConfigRequest request, Relacion opcion)
+        {
+            DataTable tabla = new DataTable();
+
+            switch (opcion)
+            {
+                case Relacion.UsuarioPerfil:
+                    tabla.Columns.Add("IdPerfil", typeof(int));
+                    tabla.Columns.Add("IdUsuario", typeof(int));
+                    tabla.Columns.Add("IdAplicacion", typeof(int));
+                    tabla.Columns.Add("FechaCreacion", typeof(DateTime));
+
+                    foreach (var item in request.Roles)
+                    {
+                        DataRow fila = tabla.NewRow();
+                        fila["IdPerfil"] = item.IdPerfil;
+                        fila["IdUsuario"] = item.IdUsuario;
+                        fila["IdAplicacion"] = item.IdAplicacion;
+                        fila["FechaCreacion"] = DateTime.Now;
+                        tabla.Rows.Add(fila);
+                    }
+                    break;
+                case Relacion.UsuarioManzana:
+                    tabla.Columns.Add("IdManzana", typeof(int));
+                    tabla.Columns.Add("IdUsuario", typeof(int));
+                    tabla.Columns.Add("IdAplicacion", typeof(int));
+                    tabla.Columns.Add("FechaCreacion", typeof(DateTime));
+                    foreach (var item in request.Block)
+                    {
+                        DataRow fila = tabla.NewRow();
+                        fila["IdManzana"] = item.IdManzana;
+                        fila["IdUsuario"] = item.IdUsuario;
+                        fila["IdAplicacion"] = item.IdAplicacion;
+                        fila["FechaCreacion"] = DateTime.Now;
+                        tabla.Rows.Add(fila);
+                    }
+                    break;
+                case Relacion.PermisoPagina:
+                    tabla.Columns.Add("IdPagina", typeof(int));
+                    tabla.Columns.Add("IdPermiso", typeof(int));
+                    tabla.Columns.Add("FechaCreacion", typeof(DateTime));
+                    break;
+
+                default:
+                    break;
+            }
+
+            return tabla;
+        }
+
+        public List<PermissionPageCurrentEntity> GetPermissionPageByUserApp(string DBCnn, int IdUsuario, int IdApp)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                        new SqlParameter(ParameterName.IdUsuario,SqlDbType.Int){Value = IdUsuario },
+                        new SqlParameter(ParameterName.IdApp,SqlDbType.Int){Value = IdApp },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetPermissionsByUsuarioAndAplication, _Parametros);
+                List<PermissionPageCurrentEntity> ListaAplicacion = new List<PermissionPageCurrentEntity>();
+                while (DatosReader.Read())
+                {
+                    PermissionPageCurrentEntity Mod = new PermissionPageCurrentEntity();
+                    Mod.Id = Convert.ToInt32(DatosReader[DataReaderColumn.IdPermiso].ToString());
+                    Mod.Permiso = DatosReader[DataReaderColumn.Permiso].ToString(); 
+                    Mod.IdPagina = Convert.ToInt32(DatosReader[DataReaderColumn.IdPagina].ToString());
+                    ListaAplicacion.Add(Mod);
+                }
+                return ListaAplicacion;
+            }
+        }
+
+        public List<PermissionCatalogEntity> GetPermissionCatalog(string DBCnn, int? IdPermiso = new int?())
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                        new SqlParameter(ParameterName.IdPermiso,SqlDbType.Int){Value = IdPermiso },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetPermissionCatalog, _Parametros);
+                List<PermissionCatalogEntity> Lista = new List<PermissionCatalogEntity>();
+                while (DatosReader.Read())
+                {
+                    PermissionCatalogEntity ent = new PermissionCatalogEntity();
+                    ent.Id = Convert.ToInt32(DatosReader["Id"].ToString());
+                    ent.Nombre = DatosReader[DataReaderColumn.Nombre].ToString();
+                    ent.Descripcion = DatosReader[DataReaderColumn.Descripcion].ToString();
+                    ent.Activo = Convert.ToBoolean(DatosReader[DataReaderColumn.Activo].ToString());
+                    ent.FechaCreacion = Convert.ToDateTime(DatosReader[DataReaderColumn.FechaCreacion].ToString());
+                   
+                    Lista.Add(ent);
+                }
+                return Lista;
+            }
+        }
+
+        public List<PermissionCatalogEntity> GetPermissionCatalogByNotExistInPage(string DBCnn, int IdPagina)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                   new SqlParameter(ParameterName.IdPagina,SqlDbType.Int){Value = IdPagina },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetPermissionCatalogByNotExistInPage, _Parametros);
+                List<PermissionCatalogEntity> Lista = new List<PermissionCatalogEntity>();
+                while (DatosReader.Read())
+                {
+                    PermissionCatalogEntity ent = new PermissionCatalogEntity();
+                    ent.Id = Convert.ToInt32(DatosReader["Id"].ToString());
+                    ent.Nombre = DatosReader[DataReaderColumn.Nombre].ToString();
+                    ent.Descripcion = DatosReader[DataReaderColumn.Descripcion].ToString();
+                    ent.Activo = Convert.ToBoolean(DatosReader[DataReaderColumn.Activo].ToString());
+                    ent.FechaCreacion = Convert.ToDateTime(DatosReader[DataReaderColumn.FechaCreacion].ToString());
+
+                    Lista.Add(ent);
+                }
+                return Lista;
+            }
+        }
+
+        public List<PermissionCatalogEntity> GetPermissionCatalogByPage(string DBCnn, int IdPagina)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                   new SqlParameter(ParameterName.IdPagina,SqlDbType.Int){Value = IdPagina },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetPermissionCatalogByPage, _Parametros);
+                List<PermissionCatalogEntity> Lista = new List<PermissionCatalogEntity>();
+                while (DatosReader.Read())
+                {
+                    PermissionCatalogEntity ent = new PermissionCatalogEntity();
+                    ent.Id = Convert.ToInt32(DatosReader[DataReaderColumn.Id].ToString());
+                    ent.Nombre = DatosReader[DataReaderColumn.Nombre].ToString();
+                    ent.Descripcion = DatosReader[DataReaderColumn.Descripcion].ToString();
+                    ent.Activo = Convert.ToBoolean(DatosReader[DataReaderColumn.Activo].ToString());
+                    ent.FechaCreacion = Convert.ToDateTime(DatosReader[DataReaderColumn.FechaCreacion].ToString());
+                    ent.IdPermisoPagina = Convert.ToInt32(DatosReader[DataReaderColumn.IdPermisoPagina].ToString());
+                    Lista.Add(ent);
+                }
+                return Lista;
+            }
+        }
+
+        public void SavePermissionPage(string DBCnn, int IdPermiso, int IdPagina)
+        {
+            try
+            {
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]{
+                        new SqlParameter(ParameterName.IdPermiso,SqlDbType.Int){Value = IdPermiso },
+                        new SqlParameter(ParameterName.IdPagina,SqlDbType.Int){Value = IdPagina },
+                      };
+                    DataObj.EjecutaSP(AministrationAppSP.SavePermissionPage, _Parametros);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public void DeletePermissionPagina(string DBCnn, int IdPermisoPagina)
+        {
+            try
+            {
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]
+                    {
+                        new SqlParameter(ParameterName.IdPermisoPagina,SqlDbType.Int){Value = IdPermisoPagina },
+                    };
+                    DataObj.EjecutaSP(AministrationAppSP.DeletePermissionPage, _Parametros);
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<CatalogEntity> GetBlockAsignedToUser(string DBCnn, int IdUsuario, int IdApp)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                        new SqlParameter(ParameterName.IdUsuario,SqlDbType.Int){Value = IdUsuario },
+                        new SqlParameter(ParameterName.IdApp,SqlDbType.Int){Value = IdApp },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetBlockAsignedByApp, _Parametros);
+                List<CatalogEntity> ListaAplicacion = new List<CatalogEntity>();
+                while (DatosReader.Read())
+                {
+                    CatalogEntity Mod = new CatalogEntity();
+                    Mod.Id = Convert.ToInt32(DatosReader[DataReaderColumn.Id].ToString());
+                    Mod.Descripcion = DatosReader[DataReaderColumn.Descripcion].ToString();
+                    ListaAplicacion.Add(Mod);
+                }
+                return ListaAplicacion;
+            }
+        }
+
+        #endregion
+
+        #region Administrador de Catálogos
+        public List<Entities.SystemAdmin.CatalogEntity> GetCatalogManager(string DBCnn, int? IdAplicacion)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                        new SqlParameter(ParameterName.IdApp,SqlDbType.Int){Value = IdAplicacion },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetAdministradorCatalogo, _Parametros);
+                List<CatalogEntity> Lista = new List<CatalogEntity>();
+                while (DatosReader.Read())
+                {
+                    CatalogEntity ent = new CatalogEntity();
+                    ent.Id = Convert.ToInt32(DatosReader[DataReaderColumn.Id].ToString());
+                    ent.Descripcion = DatosReader[DataReaderColumn.Nombre].ToString();
+                    Lista.Add(ent);
+                }
+                return Lista;
+            }
+        }
+
+        public void LockPermission(string DBCnn, int IdLock, bool Activar)
+        {
+            try
+            {
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]
+                    {
+                        new SqlParameter(ParameterName.IdPermiso,SqlDbType.Int){Value = IdLock },
+                        new SqlParameter(ParameterName.Activo,SqlDbType.Bit){Value = Activar },
+                    };
+                    DataObj.EjecutaSP(AministrationAppSP.LockCatalog, _Parametros);
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
         #region Catalogos
@@ -583,6 +1008,8 @@ namespace SAyCC.Data.Repository
                     CatalogEntity ent = new CatalogEntity();
                     ent.Id = Convert.ToInt32(DatosReader["Id"].ToString());
                     ent.Descripcion = DatosReader["Descripcion"].ToString();
+                    ent.IdCatalogType = IDCatalog;
+
                     Lista.Add(ent);
                 }
                 return Lista;
@@ -630,6 +1057,53 @@ namespace SAyCC.Data.Repository
                         new SqlParameter("Descripcion",SqlDbType.VarChar){Value = Descripcion },
                     };
                     DataObj.EjecutaSP(AministrationAppSP.SaveCatalog, _Parametros);
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public List<Entities.SystemAdmin.CatalogEntity> GetBlockByUserAndAplication(string DBCnn, int IdUser, int IdAplication)
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                        new SqlParameter(ParameterName.IdUsuario,SqlDbType.Int){Value = IdUser },
+                        new SqlParameter(ParameterName.IdApp,SqlDbType.Int){Value = IdAplication },
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetBlockByUserAndAplication, _Parametros);
+                List<CatalogEntity> Lista = new List<CatalogEntity>();
+                while (DatosReader.Read())
+                {
+                    CatalogEntity ent = new CatalogEntity();
+                    ent.Id = Convert.ToInt32(DatosReader[DataReaderColumn.Id].ToString());
+                    ent.Descripcion = DatosReader[DataReaderColumn.Descripcion].ToString();
+                    Lista.Add(ent);
+                }
+                return Lista;
+            }
+        }
+        public void SavePermissionCatalog(string DBCnn, PermissionCatalogEntity entity)
+        {
+            try
+            {
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]
+                    {
+                        new SqlParameter("Id",SqlDbType.Int){Value = entity.Id },
+                        new SqlParameter("Nombre",SqlDbType.VarChar){Value = entity.Nombre },
+                        new SqlParameter("Descripcion",SqlDbType.VarChar){Value = entity.Descripcion },
+                        new SqlParameter("Activo",SqlDbType.VarChar){Value = entity.Activo }
+                    };
+                    DataObj.EjecutaSP(AministrationAppSP.SavePermissionCatalog, _Parametros);
                 }
             }
             catch (SqlException ex)
@@ -693,6 +1167,76 @@ namespace SAyCC.Data.Repository
                 throw ex;
             }
         }
+
+        public List<PermisosByPagina> GetPermissionPageAndAsign(string DBCnn, int? IdPerfil, int? IdApp, int? IdPagina = new int?())
+        {
+            SqlDataReader DatosReader;
+            using (ContextoDB DataObj = new ContextoDB(DBCnn))
+            {
+                SqlParameter[] _Parametros = new SqlParameter[]
+                {
+                        new SqlParameter("IdPerfil",SqlDbType.Int){Value = IdPerfil },
+                        new SqlParameter("IdApp",SqlDbType.Int){Value = IdApp },
+                        new SqlParameter("IdPagina",SqlDbType.Int){Value = IdPagina },
+                        
+                };
+                DatosReader = DataObj.EjecutaSP(AministrationAppSP.GetPagesAndPermissionAsign, _Parametros);
+                List<PermisosByPagina> list = new List<PermisosByPagina>();
+                while (DatosReader.Read())
+                {
+                    PermisosByPagina dto = new PermisosByPagina();
+                    dto.IdPagina = int.Parse(DatosReader["IdPagina"].ToString());
+                    dto.Pagina = DatosReader["Pagina"].ToString();
+                    dto.Orden = int.Parse(DatosReader["Orden"].ToString());
+                    var jsonPermisos = DatosReader["PermissionsList"].ToString();
+                    var PermisoPagina =  JsonConvert.DeserializeObject<List<PermisoPaginaEntity>>(jsonPermisos);
+                    dto.PermisosPaginas = PermisoPagina;
+                    list.Add(dto);
+                }
+                return list.OrderBy(x=>x.Orden).ToList();
+            }
+        }
+
+        public void SaveDetailProfileAndPermissionList(string DBCnn, PermisoPaginaPerfilRequest request)
+        {
+            try
+            {
+                DataTable tabla = new DataTable();
+
+                tabla.Columns.Add(ColumnDataTable.IdPermisoPagina, typeof(int));
+                tabla.Columns.Add(ColumnDataTable.IdPerfil, typeof(int));
+                tabla.Columns.Add(ColumnDataTable.IdUsuarioCreacion, typeof(int));
+
+                foreach (var item in request.PermisoPaginaPerfil)
+                {
+                    DataRow fila = tabla.NewRow();
+                    fila[ColumnDataTable.IdPermisoPagina] = item.IdPermisoPagina;
+                    fila[ColumnDataTable.IdPerfil] = item.IdPerfil;
+                    fila[ColumnDataTable.IdUsuarioCreacion] = request.IdUsuarioModificacion;
+                    tabla.Rows.Add(fila);
+                }
+
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]{
+                        new SqlParameter(ParameterName.IdPerfil,SqlDbType.Int){Value = request.IdPerfil },
+                        new SqlParameter(ParameterName.Nombre,SqlDbType.VarChar){Value = request.Nombre },
+                        new SqlParameter(ParameterName.Activo,SqlDbType.Bit){Value = request.Activo },
+                        new SqlParameter(ParameterName.IdUsuarioModificacion,SqlDbType.Int){Value = request.IdUsuarioModificacion },
+                        new SqlParameter(ParameterName.TblPermisoPaginaPerfil, SqlDbType.Structured) { Value = tabla, TypeName = TypeTable.PermisoPaginaPerfil},
+                };
+
+                    DataObj.EjecutaSP(AministrationAppSP.SavePermisoPaginaPerfilBulk, _Parametros);
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+
+        }
+
         #endregion
 
         public void SaveWaterMeter(string DBCnn, WaterMeterEntity entity)

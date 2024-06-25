@@ -1,0 +1,30 @@
+﻿@using SAyCC.SystemAdmin.Utilities
+@model SAyCC.Entities.SystemAdmin.UserUtilityEntity
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+<div style="margin: 10% 0;" id="ModalApproveMoveUser" class="modal fade bd-example-modal-md" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <input type="hidden" id="hfIdUserLock" value="@Model.Id" />
+    <input type="hidden" id="hfEstatusUser" value="@Model.IdEstatus" />
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lblTitle" class="modal-title"><i class="fas fa-@Model.IconoModal fa-lg"></i> @Model.TitleModal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <p>@Model.MensajeModal</p>
+                        <h5>¿Desea continuar?</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnApproveMoveNo" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                <div id="btnApproveMoveYes" type="submit" class="btn btn-success"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
+            </div>
+        </div>
+    </div>
+</div>

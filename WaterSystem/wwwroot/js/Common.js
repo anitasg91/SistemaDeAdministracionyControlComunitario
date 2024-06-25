@@ -88,6 +88,9 @@ function createFila(theadTitle, EsEncabezado, IdTipoTable) {
                 //    break;
                 case 7:
                     if (value.id != "Ningún dato disponible en esta tabla" && value.id != "No data available in table") {
+
+
+                       
                         var actionsOp = '<td style="with:9% !important;" class="dt-center">'
                           
                             + '<i title="' + value.titleAssocciate + '" onclick="configureActionsWaterMeter(' + value.id + ',\'' + value.assocciate + '\',\'' + value.titleAssocciate + '\',1); "style="color:' + value.colorAssocciate +'; cursor:pointer; margin-right: 10px;" class="fas ' + value.assocciate + ' fa-lg"></i>'
@@ -101,7 +104,7 @@ function createFila(theadTitle, EsEncabezado, IdTipoTable) {
                             + '<td class="dt-center">' + value.nombreTitular + '</td>'
                             + '<td class="dt-center">' + value.ubicacion + '</td>'
                             + '<td class="dt-center" style="color:' + value.color + '"><i class="' + value.estatus + ' fa-lg"></i></td>'
-                            + '<td class="dt-center">' + value.strFechaLectura + '</td>'
+                        + '<td class="' + value.strClassFechaLectura + '">' + value.strFechaLectura + '</td>'
                         + (value.fechaBaja == null ? actionsOp : '<td class="dt-center" style="color:red;"> MEDIDOR DADO DE BAJA </td>')
                             + '</tr>';
                         cont++;
@@ -271,6 +274,16 @@ function createFilaCatalog(theadTitle, EsEncabezado, IdTipoTable) {
                         + '<td>' + value.nombreTitular + '</td>'
                         + '<td class="dt-center"><input class="readOnly" readonly name="Medidor[' + cont + '].LecturaAnterior" value="' + parseFloat(value.lecturaActual) + '"/></td>'
                         + '<td><input class="form-control LecturaActual" name="Medidor[' + cont + '].LecturaActual" placeholder="Lectura Actual" autocomplete="off" maxlength="18" type="number" /></td></tr>';
+                    cont++;
+                    break;
+                case 4:
+
+                    tdEnc += '<tr><td class="dt-center ajustes"><input class="readOnly" readonly name="Medidor[' + cont + '].Id" value="' + value.id + '"/></td>'
+                        + '<td> Manzana ' + value.idManzana + '</td>'
+                        + '<td><input class="readOnly" readonly name="Medidor[' + cont + '].Numero" value="' + value.numero + '"/></td>'
+                        + '<td>' + value.nombreTitular + '</td>'
+                        + '<td class="dt-center"><input class="readOnly" readonly name="Medidor[' + cont + '].LecturaAnterior" value="' + parseFloat(value.lecturaAnterior) + '"/></td>'
+                        + '<td><input class="form-control LecturaActual" name="Medidor[' + cont + '].LecturaActual" value="' + parseFloat(value.lecturaActual) + '" autocomplete="off" maxlength="18" type="number" /></td></tr>';
                     cont++;
                     break;
             }

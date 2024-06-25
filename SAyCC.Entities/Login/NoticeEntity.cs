@@ -28,6 +28,7 @@ namespace SAyCC.Entities.Login
         public string iconoAplicacion { get; set; }
         public string nombreUsuario { get; set; }
         public string descripcionTipoAviso { get; set; }
-        
+        public string PrioridadDescripcion { get; set; }
+        public string PrioridadClase { get; set; }
     }
 }

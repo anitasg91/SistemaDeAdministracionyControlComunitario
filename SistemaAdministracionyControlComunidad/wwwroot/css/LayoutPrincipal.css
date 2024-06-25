@@ -48,7 +48,7 @@
     min-width: 230px;
     max-width: 230px;
     background: #000000;
-    color: #fff;
+    color: #424548;
     transition: all 0.3s;
 }
 
@@ -132,11 +132,11 @@ nav.dropdown-toggle {
     background-size: 2130px 1200px;
     border-radius: 0 0 2em 0;
     opacity: 0.9;
-    color: #020000;
+    color: #424548;
 }
 
     #sidebar a {
-        color: #020000;
+        color: #424548;
     }
 
 #bannerPal {
@@ -153,7 +153,9 @@ nav.dropdown-toggle {
     CARROUSEL STYLE
 ----------------------------------------------------- */
 
-
+.ajustes {
+    width: 7% !important;
+}
 
 
 

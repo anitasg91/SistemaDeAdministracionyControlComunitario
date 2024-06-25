@@ -1,13 +1,28 @@
 ﻿@model SAyCC.Entities.Login.UserEntity
+@using SAyCC.SystemAdmin.Utilities
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@{
+    var IsEdit = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar, (int)PermisoEn.Crear });
+    var strSi = "Sí";
+}
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 dvCreateUser">
-            <label>¿Crear usuario de sesión?</label>
-            <br />
-            <input class="CreateUser" type="checkbox" asp-for="CreateUser" /> Sí
+            <label>¿Crear usuario de sesión?</label> <br />
+            @if (IsEdit){
+            <input class="CreateUser" type="checkbox" asp-for="CreateUser" /> @strSi
+            }
+            else {
+            <input type="checkbox" class="CreateUser inputDetail" disabled="disabled" /> @strSi
+            }
         </div>
         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 SendEmailUser">
-            <label>¿Enviar usuario por correo?</label>
-            <br />
-            <input class="SendEmail" type="checkbox" asp-for="SendEmail" /> Sí
+            <label>¿Enviar usuario por correo?</label> <br />
+            @if (IsEdit)
+            {
+              <input class="SendEmail" type="checkbox" asp-for="SendEmail" /> @strSi
+            }
+            else {
+                <input type="checkbox" class="SendEmail inputDetail" disabled="disabled" /> @strSi
+            }
         </div>
     </div>

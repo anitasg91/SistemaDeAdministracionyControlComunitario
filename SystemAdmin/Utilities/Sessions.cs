@@ -15,6 +15,12 @@ namespace SAyCC.SystemAdmin.Utilities
         public static string ImagenUpload = "ImagenUpload";
         public static string urlAplicacionRedirect = "urlAplicacionRedirect";
         public static string MessageError = "MessageError";
-        public static string IdModule = "IdModule";
+        public static string IdModule => "IdModule";
+        public static string RolesList => "Roles";
+        public static string PermissionPageCurrent => "PermissionPageCurrent";
+        public static string CurrentPage => "IdCurrentPage";
+        public static string AllPagesByApp => "AllPagesAllowedByAppList";
+        public static string BlockAsignedList => "BlockAsignedList";
+
     }
 }

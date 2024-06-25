@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor contextAccesor
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="#" id="userDropdown" data-toggle="dropdown">
+                <div style="display:inline-block;text-align:center; vertical-align:middle;">
+                    <i class="text-dark fas fa-cog fa-1x"></i>&nbsp;&nbsp;
+                    <strong><span class="text-dark">Ajustes</span></strong><br />
+                </div>
+            </a>
+            <!-- Dropdown - User Information -->
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+            <a class="dropdown-item" href="https://localhost:44336/Home/PrincipalView/@_sessions.IdUser">
+                    <i class="text-dark fas fa-user-alt fa-1x"></i>&nbsp;&nbsp;
+                    Mis Aplicaciones
+                </a>
+                <a class="dropdown-item" asp-controller="Directory" asp-action="Index">
+                    <i class="text-dark fas fa-address-book fa-1x"></i>&nbsp;&nbsp;
+                    Directorio administrativo
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" asp-controller="Home" asp-action="CierraSesion">
+                    <i class="text-dark fas fa-sign-out-alt fa-1x"></i>&nbsp;&nbsp;
+                    Cerrar Sesión
+                </a>
+            </div>
+        </li>
+    </ul>
+</div>

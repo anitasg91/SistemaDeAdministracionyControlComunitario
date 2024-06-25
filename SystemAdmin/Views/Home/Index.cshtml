@@ -1,7 +1,19 @@
-﻿@model SAyCC.Entities.Login.UserEntity
+﻿@using SAyCC.SystemAdmin.Utilities
+@model SAyCC.Entities.Login.UserEntity
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
 
 @{
     ViewData["Title"] = "Usuarios";
+    var hasAnyPerm = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP,(int)PermisoEn.Crear,
+            (int)PermisoEn.Editar,(int)PermisoEn.Borrar, (int)PermisoEn.Activar, (int)PermisoEn.Desactivar, (int)PermisoEn.Visualizar, (int)PermisoEn.AprobarMovimientos});
+    bool isEditable = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar });
+    string strIcono = isEditable ? "user-edit" : "eye";
+    string strTitle = isEditable ? "Editar" : "Ver";
+
+    var arrEstatusAprobacion = new[] {(int)EstatusUsuario.EnvíoInactivación, (int)EstatusUsuario.EnvíoRecuperación,(int)EstatusUsuario.EnvíoActivación,(int)EstatusUsuario.EnvíoEliminación,
+        (int)EstatusUsuario.ProcesoAprobaciónActivación, (int)EstatusUsuario.ProcesoAprobaciónInactivación, (int)EstatusUsuario.ProcesoAprobaciónEliminación };
+
+    var arrEstatusEliminacion = new[] {(int)EstatusUsuario.Eliminado, (int)EstatusUsuario.EnvíoEliminación,(int)EstatusUsuario.ProcesoAprobaciónEliminación };
 }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <style>
@@ -12,7 +24,7 @@
 <body style="overflow-x: hidden;">
     <div>
         <div class="row">
-            @if (ViewBag.Alta)
+            @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear }))
             {
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div style="margin: 34px 0 0 0; float: right; height: 35px;" class="btn btn-info" onclick="newUser();">
@@ -22,22 +34,25 @@
             }
         </div>
         <br />
-        <div class="datagrid" style="height:500px; overflow-y:scroll;">
+        <div class="datagrid">
             <table id="table_id">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Nombre</th>
                         <th scope="col">Identificador</th>
+                        <th scope="col">Status</th>
                         <th scope="col">Perfil</th>
                         <th scope="col">Manzana</th>
                         <th scope="col">Teléfono</th>
                         <th scope="col">E-Mail</th>
                         <th scope="col">Fecha Alta</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">
-                            <i class="fas fa-cog fa-1x"></i>
-                        </th>
+                        @if (hasAnyPerm)
+                        {
+                            <th scope="col">
+                                <i class="fas fa-cog fa-1x"></i>
+                            </th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -45,29 +60,62 @@
                         var Users = (List<SAyCC.Entities.Login.UserEntity>)ViewBag.tableUser;
                         foreach (var item in Users)
                         {
-                            string fechaAlta = item.FechaAlta.ToString("dd/MM/yyyy");
-                            <tr>
-                                <td>@item.Id</td>
-                                <td>@item.NombreCompleto</td>
-                                <td>@item.Identificador</td>
-                                <td>@item.Perfil</td>
-                                <td>@item.Manzana</td>
-                                <td>@item.Telefono</td>
-                                <td>@item.Email</td>
-                                <td>@fechaAlta</td>
-                                <td style="color:@item.Color" class="dt-center ajustes"><i class="@item.Estatus fa-lg"></i></td>
-                                <td class="dt-center ajustes">
-                                    <i onclick="editUser(1,@item.Id);" style="color:dodgerblue; cursor:pointer;" class="fas fa-user-edit fa-lg"></i>
-                                    @if (ViewBag.Alta || ViewBag.Modificacion)
+                            @if (item.IdEstatus != (int)EstatusUsuario.Eliminado || _sessions.IsSuperAdmin)
+                            {
+                                string fechaAlta = item.FechaAlta.ToString("dd/MM/yyyy");
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.NombreCompleto</td>
+                                    <td>@item.Identificador</td>
+                                    <td class="dt-center ajustes @item.Color"><i class="@item.Estatus fa-lg" title="@item.NombreEstatus"></i></td>
+                                    <td>@item.Perfil</td>
+                                    <td>@item.Manzana</td>
+                                    <td>@item.Telefono</td>
+                                    <td>@item.Email</td>
+                                    <td>@fechaAlta</td>
+                                    @if (hasAnyPerm)
                                     {
-                                        <i onclick="blockUnblockUser(1,@item.Id,@(item.Activo? 1: 0));" style="color:gray; cursor:pointer;" class="@item.Action fa-lg"></i>
+                                        <td class="dt-center ajustes">
+                                            @if (item.IdEstatus != (int)EstatusUsuario.Eliminado)
+                                            {
+                                                @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar, (int)PermisoEn.Visualizar }))
+                                                {
+                                                    <i onclick="editUser(1,@item.Id);" class="fas fa-@strIcono fa-lg pointer text-info" title="@strTitle"></i>
+                                                }
+                                                @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP })
+                                                || (item.IdEstatus == (int)EstatusUsuario.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.Activar }))
+                                                || (item.IdEstatus == (int)EstatusUsuario.Inactivo && _sessions.HasAccessTo(new[] { (int)PermisoEn.Desactivar }))
+                                                )
+                                                {
+                                                    var title = item.IdEstatus == (int)EstatusUsuario.Activo ? "Desactivar" : "Activar";
+                                                    <i name="btnLockUser" data-id="@item.Id" data-estatus="@item.IdEstatus" class="@item.Action fa-lg pointer text-secondary" title="@title"></i>
+                                                }
+                                                @if ((!arrEstatusAprobacion.Contains(item.IdEstatus) && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Borrar })) || _sessions.IsSuperAdmin)
+                                                {
+                                                    <i name="btnDeleteUser" data-id="@item.Id" class="fas fa-trash fa-lg text-danger pointer" title="Eliminar"></i>
+                                                }
+                                                @if (arrEstatusAprobacion.Contains(item.IdEstatus) && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.AprobarMovimientos }))
+                                                {
+                                                    if ((_sessions.HasRol(roles.Juez) && _sessions.HasBlock(item.IdManzana) && !item.HasApprovalJudge)
+                                                    || (_sessions.HasRol(roles.Subdelegado) && !item.HasApprovalSubdelegate)
+                                                    || (_sessions.HasRol(roles.Tesorero) && !item.HasApprovalTreasurer)
+                                                    )
+                                                    {
+                                                        <i name="btnApproveMoveUser" data-id="@item.Id" data-estatus="@item.IdEstatus" class="fas fa-handshake fa-lg text-warning pointer" title="Aprobar"></i>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                               <span>Eliminar</span>
+                                            }
+
+                                        </td>
                                     }
-                                    @if (ViewBag.Alta)
-                                    {
-                                        <i onclick="deleteUser(1,@item.Id);" style="color:red; cursor:pointer;" class="fas fa-trash fa-lg"></i>
-                                    }
-                                </td>
-                            </tr>
+                                </tr>
+                            }
+
+                       
                         }
                     }
                 </tbody>
@@ -78,12 +126,17 @@
         <partial name="~/Views/Home/modalNewUser.cshtml" model="Model" />
     </div>
 </body>
+<div id="dvModals"></div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
 <script type="text/javascript">
-
+    const _permissionCurrentPage = JSON.parse('@Json.Serialize(_sessions.PermissionPageCurrent.Select(x => x.Id))');
+    $(function () {
+        let IdPagina = "@_sessions.IdCurrentPage";
+        $("#liMenu_" + IdPagina).addClass('PaginaActiva');
+    });
          var resul = "@ViewBag.Resultado";
         switch (resul) {
             case "SaveSuccess":

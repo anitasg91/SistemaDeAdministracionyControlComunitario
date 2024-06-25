@@ -36,6 +36,10 @@
             $("#dvMdlWaterMeter").modal();
             //createDll("#dllIdManzana", "/Catalog/GetCatalogJson");
             break;
+        case "5":
+            $("#ModalPermissionsNew").modal();
+            
+            break;
         default:
     }
 }
@@ -158,10 +162,10 @@ function createTableGral(lista) {
     createTableCatalog("table_id", theadTitle, lista, "#dvTablaCatalog", IDCatalog);
 }
 
-function createTableProfiles(lista) {
+/*function createTableProfiles(lista) {
     var theadTitle = ["#", "Nombre", "Estatus", "<i class='fas fa-cog fa-1x'></i>"];
     createTable("table_id", theadTitle, lista, "#dvTablaCatalog", 2);
-}
+}*/
 
 //function configureTabPermission() { }
 function ModifyWaterMeterEdit(IdWaterMeter, ModifyTypeWaterMeter) {
@@ -329,4 +333,33 @@ function selectTitular(IdTitularNew, nameTitular) {
     $("#hfIdTitularNew").val(IdTitularNew);
     $("#txtUserName").val(nameTitular);
     $(".searchAutom").remove(); 
+}
+
+function GetPermissionCatalogJson() {
+
+    var Params = {
+        IdPermiso: null,
+    };
+    $.ajax({
+        type: "GET",
+        url: '/Catalog/GetPermissionCatalogJson',
+        data: Params,
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        success: function (data) {
+            if (data.data !== null) {
+                CreatePermissionCatalog(data.data);
+            }
+            else {
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            alert('Error!!' + xhr + ", " + textStatus + ", " + errorThrown);
+        }
+    });
+}
+
+function CreatePermissionCatalog(lista) {
+    var theadTitle = ["#", "Nombre","Descripcion", "Estatus", "<i class='fas fa-cog fa-1x'></i>"];
+    createTable("table_id", theadTitle, lista, "#dvTablaCatalog", 8);
 }

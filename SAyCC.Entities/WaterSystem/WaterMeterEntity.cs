@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace SAyCC.Entities.WaterSystem
@@ -18,8 +19,19 @@ namespace SAyCC.Entities.WaterSystem
         public int IdManzana { get; set; }
         public string Ubicacion { get; set; }
         public DateTime FechaLectura { get; set; }
-        
 
+       
+       
+        public string strClassFechaLectura
+        {
+            get
+            {
+                var fechaActual = DateTime.Now.Month;
+                var fecha = FechaLectura.Month;
+                return fecha == fechaActual ? "text-success" : Activo && FechaBaja == new DateTime?() ? "text-danger" : "text-black";
+
+            }
+        }
         public string strFechaLectura { get { return FechaLectura.ToString("dd/MMMM/yyyy").ToUpper(); } }
         public string Estatus { get { return Activo && FechaBaja == new DateTime?() ? "fas fa-check-circle" : "fas fa-ban"; } }
         public string Deactivate { get { return Activo ? "fas fa-ban" : "fas fa-unlock"; } }

@@ -27,12 +27,12 @@ namespace WaterSystem.Controllers
                 if (id != new int?())
                     HttpContext.Session.SetInt32(Sessions.IdModule, (int)id);
                 ViewBag.IdUser = HttpContext.Session.GetInt32(Sessions.IdUser);
-               // ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), HttpContext.Session.GetInt32(Sessions.IdApp));
                 string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
                 ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
                // ViewBag.Alta = ViewBag.Modificacion = true;
                
-                var mods = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), (int)HttpContext.Session.GetInt32(Sessions.IdApp));
+               // var mods = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), (int)HttpContext.Session.GetInt32(Sessions.IdApp));
+                var mods = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.IdUser), (int)HttpContext.Session.GetInt32(Sessions.IdApp));
                 ViewBag.Modules = mods;
                 int IDMod = (int)HttpContext.Session.GetInt32(Sessions.IdModule);
                 ViewBag.Alta = mods.FirstOrDefault(x => x.Id == IDMod).Alta;
@@ -47,6 +47,18 @@ namespace WaterSystem.Controllers
                 ViewBag.Apple = GetPeriod((int)Enumerador.CatalogType.Apple);
                 ViewBag.Period = GetPeriod((int)Enumerador.CatalogType.Month);
                 ViewBag.tableMedidor = GetWaterMeter().Where(x=> (IdManzana == 0) ?x.IdManzana == 1: x.IdManzana == IdManzana).ToList();
+                ViewBag.BtnAgregar = false;
+                using (WaterSystemBusiness nego = new WaterSystemBusiness())
+                {
+                    var res = nego.GetWaterMeter().Where(x => x.IdManzana == 1).ToList();
+                    if (res.Any())
+                    {
+                        var fechaActual = DateTime.Now.Month;
+                        var fecha = res.FirstOrDefault().FechaLectura.Month;
+                        ViewBag.BtnAgregar = fecha == fechaActual;
+                    }
+                }
+
                 return View();
             }
             else
@@ -92,11 +104,11 @@ namespace WaterSystem.Controllers
             }
         }
 
-        public List<ModuleEntity> GetModulesAllowed(int? IdPerfil, int? IdApp)
+        public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
         {
             using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
             {
-                var resultado = AppNegocio.GetModulesAllowed(IdPerfil, IdApp);
+                var resultado = AppNegocio.GetModulesAllowed(IdUsuario, IdApp);
                 return resultado;
             }
         }
@@ -160,7 +172,7 @@ namespace WaterSystem.Controllers
                 return Json(new { data = res });
             }
         }
-       
+
         #region HTTPOST
         [HttpPost]
         public IActionResult saveNewReading(WaterMeterList list)

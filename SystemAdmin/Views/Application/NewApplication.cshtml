@@ -1,28 +1,67 @@
 ﻿@model SAyCC.Entities.Login.ApplicationEntity
+@using SAyCC.SystemAdmin.Utilities;
+@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions;
+@{
+    bool hasAnyPerm = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar, (int)PermisoEn.Crear});
+    var classDisabled = hasAnyPerm ? "" : "inputDetail";
+    var disabledInp = hasAnyPerm ? "none" : "disabled";
+}
+
 <div class="col-lg-4 col-md-4 col-md-4 col-sm-12 col-xs-12">
     <label>Nombre:</label><br />
-    <input asp-for="Descripcion" class="form-control txtDescripcion" placeholder="Nombre" autocomplete="off" />
-    <span asp-validation-for="Descripcion" class="text-danger" style="font-size:small"></span>
+    @if (hasAnyPerm){
+        <input asp-for="Descripcion" class="form-control txtDescripcion" placeholder="Nombre" autocomplete="off" />
+        <span asp-validation-for="Descripcion" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtDescripcion inputDetail" disabled="disabled" />
+    }
+    
 </div>
 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
     <label>Icono:</label><br />
-    <input asp-for="Icono" class="form-control txtIcono" placeholder="Icono" autocomplete="off" />
-    <span asp-validation-for="Icono" class="text-danger" style="font-size:small"></span>
+    @if (hasAnyPerm){
+        <input asp-for="Icono" class="form-control txtIcono" placeholder="Icono" autocomplete="off" />
+        <span asp-validation-for="Icono" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtIcono inputDetail" disabled="disabled"/>
+    }
 </div>
 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
     <label>Acción:</label><br />
-    <input asp-for="Accion" class="form-control txtAccion" placeholder="Acción" autocomplete="off" />
-    <span asp-validation-for="Accion" class="text-danger" style="font-size:small"></span>
+    @if (hasAnyPerm) {
+        <input asp-for="Accion" class="form-control txtAccion" placeholder="Acción" autocomplete="off" />
+        <span asp-validation-for="Accion" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtAccion inputDetail" disabled="disabled"/>
+    }
 </div>
 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
-    <label>Controlador:</label><br />
-    <input asp-for="Controlador" class="form-control txtControlador" placeholder="Controlador" autocomplete="off" />
-    <span asp-validation-for="Controlador" class="text-danger" style="font-size:small"></span>
+    <label>Controlador:</label><br />    
+    @if (hasAnyPerm) {
+        <input asp-for="Controlador" class="form-control txtControlador" placeholder="Controlador" autocomplete="off" />
+        <span asp-validation-for="Controlador" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtControlador inputDetail" disabled="disabled" />
+    }
 </div>
 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12">
     <label>Dominio:</label>
     <br />
-    <input asp-for="Dominio" class="form-control txtDominio" placeholder="Dominio" autocomplete="off" />
-    <span asp-validation-for="Dominio" class="text-danger" style="font-size:small"></span>
+    @if (hasAnyPerm) {
+        <input asp-for="Dominio" class="form-control txtDominio" placeholder="Dominio" autocomplete="off" />
+        <span asp-validation-for="Dominio" class="text-danger" style="font-size:small"></span>
+    }
+    else
+    {
+        <input type="text" class="form-control txtDominio inputDetail" disabled="disabled"/>
+    }
 </div>
 

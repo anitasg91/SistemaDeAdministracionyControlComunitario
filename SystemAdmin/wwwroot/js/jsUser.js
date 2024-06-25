@@ -1,4 +1,6 @@
 ﻿function newUser() {
+    $("#liHistorial").css("display", "none");
+    $("#Historial").css("display", "none");
     $('#dvMdlNewUser').modal();
     $("#aInfoGral").click();
     $("#hfIdUserEdit").val("0");
@@ -66,7 +68,31 @@ function getDetailUser(IdUser) {
                         $(".SendEmailUser").hide();
                         $(".dvCreateUser").hide();
                     }
-                    
+
+                    if (entidad.idEstatus === 1 || entidad.idEstatus === 2 || entidad.idEstatus === 3) {
+                       
+                        $("#liHistorial").css("display", "none");
+                        $("#Historial").css("display", "none");
+                    }
+                    else {
+                        let hasApprovalSubdelegate = entidad.hasApprovalSubdelegate ? "Aprobado por el subdelegado" : "";
+                        let hasApprovalJudge = entidad.hasApprovalJudge ? "Aprobado por el juez" : "";
+                        let hasApprovalTreasurer = entidad.hasApprovalTreasurer ? "Aprobado por el tesorero" : "";
+                       
+                        let html = `<div class="row">
+                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 EstatusMovimento">
+                                            <label>Estatus</label> <br />
+                                            <label>${entidad.nombreEstatus}</label> <br />
+                                        </div>
+                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 EstatusMovimento">
+                                            <label>Aprobaciones:</label> <br />
+                                            <label>${entidad.approvalSubdelegate}</label>
+                                            <label>${entidad.approvalJudge}</label>
+                                            <label>${entidad.approvalTreasurer}</label>
+                                        </div>
+                                    </div>`;
+                        $("#Historial").html(html);
+                    }
 
                     createTableWaterMeter(entidad.medidor);
                    /* createTableProfiles(entidad.profiles);
@@ -93,7 +119,14 @@ function getDetailUser(IdUser) {
 }
 
 function createTableWaterMeter(lista) {
-    var theadTitle = ["No", "Número", "Lectura_Actual", "Lectura_Anterior", "<i class='fas fa-cog fa-1x'></i>"];
+   // var theadTitle = ["No", "Número", "Lectura_Actual", "Lectura_Anterior", "<i class='fas fa-cog fa-1x'></i>"];
+    let canDeleteMed = ([1, 5].some(perm => _permissionCurrentPage.includes(perm)));
+    var theadTitle = ["No", "Número", "Lectura_Actual", "Lectura_Anterior"];
+    if (canDeleteMed) {
+        theadTitle.push("<i class='fas fa-cog fa-1x'></i>");
+    }
+
+
     createTable("table_SecondId", theadTitle, lista, "#tableMedidor", 6);
     // onDllPerfilesChanged();
 }

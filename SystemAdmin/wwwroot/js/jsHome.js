@@ -1,4 +1,133 @@
-﻿$(".custom-file-input").on("change", function () {
+﻿$(document).on("click", "i[name='btnLockUser']", function (e) {
+    e.preventDefault();
+    let idUser = $(this).data('id');
+    let estatus = $(this).data('estatus');
+
+    $.ajax({
+        type: "GET",
+        url: "/Home/GetModalLockUnlockUser",
+        data: { IdUsuario: idUser, Estatus: estatus },
+        success: function (data) {
+            if (!$.isEmptyObject(data)) {
+                $("#dvModals").empty();
+                $("#dvModals").append(data);
+                $("#ModalLockUnlockUser").modal();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            alert('Error!!' + xhr + ", " + textStatus + ", " + errorThrown);
+        }
+    });
+
+    e.stopImmediatePropagation();
+});
+
+$(document).on("click", "i[name='btnDeleteUser']", function (e) {
+    e.preventDefault();
+    let idUsuario = $(this).data('id');
+   // let idUsuario = $(this).data('estatus');
+    
+    $.ajax({
+        type: "GET",
+        url: "/Home/GetModalDeleteUser",
+        data: { IdUsuario: idUsuario },
+        success: function (data) {
+            if (!$.isEmptyObject(data)) {
+                $("#dvModals").empty();
+                $("#dvModals").append(data);
+                $("#ModalDeleteUser").modal();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            alert('Error!!' + xhr + ", " + textStatus + ", " + errorThrown);
+        }
+    });
+
+    e.stopImmediatePropagation();
+});
+
+$(document).on("click", "div[id='btnLockUserYes']", function (e) {
+    e.preventDefault();
+    let idUser = $("#hfIdUserLock").val();
+    let estatus = $("#hfEstatusUser").val();
+    let motivo = $("#txtMotivo").val();
+    if (motivo != "") {
+        SaveChangeStatusUser("#btnLockUserNo", idUser, estatus, motivo);
+    }
+    else {
+        $("#txtMotivo").addClass("requerido");
+    }
+    e.stopImmediatePropagation();
+});
+
+$(document).on("click", "div[id='btnDeleteUserYes']", function (e) {
+    e.preventDefault();
+    let idUser = $("#hfIdUserDelete").val();
+    let estatus = $("#hfEstatusUserrDelete").val();
+    let motivo = $("#txtMotivo").val();
+    if (motivo != "") {
+        SaveChangeStatusUser("#btnDeleteUserNo", idUser, estatus, motivo);
+    }
+    else {
+        $("#txtMotivo").addClass("requerido");
+    }
+    e.stopImmediatePropagation();
+});
+
+$(document).on("click", "i[name='btnApproveMoveUser']", function (e) {
+    e.preventDefault();
+    let idUser = $(this).data('id');
+    let estatus = $(this).data('estatus');
+
+    $.ajax({
+        type: "GET",
+        url: "/Home/GetModalApproveMoveUser",
+        data: { IdUsuario: idUser, Estatus: estatus },
+        success: function (data) {
+            if (!$.isEmptyObject(data)) {
+                $("#dvModals").empty();
+                $("#dvModals").append(data);
+                $("#ModalApproveMoveUser").modal();
+            }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            alert('Error!!' + xhr + ", " + textStatus + ", " + errorThrown);
+        }
+    });
+
+    e.stopImmediatePropagation();
+});
+$(document).on("click", "div[id='btnApproveMoveYes']", function (e) {
+    e.preventDefault();
+    let idUser = $("#hfIdUserLock").val();
+    let estatus = $("#hfEstatusUser").val();
+    SaveChangeStatusUser("#btnApproveMoveNo", idUser, estatus, null);
+    e.stopImmediatePropagation();
+});
+
+function SaveChangeStatusUser(btnClick,idUser, estatus, motivo) {
+    $.ajax({
+        type: "GET",
+        url: "/Home/SaveBlockUnblockUser",
+        data: { IdUsuario: idUser, Estatus: estatus, Motivo: motivo },
+        success: function (data) {
+            if (data.success) {
+                window.location.reload();
+                swal("Éxito", data.message, "info");
+            } else {
+                swal("ERROR", data.message, "error");
+            }
+           $(btnClick).click();
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            alert('Error!!' + xhr + ", " + textStatus + ", " + errorThrown);
+            swal("ERROR", xhr + ", " + textStatus + ", " + errorThrown, "error");
+        }
+    });
+}
+
+
+$(".custom-file-input").on("change", function () {
     var fileName = $(this).val().split("\\").pop();
     $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 });
