@@ -76,6 +76,16 @@ namespace SAyCC.Bussiness.SystemAdmin
             }
         }
 
+        public bool DeleteUserForErrorToSave(int Id)
+        {
+            using (AministrationRepository objDBD = new AministrationRepository())
+            {
+                bool usuario = objDBD.DeleteUserForErrorToSave(DBSet.DBcnn, Id);
+                objDBD.Dispose();
+                return usuario;
+            }
+        }
+
         #endregion
 
         #region Aplicación
@@ -299,6 +309,7 @@ namespace SAyCC.Bussiness.SystemAdmin
                 objDBD.Dispose();
             }
         }
+
         public void DeletePermissionPagina(int IdPermisoPagina)
         {
             using (AministrationRepository objDBD = new AministrationRepository())
@@ -308,7 +319,6 @@ namespace SAyCC.Bussiness.SystemAdmin
             }
         }
 
-        
         public List<CatalogEntity> GetBlockAsignedToUser(int IdUsuario, int IdApp)
         {
             using (AministrationRepository objDBD = new AministrationRepository())

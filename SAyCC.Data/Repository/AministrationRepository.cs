@@ -214,6 +214,32 @@ namespace SAyCC.Data.Repository
             }
         }
 
+        public bool DeleteUserForErrorToSave(string DBCnn, int Id)
+        {
+            bool eliminado = false;
+            try
+            {
+                SqlDataReader DatosReader;
+                using (ContextoDB DataObj = new ContextoDB(DBCnn))
+                {
+                    SqlParameter[] _Parametros = new SqlParameter[]
+                    {
+                        new SqlParameter("IdUsuario",SqlDbType.Int){Value = Id },
+                    };
+                    DatosReader = DataObj.EjecutaSP(AministrationAppSP.DeleteUserForErrorToSave, _Parametros);
+                    while (DatosReader.Read())
+                    {
+                        eliminado = Convert.ToBoolean(DatosReader["eliminado"].ToString());
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            return eliminado;
+        }
+
 
         #endregion
 

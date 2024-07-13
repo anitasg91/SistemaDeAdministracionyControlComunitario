@@ -169,6 +169,7 @@ namespace SystemAdmin.Controllers
         public IActionResult saveUser(UserEntity entity)
         {
 
+                    int Id = 0;
             try
             {
                 string imageUp = "";
@@ -184,7 +185,6 @@ namespace SystemAdmin.Controllers
 
                 using (ApplicationBusiness nego = new ApplicationBusiness())
                 {
-                    int Id = 0;
                     entity.IdUsuarioAlta = _generals.IdUser;
                     entity.IdUsuarioMod = entity.Id == 0 ? new int?() : _generals.IdUser; ;
                     string usuario = nego.saveUser(entity, ref Id);
@@ -211,6 +211,13 @@ namespace SystemAdmin.Controllers
             }
             catch (Exception e)
             {
+                using (ApplicationBusiness nego = new ApplicationBusiness())
+                {
+                    if (Id > 0)
+                    {
+                        var eliminado = nego.DeleteUserForErrorToSave(Id);
+                    }
+                }
                 TempData["resultado"] = "SaveError";
                 TempData["Error"] = e.Message + " - " + e.Source;
             }
@@ -321,7 +328,6 @@ namespace SystemAdmin.Controllers
             string strmessage = "";
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
-
                 try
                 {
                     if (_generals.IsSuperAdmin)

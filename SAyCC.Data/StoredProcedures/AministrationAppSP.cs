@@ -54,6 +54,8 @@ namespace SAyCC.Data.StoredProcedures
         public static string ChangeStatusUser => "[Administracion].[spChangeStatusUser]";
         public static string GetBlockAsignedByApp => "[dbo].[GetBlockAsignedByApp]";
         public static string ChangeStatusUserBySuperAdmin => "[Administracion].[spChangeStatusUserBySuperAdmin]";
+        public static string DeleteUserForErrorToSave => "[Administracion].[spDeleteUserForErrorToSave]";
+        
     }
 
 
