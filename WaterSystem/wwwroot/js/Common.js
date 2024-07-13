@@ -1,4 +1,8 @@
 ﻿/**     Common     */
+function createClassicBtn(id, dvClass, iclass, txt) {
+    return `<div id="${id}" class="${dvClass}">
+    <i class="${iclass}" style = "color:white" ></i> ${txt} </div>`;
+}
 function createBasicBtn(id, dvClass, onclicFunction, iclass, txt) {
 
     return '<div id="' + id + '" class="' + dvClass + '" onclick="' + onclicFunction + '">'
@@ -407,7 +411,7 @@ function getWaterMeterList() {
 }
 
 function txtOnkeyup(Params, url, contentName) {
-    var divContent = '<div class="form-control searchAutom" style="max-height: 250px !important; height: auto; overflow-y: scroll;">{}</div>';
+    var divContent = '<div class="form-control searchAutom" style="max-height: 150px !important; height: auto; overflow-y: scroll;">{}</div>';
     var option = "";
     $.ajax({
         type: "GET",

@@ -254,9 +254,23 @@ function ModifyWaterMeter() {
                 execController = false;
             }
           //  execModifyWaterMeter(Params, url, btnClose, accion);
-
+            break;
+        case 7:
+            Params = {
+                IdWaterMeter: IdWaterMeter,
+                ModifyTypeWaterMeter: ModifyTypeWaterMeter
+            };
+            accion = "activado";
+            break;
+        case 8:
+            Params = {
+                IdWaterMeter: IdWaterMeter,
+                ModifyTypeWaterMeter: ModifyTypeWaterMeter
+            };
+            accion = "dado de alta";
             break;
         default:
+            break;
     }
     if (execController)
     execModifyWaterMeter(Params, url, btnClose, accion);
@@ -312,10 +326,13 @@ function execModifyWaterMeter(Params, url, btnClose, accion) {
                     type = "error";
                 }
                 else {
-
-                    var theadTitle = ["No", "Número", "L_Actual", "L_Anterior", "Titular", "Ubicacion", "Estatus", "<i class='fas fa-cog fa-1x'></i>"];
-                    createTable("table_id", theadTitle, data.data, "#dvTablaCatalog", 7);
-
+                    if (btnClose === "#btnCloseWaterMeterAction") {
+                        busqueda.table();
+                    }
+                    else {
+                        var theadTitle = ["No", "Número", "L_Actual", "L_Anterior", "Titular", "Ubicacion", "Estatus", "<i class='fas fa-cog fa-1x'></i>"];
+                        createTable("table_id", theadTitle, data.data, "#dvTablaCatalog", 7);
+                    }
                     title = "Éxito";
                     mensaje = "El registro ha sido " + accion +" con éxito.";
                     type = "success";

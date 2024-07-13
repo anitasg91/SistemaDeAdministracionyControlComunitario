@@ -42,7 +42,9 @@ namespace SAyCC.Entities.Common
             Deactivate = 3,
             Delete = 4,
             Update = 5,
-            associate = 6
+            associate = 6,
+            activate = 7,
+            Subscribe = 8
         }
 
         public enum CatalogTypeWaterSystem

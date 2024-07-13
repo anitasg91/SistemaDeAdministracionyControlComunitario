@@ -1,0 +1,102 @@
+﻿@using SAyCC.WaterSystem.Utilities
+@model List<SAyCC.Entities.WaterSystem.WaterMeterEntity>
+@inject SAyCC.WaterSystem.Utilities.IGenerals _sessions
+@{
+    var hasAnyPerm = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP,
+        (int)PermisoEn.Crear,
+        (int)PermisoEn.Editar,
+        (int)PermisoEn.Activar,
+        (int)PermisoEn.Desactivar,
+        (int)PermisoEn.Asignar_Medidor,
+        (int)PermisoEn.Desasignar_Medidor,
+        (int)PermisoEn.Dar_Baja,
+        (int)PermisoEn.Visualizar});
+
+    bool puedeEditar = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar });
+
+    var iconoEdit = puedeEditar ? "tasks" : "eye";
+    var titleEdit = puedeEditar ? "Editar/Asignar" : "Ver";
+    var colorEdit = puedeEditar ? "success" : "info";
+
+}
+
+<div class="row">
+    <div class="col-12 datagrid">
+        <table id="table_id">
+            <thead>
+                <tr>
+                    <th scope="col">Medidor</th>
+                    <th scope="col">Titular</th>
+                    <th scope="col">Anterior</th>
+                    <th scope="col">Actual</th>
+                    <th scope="col">Estatus</th>
+                    <th scope="col">Última Lectura</th>
+                    @if (hasAnyPerm)
+                    {
+                      <th class="dt-center" scope="col"><i class="fas fa-cog fa-1x"></i></th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Model)
+                {
+                <tr>
+                    <td>@x.Numero</td>
+                    <td>@x.NombreTitular</td>
+                    <td>@x.LecturaAnterior</td>
+                    <td>@x.LecturaActual</td>
+                    <td class="dt-center" style="color:@x.Color;"><i class="@x.Estatus fa-lg"></i></td>
+                    <td class="@x.strClassFechaLectura">@x.strFechaLectura</td>
+                        @if (hasAnyPerm)
+                        {
+                            @if (x.FechaBaja != null)
+                            {
+                                string point = _sessions.IsSuperAdmin || _sessions.HasRol(roles.Presidente_Agua)?"pointer":string.Empty;
+                                bool isAdmin = _sessions.IsSuperAdmin || _sessions.HasRol(roles.Presidente_Agua);
+                                <td name="btnMedidorBaja" class="dt-center @point" style="color:red;" data-id="@x.Id" data-isAdmin="@isAdmin"> MEDIDOR DADO DE BAJA </td>
+                            }
+                            else
+                            {
+                                <td class="dt-center">
+                                    @if (
+                                   (x.IdTitular != null && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Desasignar_Medidor }))
+                                   || (x.IdTitular == null && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Asignar_Medidor }))
+                                   )
+                                    {
+                                        <i style="color:@x.ColorAssocciate;" class="fas @x.Assocciate fa-lg pointer mr10px"
+                                           title="x.TitleAssocciate" name="btnAsociar" data-id="@x.Id"
+                                           data-type="@(x.IdTitular != null?1:6)"></i>
+                                    }
+
+                                    @if (
+                                   (x.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Desactivar }))
+                                   || (!x.Activo && _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Activar }))
+                                   )
+                                    {
+                                        <i style="color:@x.ColorDeactivate;" class="fas @x.Deactivate fa-lg pointer mr10px" title="x.TitleDeactivate"
+                                           name="btnActivar" data-id="@x.Id" data-type="@(x.Activo? 3 : 7)"></i>
+                                    }
+
+                                    @if (
+                                   (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Dar_Baja }))
+                                   )
+                                    {
+                                        <i style="color:@x.ColorUnsubscribe;" class="fas fa-power-off fa-lg pointer mr10px" title="x.TitleUnsubscribe"
+                                           name="btnDarBaja" data-id="@x.Id" data-type="2"></i>
+                                    }
+                                    
+                                   @*  <i title="x.TitleAssocciate" onclick="configureActionsWaterMeter(@x.Id,'@x.Assocciate','@x.TitleAssocciate',1); " style="color:@x.ColorAssocciate; cursor:pointer; margin-right: 10px;" class="fas @x.Assocciate fa-lg"></i>
+                                    <i title="x.TitleDeactivate" onclick="configureActionsWaterMeter(@x.Id,'@x.Deactivate','@x.TitleDeactivate',3); " style="color:@x.ColorDeactivate; cursor:pointer; margin-right: 10px;" class="fas @x.Deactivate fa-lg"></i>
+                                    <i title="x.TitleUnsubscribe" onclick="configureActionsWaterMeter(@x.Id,'fa-power-off','@x.TitleUnsubscribe',2); " style="color:@x.ColorUnsubscribe; cursor:pointer; margin-right: 10px;" class="fas fa-power-off fa-lg"></i>
+                                *@
+                                
+                                
+                                </td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,25 +1,15 @@
-﻿namespace SAyCC.SystemAdmin.Utilities
+﻿namespace SAyCC.WaterSystem.Utilities
 {
    
     public static class PartialViewEnum
     {
-        public static string Table => "_Table";
-        public static string PerfilAsign => "_PerfilAsign";
-        public static string PermissionsList => "_PermissionsList";
-        public static string BlockMonthTable => "_TableMM";
-        public static string PermissionTable => "_TablePermisos";
-        public static string PermissionsNew => "Permission/_PermissionsNew";
-        public static string CatalogNew => "BasicCatalogs/_CatalogNew";
-        public static string DeletePartialView => "_Delete";
-        public static string SharedNotAsign => "~/Views/Shared/_NotAsign.cshtml";
-        public static string CatalogNewFront => "~/Views/CatalogManager/BasicCatalogs/_CatalogNew.cshtml";
-        public static string PermissionsNewFront => "~/Views/CatalogManager/Permission/_PermissionsNew.cshtml";
-        public static string LockUnlockModal => "_LockUnlockProfile";
-        public static string DeleteProfileModal => "_DeleteProfile";
+        public static string Shared_ImgProfile => "_ImgProfile";
+        public static string Shared_SideBar => "_SideBar";
         public static string PageNotAccess => "~/Views/Shared/PageNotAccess.cshtml";
-        public static string LockUnlockUserModal => "_LockUnlockUser";
-        public static string DeleteUserModal => "_DeleteUser";
-        public static string ApproveMovementUser => "_ApproveMovementUser";
+        public static string Shared_Manzana => "_Manzana";
+        public static string Shared_Mes => "_Mes";
+        public static string Table => "_Table";
+        public static string ModalActions => "_ModalActions";
 
     }
     public static class TempDataEnum
@@ -32,10 +22,8 @@
     public enum roles
     {
         Superadmin = 1,
-        Delegado,
-        Subdelegado,
-        Tesorero,
-        Juez
+        Presidente_Agua = 7,
+        Juez = 8
     }
     public enum RestrictedPages
     {

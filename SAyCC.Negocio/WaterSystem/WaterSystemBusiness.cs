@@ -3,6 +3,7 @@ using SAyCC.Data.Repository;
 using SAyCC.Entities.WaterSystem;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SAyCC.Bussiness.DrinkingWaterSystem
@@ -20,7 +21,7 @@ namespace SAyCC.Bussiness.DrinkingWaterSystem
             {
                 var Result = objDBD.GetWaterMeter(DBSet.DBcnn, Id, Numero);
                 objDBD.Dispose();
-                return Result;
+                return Result.OrderByDescending(x=>x.Id).ToList();
             }
         }
 

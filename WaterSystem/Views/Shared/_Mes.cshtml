@@ -1,0 +1,21 @@
+﻿@model List<SAyCC.Entities.SystemAdmin.CatalogEntity>
+@{
+    int mes = DateTime.Now.Month;
+}
+<div class="col-md-3 col-sm-3 col-xs-12">
+    <label>Periodo:</label>
+    <br />
+    <select id="ddlMes" class="form-control">
+        @{
+            foreach (var item in Model)
+            {
+                if (item.Id <= mes){
+                    if (item.Id == mes) {
+                        <option value="@item.Id" selected>@item.Descripcion</option>}
+                    else{
+                    <option value="@item.Id">@item.Descripcion</option>}
+                }
+            }
+        }
+    </select>
+</div>

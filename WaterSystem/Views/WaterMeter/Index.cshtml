@@ -1,7 +1,9 @@
-﻿@model SAyCC.Entities.WaterSystem.WaterMeterList
+﻿@using SAyCC.WaterSystem.Utilities
+@model SAyCC.Entities.WaterSystem.WaterMeterResponse
+@inject SAyCC.WaterSystem.Utilities.IGenerals _sessions
 
 @{
-    ViewData["Title"] = "Usuarios";
+    ViewData["Title"] = "Medidor";
 }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <style>
@@ -9,9 +11,57 @@
         margin: 2% 0 2% 0 !important;
     }
 </style>
+<div>
+    <div class="row">
+        @Html.Partial(PartialViewEnum.Shared_Manzana, Model.Manzana)
+        @* @Html.Partial(PartialViewEnum.Shared_Mes, Model.Mes) *@
+        @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear }))
+        {
+        <div class="col-md-9 col-sm-9 col-xs-12">
+                <br/>
+            <div id="btnNuevo" class="btn btn-info float-right btnMarginTopDer">
+                <i class="fas fa-plus-square fa-1x" style="color:white"></i> Nuevo
+            </div>
+        </div>
+        }
+    </div>
+    <div id="dvTabla" class="datagrid" style="max-height:450px; overflow-y:scroll;"> 
+        @Html.Partial(PartialViewEnum.Table, Model.Medidor)
+    </div>
+</div>
+<div id="dvModal"></div>
+@* <div style="margin: 10% 0;" id="dvMdlWaterMeterAction" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <input id="hfIdWaterMeterAction" class="form-control" type="hidden" value="0" />
+    <input id="hfIdModifyTypeWaterMeterAction" class="form-control" type="hidden" value="0" />
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lblTittleWaterMeterAction" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div id="dvMsjWaterMeterAction" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                        <label id="lblMsjWaterMeterAction"></label><br />
+                    </div>
+                    <div id="dvSearchUser" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                        <label>Nombre del usuario:</label><br />
+                        <input id="txtUserName" class="form-control" placeholder="Teclee nombre o apellidos..." autocomplete="off" onkeyup="txtUserNameOnkeyup();" />
+                        <input id="hfIdTitularNew" class="form-control" type="hidden" value="0" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCloseWaterMeterAction" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                <div type="submit" class="btn btn-success" onclick="ModifyWaterMeter();"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
+            </div>
+        </div>
+    </div>
+</div> *@
 
-
-<body style="overflow-x: hidden;">
+@* <body>
     <form asp-controller="WaterMeter" asp-action="saveNewReading" method="post">
         <div>
             <div class="row">
@@ -30,7 +80,7 @@
                     <input id="hfIdManzana" asp-for="IdManzana" class="form-control" type="hidden" value="1" />
 
                 </div>
-                @*<div id="dvPeriod" class="col-md-3 col-sm-3 col-xs-12 hide">
+                <div id="dvPeriod" class="col-md-3 col-sm-3 col-xs-12 hide">
                         <label>Periodo:</label>
                         <br />
                         <select id="ddlPeriodo" class="form-control" onchange=" getProf();">
@@ -42,7 +92,7 @@
                                 }
                             }
                         </select>
-                    </div>*@
+                    </div>
                 <div class="col-md-9 col-sm-9 col-xs-12 row">
                     <div id="dvBtnContainer" class="col-md-12 col-sm-12 col-xs-12">
                         @if (ViewBag.BtnAgregar)
@@ -69,7 +119,6 @@
                 <table id="table_id">
                     <thead>
                         <tr>
-                            @*<th scope="col">#</th>*@
                             <th scope="col">Medidor</th>
                             <th scope="col">Titular</th>
                             <th scope="col">Anterior</th>
@@ -81,13 +130,11 @@
                     </thead>
                     <tbody>
                         @{
-                            //var mesActual = DateTime.Now.Month;
                             var Users = (List<SAyCC.Entities.WaterSystem.WaterMeterEntity>)ViewBag.tableMedidor;
                             foreach (var x in Users)
                             {
                               //  var mes = x.FechaLectura.Month;
                                 <tr>
-                                    @*<td>@x.Id</td>*@
                                     <td>@x.Numero</td>
                                     <td>@x.NombreTitular</td>
                                     <td>@x.LecturaAnterior</td>
@@ -119,37 +166,8 @@
 
 
 
-    <div style="margin: 10% 0;" id="dvMdlWaterMeterAction" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-        <input id="hfIdWaterMeterAction" class="form-control" type="hidden" value="0" />
-        <input id="hfIdModifyTypeWaterMeterAction" class="form-control" type="hidden" value="0" />
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 id="lblTittleWaterMeterAction" class="modal-title"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div id="dvMsjWaterMeterAction" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
-                            <label id="lblMsjWaterMeterAction"></label><br />
-                        </div>
-                        <div id="dvSearchUser" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
-                            <label>Nombre del usuario:</label><br />
-                            <input id="txtUserName" class="form-control" placeholder="Teclee nombre o apellidos..." autocomplete="off" onkeyup="txtUserNameOnkeyup();" />
-                            <input id="hfIdTitularNew" class="form-control" type="hidden" value="0" />
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="btnCloseWaterMeterAction" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
-                    <div type="submit" class="btn btn-success" onclick="ModifyWaterMeter();"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
+   
+</body> *@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

@@ -80,6 +80,7 @@ namespace SAyCC.Data.Repository
                     login.ImagenUpload = DatosReader["ImagenUpload"].ToString();
                     login.Perfil = DatosReader["Perfil"].ToString();
                     login.Activo = Convert.ToBoolean(DatosReader["Activo"].ToString());
+                    login.IdManzana = int.Parse(DatosReader["IdManzana"].ToString());
                     //login.IdPerfil = int.Parse(DatosReader["IdPerfil"].ToString());
 
                     Lista.Add(login);

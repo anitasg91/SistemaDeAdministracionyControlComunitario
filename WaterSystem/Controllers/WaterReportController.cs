@@ -16,78 +16,39 @@ using System.Linq;
 
 namespace WaterSystem.Controllers
 {
+    [SessionValidator]
     public class WaterReportController : Controller
     {
-        public IActionResult Index()
+        private readonly IGenerals _generals;
+        public WaterReportController(IGenerals generals)
         {
-            if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
-            {
-                #region Configura Menú
-                ViewBag.IdUser = HttpContext.Session.GetInt32(Sessions.IdUser);
-               // ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), HttpContext.Session.GetInt32(Sessions.IdApp));
-                ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.IdUser), HttpContext.Session.GetInt32(Sessions.IdApp));
-                string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
-                ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
-                ViewBag.Alta = ViewBag.Modificacion = true;
-                ViewBag.NombreUsuario = HttpContext.Session.GetString(Sessions.UserName);
-                #endregion
-
-                ViewBag.resultado = TempData["resultado"];
-                ViewBag.MensajeErr = TempData["MensajeErr"];
-
-                ViewBag.Period = GetPeriod((int)Enumerador.CatalogType.Month);
-                ViewBag.Apple = GetPeriod((int)Enumerador.CatalogType.Apple);
-                ViewBag.PaymentVoucher = GetPaymentVoucher(new int?());
-                
-                // ViewBag.Applications = GetApplications();
-                // ViewBag.Catalogs = GetCatalog((int)Enumerador.CatalogTypeWaterSystem.TipoLectura);
-                return View();
-            }
-            else
-            {
-                return Redirect(DBSet.urlRedirect);
-            }
+            _generals = generals;
         }
-        #region configura menú
-        public void validateSession()
+        public IActionResult Index(int? id)
         {
-            if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
+            #region Varibles de configuración para armar el Menú
+            if (id != new int?())
             {
-                int IdUser = (int)HttpContext.Session.GetInt32(Sessions.IdUser);
-                int IdApp = (int)HttpContext.Session.GetInt32(Sessions.IdApp);
-                int RolUser = (int)HttpContext.Session.GetInt32(Sessions.RolUser);
-                HttpContext.Session.SetInt32(Sessions.IdUser, (int)IdUser);
-                HttpContext.Session.SetInt32(Sessions.IdApp, (int)IdApp);
-                HttpContext.Session.SetInt32(Sessions.RolUser, (int)RolUser);
+                //Importante guardar la paginaActual cada que se navegue
+                HttpContext.Session.SetInt32(Sessions.CurrentPage, (int)id);
+                if (!_generals.AllPagesByAppList.Any(_ => _.Id == id))
+                {
+                    return View(PartialViewEnum.PageNotAccess);
+                }
             }
-            else
-            {
-                Redirect(DBSet.urlRedirect);
-            }
-        }
+            #endregion
+            ViewBag.resultado = TempData["resultado"];
+            ViewBag.MensajeErr = TempData["MensajeErr"];
 
-        public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
-        {
-            using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
-            {
-                var resultado = AppNegocio.GetModulesAllowed(IdUsuario, IdApp);
-                return resultado;
-            }
+            ViewBag.Period = GetPeriod((int)Enumerador.CatalogType.Month);
+            ViewBag.Apple = GetPeriod((int)Enumerador.CatalogType.Apple);
+            ViewBag.PaymentVoucher = GetPaymentVoucher(new int?());
+            
+            return View();
         }
-
-        public List<ApplicationEntity> GetApplications()
-        {
-            using (LoginBusiness AppNegocio = new LoginBusiness())
-            {
-                var resultado = AppNegocio.getApplications(new int?());
-                return resultado;
-            }
-        }
-        #endregion
 
         public List<CatalogEntity> GetPeriod(int IDCatalog)
         {
-            validateSession();
             using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
             {
                 var resultado = AppNegocio.GetCatalog(IDCatalog);
@@ -96,7 +57,6 @@ namespace WaterSystem.Controllers
         }
          public List<VoucherEntity> GetPaymentVoucher(int? Id)
          {
-            validateSession();
              using (WaterSystemBusiness AppNegocio = new WaterSystemBusiness())
              {
                  var resultado = AppNegocio.GetPaymentVoucher(Id);
@@ -106,7 +66,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult GetPaymentVoucherJson(int Id)
         {
-            validateSession();
             using (WaterSystemBusiness nego = new WaterSystemBusiness())
             {
                 VoucherEntity res;
@@ -128,7 +87,6 @@ namespace WaterSystem.Controllers
 
         public List<BreakdownEntity> GetBreakdowns(int idComprobante) {
 
-            validateSession();
             using (WaterSystemBusiness nego = new WaterSystemBusiness())
             {
                     List<BreakdownEntity> lista = new List<BreakdownEntity>();

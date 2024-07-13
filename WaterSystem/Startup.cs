@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SAyCC.WaterSystem.Utilities;
 
 namespace WaterSystem
 {
@@ -41,7 +44,8 @@ namespace WaterSystem
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
+            services.AddTransient<IGenerals, Generals>();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromHours(12);
@@ -72,6 +76,48 @@ namespace WaterSystem
                   name: "ReceiveData",
                   template: "{controller=SessionReceiver}/{action=ReceiveData}/{IdUsuario}/{IdApp}");
             });
+
+
+
+
+
+
+
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage(); // Página de error detallada en entorno de desarrollo
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error"); // Página de error en producción
+                app.UseHsts(); // Redirección a HTTPS en producción
+            }
+
+            app.UseHttpsRedirection(); // Redirección a HTTPS
+            app.UseStaticFiles(); // Servir archivos estáticos (por ejemplo, CSS, JS, imágenes)
+
+            app.UseEndpointRouting(); // Middleware de enrutamiento
+            app.UseEndpoint();
+
+            //app.UseEndpoint(endpoints =>
+            //{
+            //    endpoints.MapControllerRoute(
+            //        name: "default",
+            //        pattern: "{controller=Home}/{action=Index}/{id?}");
+            //});
+
+
+
+
+
+
+
+
+
+
+
+
 
         }
     }

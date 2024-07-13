@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using SAyCC.Bussiness.Common;
 using SAyCC.Bussiness.DrinkingWaterSystem;
 using SAyCC.Bussiness.Login;
@@ -16,64 +17,40 @@ using System.Linq;
 
 namespace WaterSystem.Controllers
 {
+    [SessionValidator]
     public class CatalogController : Controller
     {
-        public IActionResult Index()
+        private readonly IGenerals _generals;
+        public CatalogController(IGenerals generals)
         {
-            if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
-            {
-                #region Configura Menú
-                ViewBag.IdUser = HttpContext.Session.GetInt32(Sessions.IdUser);
-                ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.IdUser), HttpContext.Session.GetInt32(Sessions.IdApp));
-                //ViewBag.Modules = GetModulesAllowed(HttpContext.Session.GetInt32(Sessions.RolUser), HttpContext.Session.GetInt32(Sessions.IdApp));
-                string imgUp = HttpContext.Session.GetString(Sessions.ImagenUpload);
-                ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
-                ViewBag.Alta = ViewBag.Modificacion = true;
-                ViewBag.NombreUsuario = HttpContext.Session.GetString(Sessions.UserName);
-                #endregion
-
-                ViewBag.resultado = TempData["resultado"];
-                ViewBag.MensajeErr = TempData["MensajeErr"];
-
-                ViewBag.Applications = GetApplications();
-                ViewBag.Catalogs = GetCatalog((int)Enumerador.CatalogTypeWaterSystem.TipoLectura);
-                return View();
-            }
-            else
-            {
-                return Redirect(DBSet.urlRedirect);
-            }
+            _generals = generals;
         }
-
-        public void validateSession()
+        public IActionResult Index(int? id)
         {
-            if (HttpContext.Session.GetInt32(Sessions.IdUser) != null)
+            #region Varibles de configuración para armar el Menú
+            if (id != new int?())
             {
-                int IdUser = (int)HttpContext.Session.GetInt32(Sessions.IdUser);
-                int IdApp = (int)HttpContext.Session.GetInt32(Sessions.IdApp);
-                int RolUser = (int)HttpContext.Session.GetInt32(Sessions.RolUser);
-                HttpContext.Session.SetInt32(Sessions.IdUser, (int)IdUser);
-                HttpContext.Session.SetInt32(Sessions.IdApp, (int)IdApp);
-                HttpContext.Session.SetInt32(Sessions.RolUser, (int)RolUser);
+                //Importante guardar la paginaActual cada que se navegue
+                HttpContext.Session.SetInt32(Sessions.CurrentPage, (int)id);
+                if (!_generals.AllPagesByAppList.Any(_ => _.Id == id))
+                {
+                    return View(PartialViewEnum.PageNotAccess);
+                }
             }
-            else
-            {
-                Redirect(DBSet.urlRedirect);
-            }
+            #endregion
+
+            ViewBag.resultado = TempData["resultado"];
+            ViewBag.MensajeErr = TempData["MensajeErr"];
+
+            ViewBag.Applications = GetApplications();
+            ViewBag.Catalogs = GetCatalog((int)Enumerador.CatalogTypeWaterSystem.TipoLectura);
+            return View();
         }
 
         public CatalogEntityWS GetCatalog(int IDCatalog) {
             using (WaterSystemBusiness AppNegocio = new WaterSystemBusiness())
             {
                 var resultado = AppNegocio.GetCatalog(IDCatalog);
-                return resultado;
-            }
-        }
-        public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
-        {
-            using (ApplicationBusiness AppNegocio = new ApplicationBusiness())
-            {
-                var resultado = AppNegocio.GetModulesAllowed(IdUsuario, IdApp);
                 return resultado;
             }
         }
@@ -89,7 +66,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult saveProfile(int IdProfile, int IdApp, string Descripcion)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<ProfileEntity> resultado;
@@ -112,7 +88,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult blockUnblockProfile(int IdProfile, int Status, int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<ProfileEntity> resultado;
@@ -133,7 +108,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult DeleteProfile(int IdProfile, int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<ProfileEntity> resultado;
@@ -155,7 +129,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult getDetailProfile(int IdPerfil)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.GetProfiles(IdPerfil:IdPerfil).FirstOrDefault();
@@ -168,7 +141,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult getModules(int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.GetModulesAllowed(IdApp: IdApp);
@@ -178,7 +150,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult getProfiles(int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.GetProfilesByAppActives(IdApp);
@@ -188,7 +159,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult getPermission(int IdPerfil, int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.getPermission(IdPerfil, IdApp);
@@ -198,7 +168,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult DeleteCatalog(int IDCatalog, int Id)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<CatalogEntity> resultado;
@@ -220,7 +189,6 @@ namespace WaterSystem.Controllers
         
         public IActionResult SaveCatalog(int IDCatalog, int Id, string Detalle, int IDAplicacion)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 List<CatalogEntity> resultado;
@@ -257,7 +225,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult GetCatalogJson(int IDCatalog)
         {
-            validateSession();
             using (WaterSystemBusiness nego = new WaterSystemBusiness())
             {
                 CatalogEntityWS res;
@@ -276,7 +243,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult getProfilesWithStats(int IdApp)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.GetProfiles(IdApp: IdApp);
@@ -285,7 +251,6 @@ namespace WaterSystem.Controllers
         }
         public JsonResult GetWaterMeterJson()
         {
-            validateSession();
             using (WaterSystemBusiness nego = new WaterSystemBusiness())
             {
                 List<WaterMeterEntity> res;
@@ -304,7 +269,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult ModifyWaterMeter(int IdWaterMeter, int ModifyTypeWaterMeter, string NoMedidor, decimal? LecturaAnterior, decimal? LecturaActual, int? IdManzana, int? IdTitular)
         {
-            validateSession();
             List<WaterMeterEntity> res = new List<WaterMeterEntity>();
             try
             {
@@ -315,7 +279,9 @@ namespace WaterSystem.Controllers
                         case (int)Enumerador.ModifyTypeWaterMeter.Disassociate:
                         case (int)Enumerador.ModifyTypeWaterMeter.Unsubscribe:
                         case (int)Enumerador.ModifyTypeWaterMeter.Deactivate:
-                        appNego.UpdateWaterMeterById(IdWaterMeter, ModifyTypeWaterMeter, new int?());
+                        case (int)Enumerador.ModifyTypeWaterMeter.activate:
+                        case (int)Enumerador.ModifyTypeWaterMeter.Subscribe:
+                            appNego.UpdateWaterMeterById(IdWaterMeter, ModifyTypeWaterMeter, new int?());
                             break;
                         case (int)Enumerador.ModifyTypeWaterMeter.Delete:
                             appNego.DeleteWaterMeterById(IdWaterMeter);
@@ -354,7 +320,6 @@ namespace WaterSystem.Controllers
 
         public JsonResult getUserByParameter(string name)
         {
-            validateSession();
             using (ApplicationBusiness nego = new ApplicationBusiness())
             {
                 var resultado = nego.getUserByParameter(name);
@@ -362,15 +327,6 @@ namespace WaterSystem.Controllers
                 return Json(new { data = resultado });
             }
         }
-
-
-
-
-
-
-
-
-
 
     }
 }

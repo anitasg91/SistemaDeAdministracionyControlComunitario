@@ -1,0 +1,28 @@
+﻿@using SAyCC.WaterSystem.Utilities
+@model List<SAyCC.Entities.SystemAdmin.CatalogEntity>
+@inject SAyCC.WaterSystem.Utilities.IGenerals _sessions
+@{
+    string disabled = _sessions.HasRol(roles.Juez) ? "disabled" : String.Empty;
+    var selectedVal = _sessions.HasRol(roles.Juez) ? _sessions.IdManzana : new int?();
+
+}
+<div class="col-md-3 col-sm-3 col-xs-12">
+    <label>Manzana:</label>
+    <br />
+    <select id="ddlManzana" class="form-control" @disabled>
+        @{
+            foreach (var item in Model)
+            {
+                if (item.Id == selectedVal)
+                {
+                    <option value="@item.Id" selected>@item.Descripcion</option>
+                }
+                else
+                {
+                    <option value="@item.Id">@item.Descripcion</option>
+                }
+            }
+        }
+    </select>
+</div>
+

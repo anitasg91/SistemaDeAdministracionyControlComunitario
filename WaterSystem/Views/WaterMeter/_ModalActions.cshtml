@@ -1,0 +1,44 @@
+﻿@using SAyCC.WaterSystem.Utilities
+@using static SAyCC.Entities.Common.Enumerador
+@model SAyCC.Entities.Common.ModalResponse
+@inject SAyCC.WaterSystem.Utilities.IGenerals _sessions
+
+<div style="margin: 10% 0; overflow:hidden;" id="dvMdlWaterMeterAction" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    @* <input id="hfIdWaterMeterAction" class="form-control" type="hidden" value="0" />
+    <input id="hfIdModifyTypeWaterMeterAction" class="form-control" type="hidden" value="0" /> *@
+    <input id="hfIdWaterMeterAction" class="form-control" type="hidden" value="@Model.Id" />
+    <input id="hfIdModifyTypeWaterMeterAction" class="form-control" type="hidden" value="@Model.Tipo" />
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lblTittleWaterMeterAction" class="modal-title"><i class='@Model.Icono'></i>@Model.Titulo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                        @if (Model.Tipo == (int)ModifyTypeWaterMeter.associate)
+                        {
+                            <div id="dvSearchUser" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                                <label>Nombre del usuario:</label><br />
+                                <input id="txtUserName" class="form-control" placeholder="Teclee nombre o apellidos..." autocomplete="off" onkeyup="txtUserNameOnkeyup();" />
+                                <input id="hfIdTitularNew" class="form-control" type="hidden" value="0" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="dvMsjWaterMeterAction" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                                <label id="lblMsjWaterMeterAction">@Model.Descripcion</label><br />
+                            </div>
+                        }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCloseWaterMeterAction" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                <div type="submit" class="btn btn-success" onclick="ModifyWaterMeter();"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,263 @@
+﻿@using SAyCC.WaterSystem.Utilities
+@model SAyCC.Entities.WaterSystem.WaterMeterResponse
+@inject SAyCC.WaterSystem.Utilities.IGenerals _sessions
+@{
+    ViewData["Title"] = "Lecturas";
+}
+@* <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> *@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+    .row {
+        margin: 2% 0 2% 0 !important;
+    }
+</style>
+
+@{
+    string classBotones = _sessions.HasRol(roles.Superadmin) || _sessions.HasRol(roles.Presidente_Agua) ? "col-md-6 col-sm-6 col-xs-12" : "col-md-9 col-sm-9 col-xs-12";
+    var classComprobante = !Model.CrearComprobante ? "hide" : string.Empty;
+}
+
+
+
+<form asp-controller="WaterMeterReading" asp-action="SaveListReading" method="post">
+    <div class="row">
+        @Html.Partial(PartialViewEnum.Shared_Manzana, Model.Manzana)
+        <input asp-for="IdManzana" class="form-control" type="hidden" value="@Model.IdManzana" />
+        @if (_sessions.HasRol(roles.Superadmin) || _sessions.HasRol(roles.Presidente_Agua))
+        {
+            @Html.Partial(PartialViewEnum.Shared_Mes, Model.Mes)
+            <input asp-for="IdPeriodo" class="form-control" type="hidden" value="@Model.IdPeriodo" />
+        }
+        
+            <div id="dvBtnContainer" class="@classBotones">
+                <br/>
+            @if (_sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Crear }))
+            {
+                <div id="btnCharge" class="btn btn-success float-right btnMarginTop">
+                    <i class="fas fa-plus-square fa-1x" style="color:white"></i> Cargar Lectura
+                </div>
+            }
+
+
+               @*  <div id="btnEdit" class="btn btn-success float-right btnMarginTopDer" onclick="configureEditReading();">
+                    <i class="fas fa-edit fa-1x" style="color:white"></i> Editar Lectura
+                </div> *@
+                 @if (Model.CrearComprobante)
+            {
+                <div id="btnCreate" class="btn btn-info float-right btnMarginTopDer @classComprobante" onclick="configureCreateVoucher();">
+                    <i class="fas fa-file-invoice fa-1x" style="color:white"></i> Crear Comprobante
+                </div>
+            }
+
+            </div>
+    </div>
+    <div id="dvTabla" class="datagrid" style="max-height:450px; overflow-y:scroll;">
+        @* @Html.Partial(PartialViewEnum.Table, Model.Medidor) *@
+        <div class="row">
+            <div class="col-12 datagrid">
+                <table id="table_id">
+                    <thead>
+                        <tr>
+                            <th scope="col">Titular</th>
+                            <th scope="col">Medidor</th>
+                            <th scope="col">L. Anterior</th>
+                            <th scope="col">L. Actual</th>
+                            <th scope="col">F. Última Lectura</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int contador = 0;
+                        }
+                        @foreach (var x in Model.Medidor)
+                        {
+                            bool estaActualizado = x.FechaLectura.ToString("MM/yyyy") == DateTime.Now.ToString("MM/yyyy");
+                            string classUpdate = estaActualizado ? "isUpdate" : string.Empty;
+                            string isNew = !estaActualizado ? "isUpdate" : string.Empty;
+
+                            <tr>
+                                <td data-id="@x.Id">@x.NombreTitular
+                                    <input asp-for="Medidor[contador].Id" class="form-control" type="hidden" value="@x.Id" />
+
+                                </td>
+                                <td>@x.Numero</td>
+
+                                <td>
+                                    <input asp-for="Medidor[contador].LecturaAnterior" class="form-control" type="hidden" value="@x.LecturaAnterior" />
+
+                                    @if (estaActualizado)
+                                    {
+                                        <input asp-for="Medidor[contador].LecturaActual" class="form-control inpEdit hide" type="number" value="@x.LecturaActual" />
+                                    }
+                                    <label class="inpReadOnly @classUpdate">@x.LecturaAnterior</label>
+                                </td>
+                                <td>
+                                    @if (!estaActualizado)
+                                    {
+                                        <input asp-for="Medidor[contador].LecturaActual" class="form-control inpEdit hide" type="number" value="@x.LecturaActual" />
+                                    }
+                                    <label class="inpReadOnly @isNew">@x.LecturaActual</label>
+                                </td>
+
+                                <td class="@x.strClassFechaLectura">@x.strFechaLectura</td>
+                            </tr>
+
+                            contador++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+
+
+@* <body style="overflow-x: hidden;">
+    <form asp-controller="WaterMeter" asp-action="saveNewReading" method="post">
+        <div>
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <label>Manzana:</label>
+                    <br />
+                    <select id="ddlIDManzana" class="form-control" onchange="configureInitialSearch();">
+                        @{
+                            var apple = (List<SAyCC.Entities.SystemAdmin.CatalogEntity>)ViewBag.Apple;
+                            foreach (var item in apple)
+                            {
+                                <option value="@item.Id">@item.Descripcion</option>
+                            }
+                        }
+                    </select>
+                    <input id="hfIdManzana" asp-for="IdManzana" class="form-control" type="hidden" value="1" />
+
+                </div>
+                
+                <div class="col-md-9 col-sm-9 col-xs-12 row">
+                    <div id="dvBtnContainer" class="col-md-12 col-sm-12 col-xs-12">
+                        @if (ViewBag.BtnAgregar)
+                        {
+                            <div id="btnEdit" class="btn btn-success float-right btnMarginTop" onclick="configureEditReading();">
+                                <i class="fas fa-edit fa-1x" style="color:white"></i> Editar Lectura
+                            </div>
+                            <div id="btnCreate" class="btn btn-info float-right btnMarginTopDer" onclick="configureCreateVoucher();">
+                                <i class="fas fa-plus-square fa-1x" style="color:white"></i> Crear Comprobante
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="btnCharge" class="btn btn-success float-right btnMarginTop" onclick="configureNewReading();">
+                                <i class="fas fa-plus-square fa-1x" style="color:white"></i> Cargar Lectura
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <br />
+            <br />
+            <div id="dvTablaCatalog" class="datagrid" style="max-height:450px; overflow-y:scroll;">
+                <table id="table_id">
+                    <thead>
+                        <tr>
+                            <th scope="col">Medidor</th>
+                            <th scope="col">Titular</th>
+                            <th scope="col">Anterior</th>
+                            <th scope="col">Actual</th>
+                            <th scope="col">Estatus</th>
+                            <th scope="col">Última Lectura</th>
+                            <th class="dt-center" scope="col"><i class="fas fa-cog fa-1x"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            //var mesActual = DateTime.Now.Month;
+                            var Users = (List<SAyCC.Entities.WaterSystem.WaterMeterEntity>)ViewBag.tableMedidor;
+                            foreach (var x in Users)
+                            {
+                                //  var mes = x.FechaLectura.Month;
+                                <tr>
+                                    <td>@x.Numero</td>
+                                    <td>@x.NombreTitular</td>
+                                    <td>@x.LecturaAnterior</td>
+                                    <td>@x.LecturaActual</td>
+                                    <td class="dt-center" style="color:@x.Color;"><i class="@x.Estatus fa-lg"></i></td>
+                                    <td class="@x.strClassFechaLectura">@x.strFechaLectura</td>
+                                    @if (x.FechaBaja != null)
+                                    {
+                                        <td class="dt-center" style="color:red;"> MEDIDOR DADO DE BAJA </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="dt-center">
+
+                                            <i title="@x.TitleAssocciate" onclick="configureActionsWaterMeter(@x.Id,'@x.Assocciate','@x.TitleAssocciate',1); " style="color:@x.ColorAssocciate; cursor:pointer; margin-right: 10px;" class="fas @x.Assocciate fa-lg"></i>
+                                            <i title="@x.TitleDeactivate" onclick="configureActionsWaterMeter(@x.Id,'@x.Deactivate','@x.TitleDeactivate',3); " style="color:@x.ColorDeactivate; cursor:pointer; margin-right: 10px;" class="fas @x.Deactivate fa-lg"></i>
+                                            <i title="@x.TitleUnsubscribe" onclick="configureActionsWaterMeter(@x.Id,'fa-power-off','@x.TitleUnsubscribe',2); " style="color:@x.ColorUnsubscribe; cursor:pointer; margin-right: 10px;" class="fas fa-power-off fa-lg"></i>
+                                        </td>
+
+                                    }
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+
+
+
+    <div style="margin: 10% 0;" id="dvMdlWaterMeterAction" class="modal fade bd-example-modal-md segundoModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <input id="hfIdWaterMeterAction" class="form-control" type="hidden" value="0" />
+        <input id="hfIdModifyTypeWaterMeterAction" class="form-control" type="hidden" value="0" />
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="lblTittleWaterMeterAction" class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div id="dvMsjWaterMeterAction" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                            <label id="lblMsjWaterMeterAction"></label><br />
+                        </div>
+                        <div id="dvSearchUser" class="col-lg-12 col-md-12 col-md-12 col-sm-12 col-xs-12">
+                            <label>Nombre del usuario:</label><br />
+                            <input id="txtUserName" class="form-control" placeholder="Teclee nombre o apellidos..." autocomplete="off" onkeyup="txtUserNameOnkeyup();" />
+                            <input id="hfIdTitularNew" class="form-control" type="hidden" value="0" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCloseWaterMeterAction" type="button" class="btn btn-danger" data-dismiss="modal" onclick=' $(".primerModal").removeClass("primerModal");'><i class="fas fa-window-close fa-1x" style="color:white"></i> No</button>
+                    <div type="submit" class="btn btn-success" onclick="ModifyWaterMeter();"><i class="fas fa-save fa-1x" style="color:white"></i> Sí</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body> *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<script type="text/javascript">
+
+    var resul = "@ViewBag.Resultado";
+
+    switch (resul) {
+        case "UpdateSuccess":
+            swal("Éxito", "La lecturas han sido actualizadas con éxito.", "success");
+            break;
+        case "SaveError":
+            swal("ERROR", "@ViewBag.MessageError", "error");
+            break;
+    }
+</script>
+
+<script src="~/js/Common.js"></script>
+@* <script src="~/js/jsCatalog.js"></script> *@
+<script src="~/js/jsWaterMeterReading.js"></script>

@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor contextAccesor
+@inject SAyCC.WaterSystem.Utilities.IGenerals _sessions
+
+@{
+<center>
+    <br />
+    <a asp-controller="Home" class="nav-link" asp-action="PrincipalView">
+        @if (_sessions.ImagenBytesIlustrative.Any())
+        {
+          <img class="rounded-circle" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String(_sessions.ImagenBytesIlustrative))" width="80" height="80">
+        }
+        else
+        {
+          <img class="rounded-circle" src="~/images/user.png" width="80" height="80">
+        }
+    </a>
+        <h6 style="font-weight: bold;">@_sessions.UserName</h6>
+        <h6 style="font-weight: bold;">
+            @foreach (var item in _sessions.RolesAsign)
+            {
+                <span>@item.Detalle</span>
+            }    
+        </h6>
+    <br />
+</center>
+}

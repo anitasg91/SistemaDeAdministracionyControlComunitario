@@ -14,5 +14,6 @@ namespace SAyCC.Login.Utilities
         public static string UserName = "NombreUsuario";
         public static string ImagenUpload = "ImagenUpload";
         public static string urlAplicacionRedirect = "urlAplicacionRedirect";
+        public static string LoginApp => "UrlConfiguration:LoginApp";
     }
 }

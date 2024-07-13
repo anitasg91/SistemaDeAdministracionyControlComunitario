@@ -246,8 +246,9 @@ function ModifyWaterMeter() {
             break;
         default:
     }
-    if (execController)
-    execModifyWaterMeter(Params, url, btnClose, accion);
+    if (execController) {
+        execModifyWaterMeter(Params, url, btnClose, accion);
+    }
 
 }
 function validateEmptyFieldsWaterMeter() {

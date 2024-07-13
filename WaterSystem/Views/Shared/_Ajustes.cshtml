@@ -1,12 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Http
 @using SAyCC.Bussiness.Common
 @inject IHttpContextAccessor contextAccesor
-@inject SAyCC.SystemAdmin.Utilities.IGenerals _sessions
+@inject SAyCC.WaterSystem.Utilities.IGenerals _sessions
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-   // var UrlApps = string.Concat(DBSet.urlRedirect, "Home/PrincipalView/", _sessions.IdUser);
+    //var UrlApps = string.Concat(DBSet.urlRedirect, "Home/PrincipalView/", _sessions.IdUser);
     var UrlApps = $"{DBSet.urlRedirect}Home/PrincipalView/{_sessions.IdUser}";
     var UrlDirectory = $"{DBSet.urlRedirect}Home/PrincipalView/{_sessions.IdUser}/Directory";
 }
+
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="nav navbar-nav ml-auto">
         <li class="nav-item">

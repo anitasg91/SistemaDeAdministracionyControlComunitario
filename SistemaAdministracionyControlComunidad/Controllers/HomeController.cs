@@ -23,6 +23,7 @@ namespace SistemaAdministracionyControlComunidad.Controllers
         public HomeController(IConfiguration config)
         {
             Configuracion = config;
+            DBSet.urlRedirect = Configuracion[Sessions.LoginApp];
         }
 
         public IActionResult Index(int? id)
@@ -57,7 +58,7 @@ namespace SistemaAdministracionyControlComunidad.Controllers
             }
         }
 
-        public IActionResult PrincipalView(int? id)
+        public IActionResult PrincipalView(int? id, string actionRedirect)
         {
             if (id != new int?())
             {
@@ -79,6 +80,10 @@ namespace SistemaAdministracionyControlComunidad.Controllers
                 ViewBag.ImagenBytesIlustrative = string.IsNullOrEmpty(imgUp) ? null : Convert.FromBase64String(imgUp);
 
                 List<NoticeEntity> NoticeList = GetNotice();
+
+                if (!string.IsNullOrEmpty(actionRedirect)) { 
+                    return RedirectToAction("Index", actionRedirect);
+                }
 
                 return View(NoticeList);
             }

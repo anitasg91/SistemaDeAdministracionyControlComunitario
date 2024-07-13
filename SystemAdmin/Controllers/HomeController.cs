@@ -34,13 +34,15 @@ namespace SystemAdmin.Controllers
         private readonly IGenerals _generals;
         private readonly IHostingEnvironment _environment;
 
-        private IConfiguration Configuracion { get; }
+        private IConfiguration _Config { get; }
         //private readonly ILogger<HomeController> _logger;
         public HomeController(IConfiguration config, IHostingEnvironment IHostingEnvironment, IGenerals generals)
         {
             _environment = IHostingEnvironment;
-            Configuracion = config;
+            _Config = config;
             _generals = generals;
+            DBSet.urlRedirect = _Config[Sessions.LoginApp];
+
         }
 
         public IActionResult Index(int? id)
@@ -70,18 +72,7 @@ namespace SystemAdmin.Controllers
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        public IActionResult CierraSesion()
-        {
-            var Id = HttpContext.Session.GetInt32(Sessions.IdUser);
-            /*using (LoginBussiness UsrNegocio = new LoginBussiness(Configuracion))
-            {
-                UsrNegocio.CierraSession(Id);
-            }*/
-            HttpContext.Session.Clear();
-            return Redirect(DBSet.urlRedirect); 
-        }
+        }        
 
         public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
         {

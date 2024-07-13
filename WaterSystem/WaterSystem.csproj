@@ -20,4 +20,12 @@
     <ProjectReference Include="..\SAyCC.Negocio\SAyCC.Bussiness.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Content Update="Views\Shared\_SideBar.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

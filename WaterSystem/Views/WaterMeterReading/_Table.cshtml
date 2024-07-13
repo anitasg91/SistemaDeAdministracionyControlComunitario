@@ -1,0 +1,67 @@
+﻿@using SAyCC.WaterSystem.Utilities
+@model List<SAyCC.Entities.WaterSystem.WaterMeterEntity>
+@inject SAyCC.WaterSystem.Utilities.IGenerals _sessions
+@{
+    var hasAnyPerm = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP,
+        (int)PermisoEn.Crear,
+        (int)PermisoEn.Editar,
+        (int)PermisoEn.Activar,
+        (int)PermisoEn.Desactivar,
+        (int)PermisoEn.Asignar_Medidor,
+        (int)PermisoEn.Desasignar_Medidor,
+        (int)PermisoEn.Dar_Baja,
+        (int)PermisoEn.Visualizar});
+
+    bool puedeEditar = _sessions.HasAccessTo(new[] { (int)PermisoEn.TodosLP, (int)PermisoEn.Editar });
+
+    var iconoEdit = puedeEditar ? "tasks" : "eye";
+    var titleEdit = puedeEditar ? "Editar/Asignar" : "Ver";
+    var colorEdit = puedeEditar ? "success" : "info";
+
+}
+
+<div class="row">
+    <div class="col-12 datagrid">
+        <table id="table_id">
+            <thead>
+                <tr>
+                    <th scope="col">Titular</th>
+                    <th scope="col">Medidor</th>
+                    <th scope="col">L. Anterior</th>
+                    <th scope="col">L. Actual</th>
+                    <th scope="col">F. Última Lectura</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Model)
+                {
+                    bool estaActualizado = x.FechaLectura.ToString("MM/yyyy") == DateTime.Now.ToString("MM/yyyy");
+                    string classUpdate = estaActualizado ? "isUpdate" : string.Empty;
+                    string isNew = !estaActualizado ? "isUpdate" : string.Empty;
+
+                    <tr>
+                    <td data-id="@x.Id">@x.NombreTitular</td>
+                    <td>@x.Numero</td>
+
+                    <td>
+                            @if (estaActualizado)
+                            {
+                                <input id="txtLecturaActual@(x.Id)" class="form-control inpEdit hide" type="number" value="@x.LecturaActual" />
+                            }
+                            <label class="inpReadOnly @classUpdate">@x.LecturaAnterior</label>
+                    </td>
+                    <td>
+                            @if (!estaActualizado)
+                            {
+                                <input id="txtLecturaActual@(x.Id)" class="form-control inpEdit hide" type="number" value="" />
+                            }
+                            <label class="inpReadOnly @isNew">@x.LecturaActual</label>
+                    </td>
+
+                    <td class="@x.strClassFechaLectura">@x.strFechaLectura</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
