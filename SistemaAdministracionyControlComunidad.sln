@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAyCC.Login", "SistemaAdministracionyControlComunidad\SAyCC.Login.csproj", "{C284A8DD-64C4-4DA2-B3B1-79EC75578C40}"
 EndProject
@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemAdmin", "SystemAdmin\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WaterSystem", "WaterSystem\WaterSystem.csproj", "{F7AFA3F2-FD19-42E8-93EB-0797CB3FD9D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GG.Servicios", "GG.Servicios\GG.Servicios.csproj", "{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GG.Servicios", "GG.Servicios\GG.Servicios.csproj", "{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAyCC.Tests", "SAyCC.Tests\SAyCC.Tests.csproj", "{C72725CE-B1E8-48E2-9D59-CCAF4039B20D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBD1E279-9B24-4AC4-9A06-D911ED8C95F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C72725CE-B1E8-48E2-9D59-CCAF4039B20D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C72725CE-B1E8-48E2-9D59-CCAF4039B20D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C72725CE-B1E8-48E2-9D59-CCAF4039B20D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C72725CE-B1E8-48E2-9D59-CCAF4039B20D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

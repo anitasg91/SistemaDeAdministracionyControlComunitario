@@ -185,7 +185,8 @@ namespace SystemAdmin.Controllers
                 using (ApplicationBusiness nego = new ApplicationBusiness())
                 {
                     int Id = 0;
-                    entity.IdUsuarioMod = entity.Id == 0 ? new int?() : (int)HttpContext.Session.GetInt32(Sessions.IdUser);
+                    entity.IdUsuarioAlta = _generals.IdUser;
+                    entity.IdUsuarioMod = entity.Id == 0 ? new int?() : _generals.IdUser; ;
                     string usuario = nego.saveUser(entity, ref Id);
 
                     if (Id > 0 && entity.Medidor != null && entity.Medidor.Count() > 0)

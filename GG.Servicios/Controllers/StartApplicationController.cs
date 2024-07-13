@@ -42,7 +42,7 @@ namespace GG.Servicios.Controllers
                 //HttpContext.Session.SetString(Sessions.UserName, usuario.Nombre + " " + usuario.APaterno + " " + usuario.AMaterno);
                 HttpContext.Session.SetString(Sessions.UserName, usuario.NombreCompleto);
                 HttpContext.Session.SetString(Sessions.ImagenUpload, usuario.ImagenUpload);
-                HttpContext.Session.SetInt32(Sessions.RolUser, usuario.IdPerfil);
+               // HttpContext.Session.SetInt32(Sessions.RolUser, usuario.IdPerfil);
             }
         }
         public List<ModuleEntity> GetModulesAllowed(int? IdUsuario, int? IdApp)
